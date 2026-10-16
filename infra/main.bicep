@@ -3,6 +3,9 @@ targetScope = 'resourceGroup'
 @description('Choose a supported region after checking student eligibility and total cost.')
 param location string
 param name string = 'rivock'
+@allowed(['preview', 'production'])
+@description('Preview permits Clerk development keys with the same hosted TLS/HMAC/fixture restrictions.')
+param deploymentEnvironment string = 'production'
 @description('Combined website/API GHCR image pinned by sha256 digest. Build/publish after CI passes.')
 param image string
 @description('Existing reviewed PostgreSQL runtime connection URL, including sslmode=verify-full.')
@@ -15,7 +18,7 @@ param rateHmacSecret string
 @secure()
 param aiApiKey string = ''
 param frontendOrigin string
-@description('Clerk production Frontend API HTTPS origin, without a trailing slash.')
+@description('Matching Clerk Frontend API HTTPS origin, without a trailing slash. Development instance only for preview.')
 param clerkIssuer string
 param clerkAudience string = ''
 @allowed(['pending', 'google'])
@@ -31,7 +34,7 @@ param enableApi bool = false
 param enableWorker bool = false
 
 var sharedEnv = [
-  { name: 'ENVIRONMENT', value: 'production' }
+  { name: 'ENVIRONMENT', value: deploymentEnvironment }
   { name: 'DATABASE_URL', secretRef: 'database-url' }
   { name: 'RATE_HMAC_SECRET', secretRef: 'rate-hmac' }
   { name: 'AI_API_KEY', secretRef: 'ai-key' }

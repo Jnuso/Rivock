@@ -15,15 +15,24 @@ const apiUrl = env.VITE_API_URL || "http://localhost:8000/api/v1";
 const api = apiUrl === "/api/v1" ? null : new URL(apiUrl);
 const key = (env.VITE_CLERK_PUBLISHABLE_KEY ?? "").trim();
 const origin = clerkFrontendOrigin(key);
+const environment = env.RIVOCK_BUILD_ENVIRONMENT ||
+  (env.RIVOCK_PRODUCTION_BUILD === "true" ? "production" : "local");
+if (!["local", "preview", "production"].includes(environment) ||
+    (env.RIVOCK_PRODUCTION_BUILD === "true" && environment !== "production")) {
+  throw new Error("Select an explicit local, preview or production build environment.");
+}
 if (
-  env.RIVOCK_PRODUCTION_BUILD === "true" &&
+  environment !== "local" &&
   ((api && (api.protocol !== "https:" || api.username || api.password)) ||
     !origin ||
-    !key.startsWith("pk_live_") ||
-    origin.endsWith(".accounts.dev"))
+    (environment === "preview" &&
+      (!key.startsWith("pk_test_") || env.VITE_APP_ENVIRONMENT !== "preview")) ||
+    (environment === "production" &&
+      (!key.startsWith("pk_live_") || origin.endsWith(".accounts.dev") ||
+        env.VITE_APP_ENVIRONMENT === "preview")))
 ) {
   throw new Error(
-    "Production build requires a same-origin /api/v1 or HTTPS API and a Clerk production publishable key.",
+    "Hosted build requires a same-origin /api/v1 or HTTPS API and matching preview/test or production/live Clerk configuration.",
   );
 }
 const fraud = "https://*.protect.clerk.com";

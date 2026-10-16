@@ -57,7 +57,8 @@ Updated October 14, 2026. Checked items have the implementation/check evidence d
 - [x] Verify the running native API and production frontend preview over HTTP, including deep-route fallback; no browser layout claim.
 - [x] Build Docker images, start Compose, seed the local app and verify public HTTP health/discovery plus authorization errors. Services are bound to localhost.
 - [ ] Run the workflows on GitHub after the initial repository publication.
-- [ ] Before domain purchase, implement/verify explicit hosted preview configuration: Clerk development keys with exact HTTPS origin, full cloud TLS/HMAC/fixture protections and test-only content. Recommend the combined app's Azure-provided address; GitHub Pages remains a frontend-only alternative. No preview deployed yet.
+- [x] Implement/verify hosted preview configuration: Clerk development keys with exact HTTPS origin, full cloud TLS/HMAC/token/fixture protections, disabled docs and visible Preview notice. Verify 211 backend/script and 34 frontend tests, ten build guards, image smoke and Bicep; user configured the GitHub preview public-key variable.
+- [ ] Publish preview changes, run CI and release a preview image; complete the narrow database route/cost review and deploy to Azure's provided address. Follow PREVIEW_SETUP.md; no hosted preview exists yet.
 - [ ] Inspect real browser layouts at 320/390/768/1440px and keyboard/focus/accessibility flows. Browser permission remains pending after an earlier denial; component tests do not establish visual correctness.
 - [x] Locate new replies/deep notification targets with bounded safe ancestor context and return to normal ranking.
 - [x] Preserve full drafts and original revisions; add explicit compare/reload/rebase controls, memory fallback and tab-close warning when storage fails.

@@ -58,6 +58,15 @@ jobs:
   container:
     needs: [backend, frontend]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - deployment_environment: production
+            clerk_public_key: pk_live_Y2xlcmsucml2b2NrLmV4YW1wbGUk
+            clerk_issuer: https://clerk.rivock.example
+          - deployment_environment: preview
+            clerk_public_key: pk_test_c3ludGhldGljLmNsZXJrLmFjY291bnRzLmRldiQ
+            clerk_issuer: https://synthetic.clerk.accounts.dev
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -66,16 +75,18 @@ jobs:
           context: .
           file: infra/app.Dockerfile
           # Synthetic public key for a non-existent host; never deployed.
-          build-args: VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsucml2b2NrLmV4YW1wbGUk
+          build-args: |
+            VITE_CLERK_PUBLISHABLE_KEY=${{ matrix.clerk_public_key }}
+            DEPLOYMENT_ENVIRONMENT=${{ matrix.deployment_environment }}
           push: false
           load: true
           tags: rivock-app:ci
-      - name: Check combined production routing without external services
+      - name: Check combined hosted routing without external services
         run: |
           docker run --rm -i \
-            --env ENVIRONMENT=production \
+            --env ENVIRONMENT=${{ matrix.deployment_environment }} \
             --env 'DATABASE_URL=postgresql+psycopg://synthetic:synthetic@invalid.example/rivock?sslmode=verify-full' \
-            --env CLERK_ISSUER=https://clerk.rivock.example \
+            --env CLERK_ISSUER=${{ matrix.clerk_issuer }} \
             --env CLERK_AUTHORIZED_PARTIES=https://rivock.example \
             --env CORS_ORIGINS=https://rivock.example \
             --env RATE_HMAC_SECRET=synthetic-hosting-check-only-32-characters \
@@ -83,12 +94,13 @@ jobs:
           import os
           from fastapi.testclient import TestClient
           from app.main import app
+          from app.config import settings
           assert os.getuid() == 10001
           with TestClient(app) as client:
               home = client.get('/')
               assert home.status_code == 200
               assert home.headers['cache-control'] == 'no-cache'
-              assert 'https://clerk.rivock.example' in home.headers['content-security-policy']
+              assert settings().clerk_issuer in home.headers['content-security-policy']
               assert client.get('/threads/synthetic', headers={'Accept': 'text/html'}).content == home.content
               assert client.head('/threads/synthetic', headers={'Accept': 'text/html'}).content == b''
               for path in ['/docs', '/openapi.json', '/api/v1/missing', '/assets/missing.js', '/.env', '/bad%00path']:

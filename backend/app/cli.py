@@ -19,8 +19,8 @@ TOPICS = [
 
 
 def seed():
-    if settings().environment == "production":
-        raise SystemExit("Fictional seed command is restricted to local/test environments")
+    if settings().environment not in {"local", "test", "preview"}:
+        raise SystemExit("Fictional seed command is restricted to local/test/preview environments")
     with Session() as db:
         mod.mutation_lock(db)
         if db.scalar(select(m.User.id).where(m.User.username == "demo_maya")):

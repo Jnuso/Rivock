@@ -190,6 +190,11 @@ export function Layout() {
         </header>
 
         <div className="main">
+          {import.meta.env.VITE_APP_ENVIRONMENT === "preview" && (
+            <p className="badge" role="status">
+              Rivock Preview — a test site. Please use fictional content.
+            </p>
+          )}
           <div
             className="row"
             style={{ justifyContent: "space-between", marginBottom: "1rem" }}

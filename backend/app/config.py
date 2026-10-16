@@ -6,7 +6,7 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-    environment: Literal["local", "test", "production", "migration"] = "local"
+    environment: Literal["local", "test", "preview", "production", "migration"] = "local"
     database_url: str = "postgresql+psycopg://rivock:rivock_local@localhost:5432/rivock"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     clerk_issuer: str = ""
@@ -64,7 +64,10 @@ class Settings(BaseSettings):
                 or "*" in value
                 or (
                     origin.scheme != "https"
-                    and not (self.environment != "production" and local and origin.scheme == "http")
+                    and not (
+                        self.environment not in {"preview", "production"}
+                        and local and origin.scheme == "http"
+                    )
                 )
             ):
                 raise RuntimeError(
@@ -73,7 +76,7 @@ class Settings(BaseSettings):
 
     def validate_production(self):
         self.validate_identity()
-        if self.environment == "production":
+        if self.environment in {"preview", "production"}:
             if self.moderation_mode == "fixture":
                 raise RuntimeError("Fixture moderation is forbidden in production")
             required = [self.clerk_issuer, self.authorized_parties]
@@ -83,7 +86,7 @@ class Settings(BaseSettings):
                 or self.rate_hmac_secret == "local-only-change-before-deployment"
             ):
                 raise RuntimeError("Production identity and HMAC configuration are required")
-            if self.clerk_issuer.endswith(".accounts.dev"):
+            if self.environment == "production" and self.clerk_issuer.endswith(".accounts.dev"):
                 raise RuntimeError("Production requires a Clerk production instance")
             from sqlalchemy.engine import make_url
 

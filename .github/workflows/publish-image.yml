@@ -1,17 +1,24 @@
 name: Publish reviewed Rivock image
 on:
   workflow_dispatch:
+    inputs:
+      deployment_environment:
+        description: Preview uses Clerk development keys; production uses live keys
+        type: choice
+        required: true
+        default: preview
+        options: [preview, production]
 permissions:
   contents: read
   actions: read
   packages: write
 jobs:
   publish:
-    environment: release
+    environment: ${{ inputs.deployment_environment == 'preview' && 'preview' || 'release' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Require the reviewed production public key
+      - name: Require the reviewed public key
         env:
           CLERK_PUBLIC_KEY: ${{ vars.CLERK_PUBLISHABLE_KEY }}
         run: test -n "$CLERK_PUBLIC_KEY"
@@ -33,7 +40,9 @@ jobs:
         with:
           context: .
           file: infra/app.Dockerfile
-          build-args: VITE_CLERK_PUBLISHABLE_KEY=${{ vars.CLERK_PUBLISHABLE_KEY }}
+          build-args: |
+            VITE_CLERK_PUBLISHABLE_KEY=${{ vars.CLERK_PUBLISHABLE_KEY }}
+            DEPLOYMENT_ENVIRONMENT=${{ inputs.deployment_environment }}
           push: true
-          tags: ghcr.io/jnuso/rivock-api:${{ github.sha }}
+          tags: ghcr.io/jnuso/rivock-api:${{ inputs.deployment_environment }}-${{ github.sha }}
       - run: echo "Image digest is ${{ steps.image.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"
