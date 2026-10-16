@@ -1,0 +1,16 @@
+.git
+.azure
+**/.env
+**/.env.*
+**/.azure
+**/.venv
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.pyc
+**/*.tsbuildinfo
+docs
+reference
+scripts

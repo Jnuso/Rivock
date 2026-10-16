@@ -1,0 +1,112 @@
+{
+  "retrieved_at": "2026-10-14T23:03:58.542233+00:00",
+  "currency": "USD",
+  "region": "eastus",
+  "scope": "Public consumption retail rates, not a student allowance confirmation or account invoice.",
+  "sources": [
+    {
+      "url": "https://prices.azure.com/api/retail/prices?%24filter=serviceName+eq+%27Azure+Database+for+PostgreSQL%27+and+armRegionName+eq+%27eastus%27+and+priceType+eq+%27Consumption%27",
+      "items": [
+        {
+          "productName": "Azure Database for PostgreSQL Flex Server Storage",
+          "skuName": "Storage",
+          "meterName": "Storage Data Stored",
+          "retailPrice": 0.115,
+          "unitOfMeasure": "1 GB/Month",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2021-06-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Database for PostgreSQL Flexible Server Burstable BS Series Compute",
+          "skuName": "B1MS",
+          "meterName": "B1MS",
+          "retailPrice": 0.017,
+          "unitOfMeasure": "1 Hour",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2021-12-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Database for PostgreSQL Flexible Server Backup Storage",
+          "skuName": "Backup Storage LRS",
+          "meterName": "Backup Storage LRS Data Stored",
+          "retailPrice": 0.095,
+          "unitOfMeasure": "1 GB/Month",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2021-06-01T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "url": "https://prices.azure.com/api/retail/prices?%24filter=serviceName+eq+%27Azure+Container+Apps%27+and+armRegionName+eq+%27eastus%27+and+priceType+eq+%27Consumption%27",
+      "items": [
+        {
+          "productName": "Azure Container Apps",
+          "skuName": "Standard",
+          "meterName": "Standard vCPU Idle Usage",
+          "retailPrice": 3e-06,
+          "unitOfMeasure": "1 Second",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2022-06-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Container Apps",
+          "skuName": "Standard",
+          "meterName": "Standard Requests",
+          "retailPrice": 0.4,
+          "unitOfMeasure": "1M",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2022-06-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Container Apps",
+          "skuName": "Standard",
+          "meterName": "Standard Memory Idle Usage",
+          "retailPrice": 3e-06,
+          "unitOfMeasure": "1 GiB Second",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2022-06-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Container Apps",
+          "skuName": "Standard",
+          "meterName": "Standard vCPU Active Usage",
+          "retailPrice": 2.4e-05,
+          "unitOfMeasure": "1 Second",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2022-06-01T00:00:00Z"
+        },
+        {
+          "productName": "Azure Container Apps",
+          "skuName": "Standard",
+          "meterName": "Standard Memory Active Usage",
+          "retailPrice": 3e-06,
+          "unitOfMeasure": "1 GiB Second",
+          "currencyCode": "USD",
+          "armRegionName": "eastus",
+          "type": "Consumption",
+          "effectiveStartDate": "2022-06-01T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "postgres_base_example": {
+    "hours": 730,
+    "storage_gb": 32,
+    "calculated_usd": "16.09",
+    "excludes": "Billable backup excess, IO, networking, taxes and other services; before student allowance/credits."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "rivock-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build && node scripts/configure-hosting.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc -b --pretty false",
+    "generate:api": "openapi-typescript openapi.json -o src/generated/api-schema.ts"
+  },
+  "dependencies": {
+    "@clerk/react": "6.17.8",
+    "@fontsource/inter": "5.3.0",
+    "@tanstack/react-query": "^5.74.4",
+    "lucide-react": "^0.503.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.5.1",
+    "rehype-sanitize": "^6.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "24.19.2",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "6.1.2",
+    "jsdom": "^26.1.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.10",
+    "typescript": "^5.8.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
+}

@@ -1,0 +1,80 @@
+name: rivock
+x-api: &api
+  build: ./backend
+  env_file: .env
+  environment: &api-env
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-rivock}:${POSTGRES_PASSWORD:-rivock_local}@db:5432/${POSTGRES_DB:-rivock}
+    CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+services:
+  db:
+    image: postgres:17.11
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rivock}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rivock_local}
+      POSTGRES_DB: ${POSTGRES_DB:-rivock}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/init-test-db.sql:/docker-entrypoint-initdb.d/test.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: ./backend
+    env_file: .env
+    environment: *api-env
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    <<: *api
+    ports: ["127.0.0.1:8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  worker:
+    <<: *api
+    command: ["python", "-m", "app.worker"]
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
+      VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:-}
+    ports: ["127.0.0.1:5173:5173"]
+    depends_on:
+      api:
+        condition: service_healthy
+  test:
+    <<: *api
+    profiles: ["test"]
+    environment:
+      <<: *api-env
+      TEST_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-rivock}:${POSTGRES_PASSWORD:-rivock_local}@db:5432/rivock_test
+      AI_API_KEY: ""
+      AI_MODEL: ""
+      AI_BILLING_MODE: metered
+      AI_INPUT_USD_PER_MILLION: "0"
+      AI_OUTPUT_USD_PER_MILLION: "0"
+    command: ["pytest", "-q", "-o", "cache_dir=/tmp/rivock-pytest-cache"]
+  evaluate:
+    build: ./backend
+    env_file: .env
+    profiles: ["evaluation"]
+    environment:
+      ENVIRONMENT: test
+      MODERATION_MODE: pending
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-rivock}:${POSTGRES_PASSWORD:-rivock_local}@db:5432/choose_disposable_database
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "-m", "app.evaluate"]
+volumes:
+  pgdata:

@@ -1,0 +1,39 @@
+name: Publish reviewed Rivock image
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  packages: write
+jobs:
+  publish:
+    environment: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require the reviewed production public key
+        env:
+          CLERK_PUBLIC_KEY: ${{ vars.CLERK_PUBLISHABLE_KEY }}
+        run: test -n "$CLERK_PUBLIC_KEY"
+      - name: Verify selected commit passed Rivock CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          test "$(gh run list --workflow ci.yml --commit "$SHA" --status success --json conclusion --jq 'length')" -gt 0
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v3
+      - id: image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/app.Dockerfile
+          build-args: VITE_CLERK_PUBLISHABLE_KEY=${{ vars.CLERK_PUBLISHABLE_KEY }}
+          push: true
+          tags: ghcr.io/jnuso/rivock-api:${{ github.sha }}
+      - run: echo "Image digest is ${{ steps.image.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"

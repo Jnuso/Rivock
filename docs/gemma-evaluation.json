@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-10-14T22:45:11.278675+00:00",
+  "pack": "rivock-benign-v1+synthetic-spam-v1",
+  "dataset_sha256": "c6c5c15cdce116621469cfc433b4f1443b937ee21b871bac8c334110b1898c5e",
+  "requested_adapter": "google",
+  "model": "gemma-4-26b-a4b-it",
+  "billing_mode": "free",
+  "provider_attempts": 5,
+  "coverage_gaps": [
+    "threats",
+    "targeted harassment",
+    "hate",
+    "privacy violations",
+    "scams",
+    "multilingual context"
+  ],
+  "summary": {
+    "total": 8,
+    "false_rejections": 0,
+    "rejected_violations": 3,
+    "published_violations": 0,
+    "deferred": 0,
+    "live_model_evaluated": true
+  },
+  "cases": [
+    {
+      "id": "allow-01",
+      "category": "ordinary_life",
+      "expected": "allow",
+      "decision": "allow",
+      "reason": "safe_discussion",
+      "source": "ai"
+    },
+    {
+      "id": "allow-02",
+      "category": "non_targeted_profanity",
+      "expected": "allow",
+      "decision": "allow",
+      "reason": "ordinary_profanity_and_venting",
+      "source": "ai"
+    },
+    {
+      "id": "allow-03",
+      "category": "criticism",
+      "expected": "allow",
+      "decision": "allow",
+      "reason": "ordinary_discussion",
+      "source": "ai"
+    },
+    {
+      "id": "allow-05",
+      "category": "mental_health_support",
+      "expected": "allow",
+      "decision": "allow",
+      "reason": "ordinary_discussion",
+      "source": "ai"
+    },
+    {
+      "id": "allow-06",
+      "category": "prompt_injection_discussion",
+      "expected": "allow",
+      "decision": "allow",
+      "reason": "legitimate_inquiry",
+      "source": "ai"
+    },
+    {
+      "id": "repeat_ascii",
+      "category": "synthetic_spam",
+      "expected": "reject",
+      "decision": "reject",
+      "reason": "spam_pattern",
+      "source": "rules"
+    },
+    {
+      "id": "repeat_unicode",
+      "category": "synthetic_spam",
+      "expected": "reject",
+      "decision": "reject",
+      "reason": "spam_pattern",
+      "source": "rules"
+    },
+    {
+      "id": "nine_urls",
+      "category": "synthetic_spam",
+      "expected": "reject",
+      "decision": "reject",
+      "reason": "spam_pattern",
+      "source": "rules"
+    }
+  ]
+}
