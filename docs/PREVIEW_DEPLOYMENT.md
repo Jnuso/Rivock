@@ -28,7 +28,7 @@ The existing audited operator command assigned admin to that user-confirmed acco
 | `rivock-api` | Current reviews-off digest `521ae020…` above; 0.25 vCPU / 0.5 GiB; min 0 / max 1; HTTPS; exact Azure preview origin |
 | `rivock-migrate` | Same digest; explicit manual Alembic job; 0.25 vCPU / 0.5 GiB; 120-second timeout; no retries/parallel executions |
 | Existing PostgreSQL | Consumed in place with separate restricted runtime/migration credentials; no database recreation or local data copy |
-| Worker / AI | Scheduled worker disabled; moderation pending; no cloud AI key supplied for this first connectivity/sign-in deployment |
+| Worker / AI | Scheduled worker disabled; moderation off; no cloud AI key. One explicit off-mode run released earlier ordinary pending work without provider calls |
 
 No extra registry, logging workspace or network appliance is provisioned. Container Apps' shared monthly free grant is 180,000 vCPU-seconds / 360,000 GiB-seconds; light test usage is expected to fit, while excess/transfer can consume credit. [Microsoft billing guidance](https://learn.microsoft.com/en-us/azure/container-apps/billing). The [cost review](HOSTING_COSTS.md) records database allowance and post-credit limitations.
 

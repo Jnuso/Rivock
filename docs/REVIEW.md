@@ -1,5 +1,7 @@
 # Rivock: review and next setup
 
+For the current checkpoint, prioritized next work and a copyable new-chat prompt, start with [HANDOFF.md](HANDOFF.md). Historical setup/evaluation paragraphs below are superseded by that checkpoint and the current moderation policy.
+
 Updated October 16, 2026. The [Azure preview is live](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/) with successful database/API/HTTP checks. The core application and immutable preview image are published with successful GitHub checks. Clerk replaces the unavailable external Entra tenant setup. This is a test preview; production and hosted browser verification remain pending.
 
 ## Next action
@@ -10,7 +12,7 @@ Updated October 16, 2026. The [Azure preview is live](https://rivock-api.wittymu
 
 Azure's app, WorkloadProfiles/Consumption environment and manual migration job are provisioned; the corrected migration succeeded and HTTPS-only ingress is enabled. The $10/month budget and $5/$8/$10 notifications are active. After the initial automatic approval rejection, the user explicitly approved the frozen 161 shared egress IP rules; read-back verified that exact set. The user required tighter security later: review/implement a narrower database route and remove the preview rules before production. [Deployment and approval evidence](PREVIEW_DEPLOYMENT.md).
 
-The user selected the combined Container App's generated Azure HTTPS address for testing before buying a domain. Preview retains cloud TLS/HMAC/token/fixture protections and the production-key restriction. The GitHub preview variable, CI and image publication are complete. Follow the [step-by-step preview walkthrough](PREVIEW_SETUP.md); hosted sign-in remains a human browser check. Cloud AI moderation is pending with no provider key or scheduled worker enabled.
+The user selected the combined Container App's generated Azure HTTPS address for testing before buying a domain. Preview retains cloud TLS/HMAC/token/fixture protections and the production-key restriction. The GitHub preview variable, CI and image publication are complete. The [preview walkthrough](PREVIEW_SETUP.md) records setup history; hosted Google sign-in is user-confirmed. Cloud AI moderation is off with no provider key or scheduled worker enabled.
 
 Google sign-in and Rivock username creation succeeded, as reported by the user on October 14. A read-only database check confirmed one persisted account linked to the configured Clerk instance; API/frontend health checks also pass. The integration needs no Clerk secret key.
 
@@ -45,11 +47,11 @@ The switch includes strict session-token checks, safe same-origin returns, accou
 
 ## Verification and limits
 
-Latest application checks: **211 backend/script tests passed together in Docker with PostgreSQL 17.11**, **34 frontend tests**, types, ten hosted-build guards, combined preview image smoke and workflow/Bicep checks. GitHub CI and preview publication passed for application commit `2d2ca5c`; the actual public image digest was pulled and checked. The current infrastructure changes compile and were exercised by Azure provisioning, exact firewall read-back, successful restricted migration and live HTTP/headers/deep-link checks. Google sign-in and the core two-account journey have separate user-reported local browser success; limited Gemma evaluation has real-provider evidence. [Detailed evidence](IMPLEMENTATION.md).
+Latest application release `d3879aa` passed GitHub CI and preview publication and is deployed with reviews off. Direct checks included PostgreSQL backend tests, operator-helper tests, **35 frontend tests**, types/build, Ruff, Bicep and the combined preview image smoke. Azure deployment and live HTTP/headers/privacy/protected-route checks passed. Hosted Google sign-in/onboarding/vote/save persistence is user-confirmed; the full two-account journey has separate local browser evidence. Earlier Gemma evaluation is historical, not the current policy. [Detailed evidence and counts](IMPLEMENTATION.md).
 
 Docker API/frontend/worker images built and the local stack started successfully through an approved host command. HTTP smoke checks passed for health, seven topics, five labeled fictional threads, detail/search, CORS and anonymous/malformed-token authorization. The native PostgreSQL bind restriction remains, but Docker resolved the database verification blocker. An earlier independent coding-worker review could not start under the then-active approval policy; no worker result is claimed.
 
-Hosted real sign-in, email/password/recovery, browser layouts/accessibility/CSP behavior, broad AI moderation quality and managed backup recovery remain unverified/incomplete. Local provider activation and a subsequent browser-created AI-approved question are verified by runtime records; cloud provider activation is separate and has not happened. No agent browser inspection or completed independent worker review is claimed. The October 11 baseline includes a synthetic dump/restore with later erasure replay; this does not verify Azure-managed recovery.
+Fresh hosted immediate publication, admin/report and two-account flows, email/password/recovery, browser layouts/accessibility/CSP behavior and managed backup recovery remain unverified/incomplete. Hosted Google sign-in already passed the user's check. Cloud provider activation was withdrawn; earlier local AI evaluation is historical. No agent browser inspection or completed independent worker review is claimed. The October 11 baseline includes a synthetic dump/restore with later erasure replay; this does not verify Azure-managed recovery.
 
 ## Then proceed in this order
 

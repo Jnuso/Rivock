@@ -4,6 +4,8 @@ A public advice and discussion app for college life: shared threads, useful answ
 
 Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alembic, and Clerk**. The approved visual demo is kept at [reference/design-demo.html](reference/design-demo.html). Product choices and acceptance criteria are in [docs/README.md](docs/README.md).
 
+**Continuing in a new chat? Read [the current handoff and starter prompt](docs/HANDOFF.md).** It separates completed setup from the remaining checks and next work.
+
 **[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; the owner confirmed hosted Google sign-in, onboarding and vote/save persistence. Gemma reviews are off: valid contributions publish immediately, with reports/manual moderation available. The older pending test submission has been published without AI. Broader browser/account checks remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
 
 ## What works in the implementation
@@ -41,7 +43,7 @@ docker compose up --build -d
 docker compose exec api python -m app.cli seed
 ```
 
-Open `http://localhost:5173`. API documentation: `http://localhost:8000/docs`. The seed adds five **original fictional** conversations with visibly labeled accounts. It does not scrape Reddit or simulate human activity. A fresh `.env.example` selects labeled fixture moderation, which production refuses; the current ignored local configuration uses user-approved Google/free moderation. Configure Clerk values to participate with real accounts.
+Open `http://localhost:5173`. API documentation: `http://localhost:8000/docs`. The seed adds five **original fictional** conversations with visibly labeled accounts. It does not scrape Reddit or simulate human activity. A fresh `.env.example` and the current local configuration select `MODERATION_MODE=off`: valid contributions publish without automated review. Configure Clerk values to participate with real accounts.
 
 ```powershell
 docker compose run --rm test
@@ -81,7 +83,7 @@ cd backend
 .\.venv\Scripts\python.exe -m app.worker
 ```
 
-Without Clerk configuration, public browsing works and sign-in is visibly unavailable. Moderation defaults to `pending`; explicitly set `MODERATION_MODE=fixture` only for a labeled local demo. Google mode requires a real key/model and verified positive prices in default `AI_BILLING_MODE=metered`, or explicit `free` mode for the allowlisted Gemma model with both prices zero. The current local API/worker use the approved free Gemma model with 100 calls/day; test with fictional content. Never put keys in `VITE_*` values.
+Without Clerk configuration, public browsing works and sign-in is visibly unavailable. Moderation defaults to `off`; reports/manual moderation remain available. Legacy Google/fixture modes are inactive and must not be enabled as a routine setup step. See [the current policy](docs/REPORT_MODERATION.md). Never put private keys in `VITE_*` values.
 
 ## Verify changes
 
