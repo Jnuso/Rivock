@@ -24,7 +24,7 @@ Synthetic evidence thread: https://rivock-api.wittymushroom-48e2dfec.canadacentr
 
 Inspected representative feed/thread/admin views at 320, 390, 768 and 1440 CSS pixels. The inspected layouts had no horizontal document overflow. Mobile topic navigation worked, search had a visible keyboard focus outline, and protected controls remained distinct. This is a targeted check, not a full accessibility audit or device/browser matrix.
 
-The hosted checks found three interface defects: topic headings used lowercase slugs, My submissions still described checks before publication, and Escape did not dismiss the mobile menu. The current source fixes those issues, keeps a failed feed request distinct from an empty feed, and treats the menu as a navigation disclosure with ordinary links/buttons. A separate local browser check verified the canonical topic name and Escape returning focus to Menu. These local results do not by themselves prove a new hosted release.
+The hosted checks found three interface defects: topic headings used lowercase slugs, My submissions still described checks before publication, and Escape did not dismiss the mobile menu. Application source 1ae86a7 fixes those issues, keeps a failed feed request distinct from an empty feed, and treats the menu as a navigation disclosure with ordinary links/buttons. Local browser checks passed first; the hosted follow-up below independently verifies the released interface.
 
 ## Current source verification
 
@@ -34,6 +34,14 @@ The hosted checks found three interface defects: topic headings used lowercase s
 - The separate cleanup-job Bicep template compiles and defaults to disabled. No cloud schedule or provider key was created.
 - Two bounded coding-worker attempts returned Google HTTP 503 and no changes. No independent worker review or successful worker test run is claimed; the checks above were run directly in the project environment.
 
+## October 17 release follow-up
+
+Source `1ae86a721d27a07edf2b9123b372c1207a0c6d75` passed [exact-commit CI](https://github.com/Jnuso/Rivock/actions/runs/39014440542) and [preview publication](https://github.com/Jnuso/Rivock/actions/runs/39014599571). Anonymous GHCR access verified `sha256:c54218359754604551736fcf70de2dc6132bf01ff89f0c1de7819617693af479`. Image-only updates changed the existing app and manual migration job; revision `rivock-api--0000003` became Healthy with 100% traffic. No migration ran.
+
+At 320 CSS pixels, the hosted Health & Wellbeing empty topic uses its canonical name with no horizontal document overflow. Tab moved within the open mobile menu; Escape closed it and returned focus to Menu. Tab from its final control closed the menu and moved to the account link. My submissions shows the new publication/review-history description and the existing reply remains Published without automated review. Reloading the notification deep link preserved the exact accepted reply. This follow-up used jack1's existing signed-in session, without another authentication flow. Temporary viewport sizing was reset afterward.
+
+Live HTTP checks passed for liveness/readiness, seven topics, SPA deep links, private/missing resources, anonymous read/write authorization, security/cache headers, false fixture indicator and the changed linked JavaScript bundles. Final Azure readback confirmed the exact digest/ready revision, moderation off, no AI key, min/max 0/1, the same frozen 161 egress rules plus two operator rules, verified-TLS URLs and only the existing manual migration job. No cleanup schedule, paid resource or network rule was created.
+
 ## Remaining checks
 
-Verify the next deployed image and repeat the changed interface checks there. Email/password/recovery, wider screen-reader/touch testing, managed Azure restore/erasure replay, previous-image rollback, retention scheduling and database network tightening remain separate work. Sign-in redirects were exercised through user authentication, but this run does not establish every recovery/return-path variant.
+Email/password/recovery, wider screen-reader/touch testing, managed Azure restore/erasure replay, previous-image rollback, retention scheduling and database network tightening remain separate work. Sign-in redirects were exercised through user authentication, but this run does not establish every recovery/return-path variant.

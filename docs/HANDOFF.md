@@ -6,9 +6,9 @@ Checkpoint: October 17, 2026. This is the current handoff, not a new implementat
 
 The user reauthorized built-in-browser testing and the two existing accounts jack/jack1 for Rivock only. The hosted immediate-publication, private report/manual moderation, two-account reply/accept and both notification-link journeys now passed. See [browser evidence and limits](BROWSER_CHECKS.md). Firefox remains unsupported by the current Windows browser tool; use the built-in browser.
 
-Current source corrects topic headings, outdated submission text, menu Escape/focus behavior and the feed error/empty distinction. Local verification passed 39 frontend tests/build/types, 205 PostgreSQL backend tests, 22 helper tests and Ruff. It also adds a cleanup-only CLI and a compiled daily-job template that defaults to disabled. These additions are not a claim that the running image has changed; preserve the deployment table until the next verified rollout.
+Current source corrects topic headings, outdated submission text, menu Escape/focus behavior and the feed error/empty distinction. Local verification passed 39 frontend tests/build/types, 205 PostgreSQL backend tests, 22 helper tests and Ruff. It also adds a cleanup-only CLI and a compiled daily-job template that defaults to disabled. Application source `1ae86a7` is now deployed as ready revision `rivock-api--0000003`; the changed hosted topic/submission/menu checks passed. The cleanup schedule remains disabled.
 
-Next: publish a CI-approved image containing these fixes, verify the changed hosted interface, then close the remaining operations/security gaps. Keep application AI off. The existing environment was read back as Consumption-only profiles with no custom VNet; a private database route therefore needs an explicit migration/cost review. Month-to-date resource-group cost at 2026-10-17 07:11 UTC was USD 0.0034713738696 for the app and USD 0 for PostgreSQL; billing can lag and exact credit balance/expiry remain unverified.
+Next: close the remaining operations/security gaps and expand account/recovery/accessibility coverage. The exact release passed [CI](https://github.com/Jnuso/Rivock/actions/runs/39014440542) and [image publication](https://github.com/Jnuso/Rivock/actions/runs/39014599571), followed by an image-only update of the existing app and manual migration job. No migration ran. Keep application AI off. The existing environment was read back as Consumption-only profiles with no custom VNet; a private database route therefore needs an explicit migration/cost review. Month-to-date resource-group cost at 2026-10-17 07:11 UTC was USD 0.0034713738696 for the app and USD 0 for PostgreSQL; billing can lag and exact credit balance/expiry remain unverified.
 
 ## Where we are
 
@@ -41,9 +41,9 @@ The previous ordinary pending submission was released through the validated publ
 
 ## Next work, in order
 
-### 1. Verify the next preview release and finish account/accessibility coverage
+### 1. Finish account/accessibility coverage
 
-The core hosted journey is complete; preserve [the actual browser evidence](BROWSER_CHECKS.md). Publish the current fixes only after their exact commit passes CI, pin the resulting preview digest and recheck topic names, submission text and menu Escape/focus in the hosted build.
+The core hosted journey and source 1ae86a7 rollout are complete; preserve [the actual browser and release evidence](BROWSER_CHECKS.md). The current digest is pinned and the changed hosted topic/submission/menu behavior passed. Future application releases still require their own exact-commit CI, publication and hosted checks.
 
 Remaining account/browser work: test additional offered sign-in/recovery methods without changing credentials automatically; expand screen-reader, touch, blocked-storage draft recovery and return-path coverage; fix concrete defects and record the real check scope. The 320/390/768/1440 review is targeted rather than a full accessibility certification.
 
@@ -70,9 +70,9 @@ Then update screenshots, demo instructions and résumé/architecture evidence. L
 
 | Item | Current checkpoint |
 | --- | --- |
-| Deployed application source | `d3879aa`; subsequent documentation commits do not change the running image |
-| Immutable image | `ghcr.io/jnuso/rivock-api@sha256:521ae020da920f86a382a9a2681ef9e027b737baa239930f595b18f911754963` |
-| Deployment / ready revision | `rivock-preview-reviews-off` / `rivock-api--0000002` |
+| Deployed application source | `1ae86a7`; subsequent documentation commits do not change the running image |
+| Immutable image | `ghcr.io/jnuso/rivock-api@sha256:c54218359754604551736fcf70de2dc6132bf01ff89f0c1de7819617693af479` |
+| Rollout / ready revision | Image-only app/manual-job updates, October 17 / `rivock-api--0000003` |
 | Azure subscription | Azure for Students, `0f90c4c5-2dab-411c-93a1-503c2faee55f` |
 | Tenant | UConn, `17f1a87e-2a25-4eaa-b9df-9d439034b080`; subscription Owner access, no tenant-admin setup needed |
 | Resource group / region | `rivock-dev` / Canada Central |

@@ -70,7 +70,7 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Obtain explicit user approval for the exact frozen 161 shared egress IP rules after the initial automatic approval rejection; apply and verify that exact set, preserving the two operator rules with zero ranges/all-Azure rules. Record the user's required security tightening before production.
 - [x] Confirm the exact approved rules and successful cloud migration before HTTPS ingress; correct the Linux CA bundle path without weakening TLS, refresh the failed app revision and verify live runtime readiness afterward.
 - [ ] Before production, review and implement a narrower database connection, verify its cost/connectivity, and remove shared-pool preview rules and obsolete operator rules. This is an explicit user requirement.
-- [x] Inspect representative real browser layouts at 320/390/768/1440px and mobile navigation/search focus. Fix confirmed topic/submission/menu defects and verify locally. Wider screen-reader/touch/recovery checks remain; this is not a full accessibility certification.
+- [x] Inspect representative real browser layouts at 320/390/768/1440px and mobile navigation/search focus. Fix confirmed topic/submission/menu defects and verify locally and in released revision 0000003. Wider screen-reader/touch/recovery checks remain; this is not a full accessibility certification.
 - [x] Locate new replies/deep notification targets with bounded safe ancestor context and return to normal ranking.
 - [x] Preserve full drafts and original revisions; add explicit compare/reload/rebase controls, memory fallback and tab-close warning when storage fails.
 - [x] Add a setup checker that reports missing values and local tooling without exposing credentials.
@@ -101,6 +101,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 
 - [x] Add and verify the cleanup-only CLI without changing retention semantics or processing the moderation queue.
 - [x] Compile a separate daily cleanup template that defaults to disabled and carries no AI key.
-- [ ] Release the current UI/cleanup additions through exact-commit CI and immutable preview image publication; verify the changed hosted UI afterward.
+- [x] Release UI/cleanup source 1ae86a7 through successful exact-commit CI/publication, anonymously verify digest c5421835…, update the existing app/manual-job image and verify ready revision 0000003 plus the changed hosted interface. No schema migration, schedule or network change.
 - [ ] Review/enable the cleanup schedule only after cost and existing-firewall connectivity checks; no new egress rules are implied.
 - [x] Read current month-to-date Rivock resource-group billing: USD 0.0034713738696 app and USD 0 PostgreSQL at October 17 07:11 UTC. Exact credit/expiry and broader observation period remain open.

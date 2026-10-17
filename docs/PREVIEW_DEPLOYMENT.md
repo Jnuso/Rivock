@@ -1,12 +1,22 @@
 # Reviewed preview deployment
 
-October 16, 2026. This records the reviewed configuration, actual provisioning evidence and remaining activation checks. It is not an uptime or cost guarantee.
+Updated October 17, 2026. This records the reviewed configuration, actual provisioning evidence and remaining checks. It is not an uptime or cost guarantee.
 
-**Live preview:** [Rivock on Azure](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/). HTTPS/API/database HTTP checks pass. The owner confirmed hosted Google sign-in, username onboarding and vote/save persistence as `jack`. Visual review, additional account methods and the hosted two-account conversation journey remain pending.
+## Current release
 
-**Immediate publication is live:** the user withdrew the cloud Gemma proposal. Application commit `d3879aa` passed [Rivock CI](https://github.com/Jnuso/Rivock/actions/runs/38995011126) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/38995196001). Anonymous registry access verified the exact digest `sha256:521ae020da920f86a382a9a2681ef9e027b737baa239930f595b18f911754963`. Deployment `rivock-preview-reviews-off` succeeded with that digest and `moderationMode=off`; latest/ready revision is `rivock-api--0000002`. Live health/HTML/privacy/Clerk headers/protected-route checks pass, and the served bundle contains the reviews-off notice. No AI key or scheduled Google worker was added; min/max remain 0/1 and the reported outbound set has zero unapproved addresses. See [REPORT_MODERATION.md](REPORT_MODERATION.md).
+Application source `1ae86a721d27a07edf2b9123b372c1207a0c6d75` passed [Rivock CI](https://github.com/Jnuso/Rivock/actions/runs/39014440542) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39014599571). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:c54218359754604551736fcf70de2dc6132bf01ff89f0c1de7819617693af479`.
 
-Ran the existing worker once inside the verified off-mode API to release ordinary pending work through the shared validated apply service. A separate read-only verified-TLS metadata check confirmed one published submission with `reason_code=moderation_disabled`, zero pending/processing items, zero cloud AI attempts, and `jack` still active/admin. No contribution text was read by the operator. Earlier rejected/cancelled/manual-review items remain protected. A fresh signed-in browser post/reply test is the next user check.
+After the user's explicit push/publication/preview approval, image-only CLI updates moved `rivock-api` and the existing manual `rivock-migrate` job to that digest. Revision `rivock-api--0000003` is Healthy with 100% traffic. The broader Bicep what-if also proposed environment default changes, so it was not applied; the image-only operations preserved that environment. No schema migration ran and no new ARM group deployment was created for this release.
+
+Hosted topic labels, submission wording and mobile menu keyboard behavior passed; the prior accepted reply remained accessible after reload. HTTP health, route/auth/privacy/cache/security checks passed. Final readback confirmed moderation off, no AI key, min/max 0/1, manual-only migration job, verified TLS and exactly the original 161 approved app egress addresses plus two operator rules. The separate cleanup template remains disabled/unprovisioned. See [BROWSER_CHECKS.md](BROWSER_CHECKS.md) for scope and limits.
+
+## Previous preview history — October 16
+
+**Live preview:** [Rivock on Azure](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/). HTTPS/API/database HTTP checks pass. The owner confirmed hosted Google sign-in, username onboarding and vote/save persistence as `jack`. The core hosted two-account journey and targeted visual review subsequently passed; additional account/recovery methods remain open.
+
+**Previous immediate-publication release:** the user withdrew the cloud Gemma proposal. Application commit `d3879aa` passed [Rivock CI](https://github.com/Jnuso/Rivock/actions/runs/38995011126) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/38995196001). Anonymous registry access verified the exact digest `sha256:521ae020da920f86a382a9a2681ef9e027b737baa239930f595b18f911754963`. Deployment `rivock-preview-reviews-off` succeeded with that digest and `moderationMode=off`; latest/ready revision was `rivock-api--0000002`. Live health/HTML/privacy/Clerk headers/protected-route checks pass, and the served bundle contains the reviews-off notice. No AI key or scheduled Google worker was added; min/max remain 0/1 and the reported outbound set has zero unapproved addresses. See [REPORT_MODERATION.md](REPORT_MODERATION.md).
+
+Ran the existing worker once inside the verified off-mode API to release ordinary pending work through the shared validated apply service. A separate read-only verified-TLS metadata check confirmed one published submission with `reason_code=moderation_disabled`, zero pending/processing items, zero cloud AI attempts, and `jack` still active/admin. No contribution text was read by the operator. Earlier rejected/cancelled/manual-review items remain protected. A fresh signed-in browser post/reply test was still pending then; it subsequently passed as recorded in BROWSER_CHECKS.md.
 
 The existing audited operator command assigned admin to that user-confirmed account, using its exact Rivock UUID. Independent read-only verified-TLS metadata confirmed active/linked/admin state and exactly one grant audit entry. The original pending submission has now been released as described above. The proposed Google disclosure/activation was withdrawn; the live privacy notice now explains immediate publication, reports/manual review and disabled AI. Report-assisted AI needs a future design and provider/data review.
 
@@ -25,7 +35,7 @@ The existing audited operator command assigned admin to that user-confirmed acco
 | Resource | Concrete configuration |
 | --- | --- |
 | `rivock-env` | WorkloadProfiles mode with only Consumption in Canada Central; no custom VNet, NAT, private endpoint, Dedicated profile or log sink |
-| `rivock-api` | Current reviews-off digest `521ae020…` above; 0.25 vCPU / 0.5 GiB; min 0 / max 1; HTTPS; exact Azure preview origin |
+| `rivock-api` | Current digest `c5421835…` above; 0.25 vCPU / 0.5 GiB; min 0 / max 1; HTTPS; exact Azure preview origin |
 | `rivock-migrate` | Same digest; explicit manual Alembic job; 0.25 vCPU / 0.5 GiB; 120-second timeout; no retries/parallel executions |
 | Existing PostgreSQL | Consumed in place with separate restricted runtime/migration credentials; no database recreation or local data copy |
 | Worker / AI | Scheduled worker disabled; moderation off; no cloud AI key. One explicit off-mode run released earlier ordinary pending work without provider calls |
@@ -36,7 +46,7 @@ The ARM what-if check for this exact plan succeeded with three Creates (environm
 
 ## Activation order
 
-Current progress: the environment, app and manual migration job are provisioned successfully. Original migration execution `rivock-migrate-qnsxp1n` succeeded after the trust-path correction below; the off-mode release changes no schema. HTTPS-only public ingress is enabled; revision `rivock-api--0000002` is ready with latest-revision traffic. Min/max remain 0/1. Budget notifications are confirmed enabled. No database was recreated or local rows copied. AI and the scheduled worker remain disabled; the explicit one-off queue release above made no provider call.
+Original activation progress (historical): the environment, app and manual migration job were provisioned successfully. Original migration execution `rivock-migrate-qnsxp1n` succeeded after the trust-path correction below; the off-mode release changes no schema. HTTPS-only public ingress is enabled; revision `rivock-api--0000002` was ready with latest-revision traffic. Min/max remain 0/1. Budget notifications are confirmed enabled. No database was recreated or local rows copied. AI and the scheduled worker remain disabled; the explicit one-off queue release above made no provider call.
 
 The first manual-job creation failed with `ExpressEnvironmentResourceNotSupported`: Azure's newer default selected Express even though the older API response showed a Consumption profile. The template now uses environment API `2026-07-01`, explicitly selects `environmentMode=WorkloadProfiles`, and declares only the Consumption profile. The corrected in-place deployment succeeded after about 20 minutes, without resource deletion. Public ingress stayed off through the network and migration checks.
 
@@ -56,6 +66,6 @@ After enabling ingress, the earlier failed revisions still did not serve traffic
 4. Enable public ingress using the same digest/profile/secrets. The derived Azure HTTPS origin becomes the actual browser origin for Clerk/CORS. Run HTTP checks, then have the user test real sign-in and the visible Preview notice in a browser.
 5. Review cloud moderation/provider settings and worker routing before enabling them. Observe real costs/cold starts and managed recovery before a production launch.
 
-If capacity or narrow routing fails, leave public access disabled and report the concrete error before considering a costed alternative. Browser automation remains unapproved; local/HTTP checks do not establish layout or hosted identity success.
+If capacity or narrow routing fails, leave public access disabled and report the concrete error before considering a costed alternative. At initial provisioning, browser automation was not yet authorized. The subsequent authorized hosted checks are recorded separately in BROWSER_CHECKS.md; local/HTTP checks alone do not establish layout or hosted identity success.
 
 Environment-mode source: [Microsoft's create/update schema](https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/managed-environments/create-or-update?view=rest-resource-manager-containerapps-2026-07-01) lists ConsumptionOnly, WorkloadProfiles, Express and Archived. The live older API omitted this field; the newer API exposed the actual Express mode. [Express overview](https://learn.microsoft.com/en-us/azure/container-apps/express-overview) confirms jobs are unsupported there. The correction adds no Dedicated workload profile.
