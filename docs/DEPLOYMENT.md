@@ -63,3 +63,7 @@ Use the managed database's available automatic backups (target seven-day recover
 If database is unavailable, reads/writes fail honestly with retry guidance; no fake success. With moderation off, no AI availability is required for publication. Retained legacy provider modes need a separate reviewed activation; their failures must not imply approval. If Clerk is unavailable, public reading continues and new protected actions require sign-in recovery. If budget is exhausted, pause AI/bots/jobs as appropriate and leave honest pending status rather than silently charging beyond configured application caps.
 
 Domain purchase is not confirmed. When owned, configure root/www frontend and optional API subdomain with managed HTTPS, then update Clerk domain/return URLs, CORS, and CSP. A preview deployment does not authorize production activation, a domain purchase or new paid networking.
+
+## Independent operations preparation
+
+See [OPERATIONS_CHECKLIST.md](OPERATIONS_CHECKLIST.md) for the bounded read-only observation command, reviewed preview state and proposed image rollback drill. [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md) consolidates owner input. [NETWORK_ALTERNATIVE.md](NETWORK_ALTERNATIVE.md) records the lower-priced App Service feasibility review; it still exceeds the current total target and was not provisioned.

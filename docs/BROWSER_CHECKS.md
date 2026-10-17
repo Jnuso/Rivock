@@ -77,3 +77,11 @@ Frontend types, all 71 tests and production build passed. Sixteen new checks cov
 ## Remaining checks
 
 Email/password/recovery, wider screen-reader/touch testing, managed Azure restore/erasure replay, previous-image rollback, retention scheduling and database network tightening remain separate work. Sign-in redirects were exercised through user authentication, but this run does not establish every recovery/return-path variant.
+
+## Independent blocked-storage follow-up — local review candidate
+
+Two failing regressions reproduced discarded text returning after browser storage recovered and a restored draft disappearing during navigation after storage became unavailable. Discard/removal retries now remain pending within the open tab; valid restored drafts are cached in memory. Sign-out/account-change cleanup uses the same deferred clearing, while unrelated storage keys are preserved. A newer memory-only draft is retained until the old stored copy can be removed and persistence succeeds.
+
+Frontend types, all 80 tests and the production build passed. Nine added regressions cover both reproduced failures, unreadable-but-valid storage, new text during failed cleanup, whole-account/partial cleanup, warning removal after memory-only discard and a Clerk-mocked account switch. Real local browser checks used the actual useDraft/MarkdownEditor components with synthetic storage failures: persisted reload, navigation through blocked reads, discarded text staying empty after recovery, whole-draft cleanup and a visible memory-only warning at 320px. The actual privacy component also displayed the preview-only retention notice at 320px. Both inspected layouts had no horizontal overflow; viewport overrides were reset and temporary tabs/server were closed. These fixtures had no account/API connection and do not establish hosted sign-out, native unload-dialog or a full accessibility/device matrix.
+
+This batch is an independent review candidate on fix/browser-draft-recovery, not deployed. Live source remains 7bc80ad/revision 0000004. Deferred cleanup is in-memory: a blocked stored copy cannot be guaranteed erased across a reload/closed tab before storage access returns. The privacy notice explains that limit. Application AI, Azure resources, firewall, credentials, scheduling and schema were unchanged.

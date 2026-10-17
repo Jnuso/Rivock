@@ -208,3 +208,36 @@ it("leaves public browsing available when no Clerk key is configured", async () 
   expect(state.readMe).not.toHaveBeenCalled();
   expect(await state.getter()).toBeNull();
 });
+
+it("does not expose the earlier account's draft when blocked storage recovers", async () => {
+  const qc = new QueryClient();
+  const view = render(ui(qc));
+  await screen.findByText("alice");
+  sessionStorage.setItem("another-app", "Keep this");
+  writeDraft("private", "Synthetic earlier-account draft");
+  clearDraftMemory();
+  const get = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    throw new Error("Blocked");
+  });
+  const set = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    throw new Error("Blocked");
+  });
+  const remove = vi
+    .spyOn(Storage.prototype, "removeItem")
+    .mockImplementation(() => {
+      throw new Error("Blocked");
+    });
+  try {
+    state.userId = "user_bruce";
+    state.sessionId = "sess_bruce";
+    state.readMe.mockResolvedValue(profile("bruce"));
+    view.rerender(ui(qc));
+    await screen.findByText("bruce");
+  } finally {
+    get.mockRestore();
+    set.mockRestore();
+    remove.mockRestore();
+  }
+  expect(readDraft("private")).toBe("");
+  expect(sessionStorage.getItem("another-app")).toBe("Keep this");
+});

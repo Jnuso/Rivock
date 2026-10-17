@@ -1,0 +1,53 @@
+{
+  "checkedAtUtc": "2026-10-17T22:38:50.9815408Z",
+  "currency": "USD",
+  "region": "canadacentral",
+  "hoursAssumed": 730,
+  "source": "https://prices.azure.com/api/retail/prices?$filter=serviceName%20eq%20%27Azure%20App%20Service%27%20and%20armRegionName%20eq%20%27canadacentral%27%20and%20priceType%20eq%20%27Consumption%27&currencyCode=USD",
+  "additionalNetworkSource": "network-retail-snapshot.json",
+  "meters": [
+    {
+      "productName": "Azure App Service Basic Plan - Linux",
+      "skuName": "B1",
+      "meterName": "B1",
+      "retailPrice": 0.018,
+      "unitOfMeasure": "1 Hour",
+      "type": "Consumption",
+      "effectiveStartDate": "2019-06-01T00:00:00Z",
+      "monthlyBase": 13.14
+    },
+    {
+      "productName": "Virtual Network Private Link",
+      "skuName": "Standard",
+      "meterName": "Standard Private Endpoint",
+      "armRegionName": "Global",
+      "unitPrice": 0.01,
+      "unitOfMeasure": "1 Hour",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2020-02-01T00:00:00Z",
+      "meterId": "e6ab7238-e433-4fe0-a2b2-2b2564df2cdb",
+      "monthlyBase": 7.3
+    },
+    {
+      "productName": "Azure DNS",
+      "skuName": "Private",
+      "meterName": "Private Zone",
+      "armRegionName": "",
+      "unitPrice": 0.5,
+      "unitOfMeasure": "1",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2019-12-01T00:00:00Z",
+      "meterId": "0b608a26-f611-4232-8192-ce81b6b57194",
+      "monthlyBase": 0.5
+    }
+  ],
+  "appAndNetworkMonthlyBase": 20.94,
+  "assumptions": [
+    "One Linux B1 instance, 730 hours; no student/free allowance assumed.",
+    "One PostgreSQL private endpoint and private DNS zone; no NAT, separately provisioned load balancer, or inbound app private endpoint.",
+    "Excludes existing database/storage/backup, data, DNS queries, tax and migration overlap."
+  ],
+  "status": "Researched alternative only; exceeds the USD 10 total target; not approved or deployed."
+}
