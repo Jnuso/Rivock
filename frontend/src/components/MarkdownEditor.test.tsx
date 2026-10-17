@@ -1,6 +1,14 @@
-import { act, cleanup, renderHook } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, expect, it, vi } from "vitest";
-import { useDraft } from "./MarkdownEditor";
+import { MarkdownEditor, useDraft } from "./MarkdownEditor";
 import { clearDraftMemory } from "../lib/drafts";
 
 afterEach(() => {
@@ -43,4 +51,92 @@ it("keeps editing and discarding usable when browser storage is unavailable", ()
   expect(close.defaultPrevented).toBe(true);
   act(() => reopened.result.current.clear());
   expect(reopened.result.current.value).toBe("");
+});
+
+function EditorExample({
+  initial = "",
+  max = 10000,
+}: {
+  initial?: string;
+  max?: number;
+}) {
+  const [value, setValue] = useState(initial);
+  return (
+    <MarkdownEditor
+      id="example"
+      label="Your text"
+      value={value}
+      onChange={setValue}
+      max={max}
+    />
+  );
+}
+
+it("formats a selected phrase and returns focus and selection to the editor", () => {
+  render(<EditorExample initial="Welcome new player today" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.focus();
+  input.setSelectionRange(8, 18);
+  fireEvent.click(screen.getByRole("button", { name: "Bold" }));
+  expect(input).toHaveValue("Welcome **new player** today");
+  expect(input).toHaveFocus();
+  expect([input.selectionStart, input.selectionEnd]).toEqual([10, 20]);
+});
+
+it("lets typing replace an inserted placeholder at the current cursor", () => {
+  render(<EditorExample initial="Welcome !" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(8, 8);
+  fireEvent.click(screen.getByRole("button", { name: "Italic" }));
+  expect(input).toHaveValue("Welcome *text*!");
+  expect(input.value.slice(input.selectionStart, input.selectionEnd)).toBe(
+    "text",
+  );
+});
+
+it("previews the formatted words and prevents hidden edits while previewing", () => {
+  render(<EditorExample initial="welcome" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(0, 7);
+  fireEvent.click(screen.getByRole("button", { name: "Bold" }));
+  fireEvent.click(screen.getByRole("button", { name: "Preview" }));
+  expect(
+    screen.getByText("welcome", { selector: "strong" }),
+  ).toBeInTheDocument();
+  for (const name of ["Bold", "Italic", "List", "Quote", "Link"]) {
+    expect(screen.getByRole("button", { name })).toBeDisabled();
+  }
+  fireEvent.click(screen.getByRole("button", { name: "Write" }));
+  expect(screen.getByRole("textbox", { name: "Your text" })).toHaveValue(
+    "**welcome**",
+  );
+});
+
+it("keeps over-limit text intact and exposes the existing validation after formatting", () => {
+  render(<EditorExample initial="🎲" max={4} />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(0, 2);
+  fireEvent.click(screen.getByRole("button", { name: "Bold" }));
+  expect(input).toHaveValue("**🎲**");
+  expect(input).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByText("5/4")).toBeInTheDocument();
+});
+
+it("renders an italic selection within a word and preserves surrounding letters", () => {
+  render(<EditorExample initial="gameplay" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(4, 8);
+  fireEvent.click(screen.getByRole("button", { name: "Italic" }));
+  fireEvent.click(screen.getByRole("button", { name: "Preview" }));
+  expect(screen.getByText("play", { selector: "em" })).toBeInTheDocument();
 });

@@ -107,3 +107,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 
 - [x] Add and locally verify a keyboard skip link/main landmark, preserve linked-reply fragments and account for the mobile sticky header. Types, 39 frontend tests and build pass.
 - [ ] Include the local keyboard follow-up in a future reviewed source release; the current Azure source remains 1ae86a7.
+
+- [x] Replace append-only Markdown buttons with selection/cursor formatting, focus restoration, line formatting and editable link destinations. Verify 55 frontend tests/types/build plus local keyboard/mobile component checks.
+- [ ] Include the local writing-editor improvements with keyboard navigation in a future reviewed release and verify the complete hosted composer/reply flows.

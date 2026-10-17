@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  formatMarkdown,
+  type MarkdownAction,
+  type MarkdownEdit,
+} from "../lib/markdownEditing";
 import { Markdown } from "./Markdown";
 import { cpLen, LIMITS } from "../lib/limits";
 import {
@@ -52,37 +57,68 @@ export function MarkdownEditor({
   const [tab, setTab] = useState<"write" | "preview">("write");
   const len = useMemo(() => cpLen(value), [value]);
 
-  const wrap = (prefix: string, suffix = prefix) => {
-    onChange(`${value}${prefix}text${suffix}`);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const pendingSelection = useRef<MarkdownEdit | null>(null);
+  useLayoutEffect(() => {
+    const next = pendingSelection.current;
+    if (!next || next.value !== value || !inputRef.current) return;
+    pendingSelection.current = null;
+    inputRef.current.focus();
+    inputRef.current.setSelectionRange(next.start, next.end);
+  }, [value]);
+
+  const format = (action: MarkdownAction) => {
+    const input = inputRef.current;
+    if (!input || tab !== "write") return;
+    const edit = formatMarkdown(
+      value,
+      { start: input.selectionStart, end: input.selectionEnd },
+      action,
+    );
+    pendingSelection.current = edit;
+    onChange(edit.value);
   };
 
   return (
     <div className="stack">
       <div className="row" role="toolbar" aria-label="Markdown formatting">
-        <button type="button" className="btn" onClick={() => wrap("**")}>
+        <button
+          type="button"
+          className="btn"
+          disabled={tab === "preview"}
+          onClick={() => format("bold")}
+        >
           Bold
         </button>
-        <button type="button" className="btn" onClick={() => wrap("_")}>
+        <button
+          type="button"
+          className="btn"
+          disabled={tab === "preview"}
+          onClick={() => format("italic")}
+        >
           Italic
         </button>
         <button
           type="button"
           className="btn"
-          onClick={() => onChange(`${value}\n\n- `)}
+          disabled={tab === "preview"}
+          onClick={() => format("list")}
         >
           List
         </button>
         <button
           type="button"
           className="btn"
-          onClick={() => onChange(`${value}\n\n> `)}
+          disabled={tab === "preview"}
+          onClick={() => format("quote")}
         >
           Quote
         </button>
         <button
           type="button"
           className="btn"
-          onClick={() => onChange(`${value}[label](https://)`)}
+          disabled={tab === "preview"}
+          onClick={() => format("link")}
         >
           Link
         </button>
@@ -108,8 +144,12 @@ export function MarkdownEditor({
           <span>{label}</span>
           <textarea
             id={id}
+            ref={inputRef}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              pendingSelection.current = null;
+              onChange(e.target.value);
+            }}
             aria-describedby={`${id}-count`}
             aria-invalid={len > max}
             maxLength={max * 2}
