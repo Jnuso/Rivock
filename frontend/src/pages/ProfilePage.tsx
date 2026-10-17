@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "../api";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { useAuth } from "../auth/AuthContext";
 import { ReportControl } from "../components/ReportControl";
 import { usePaged, More } from "../lib/paging";
@@ -28,7 +28,7 @@ export function ProfilePage() {
     },
   });
   if (profile.isLoading) return <Loading />;
-  if (profile.error) return <ErrorBox error={profile.error} />;
+  if (profile.error) return <QueryError query={profile} />;
   if (!profile.data) return <Empty>Profile unavailable.</Empty>;
   const p = profile.data;
   return (
@@ -66,10 +66,10 @@ export function ProfilePage() {
         </button>
       </div>
       {contributions.isLoading && <Loading />}
-      {contributions.error && <ErrorBox error={contributions.error} />}
-      {!contributions.isLoading && !contributions.items.length && (
-        <Empty>No public {type}.</Empty>
-      )}
+      <QueryError query={contributions} />
+      {!contributions.isLoading &&
+        !contributions.error &&
+        !contributions.items.length && <Empty>No public {type}.</Empty>}
       {contributions.items.map((item) => (
         <article className="card" key={item.id}>
           {"title" in item ? (

@@ -2,7 +2,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api, type Submission, ApiError } from "../api";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { useAuth } from "../auth/AuthContext";
 import { SignInGate } from "../components/SignInGate";
 import { MarkdownEditor } from "../components/MarkdownEditor";
@@ -32,8 +32,10 @@ export function SubmissionsListPage() {
         See the publication status and review history of your contributions.
       </p>
       {q.isLoading && <Loading />}
-      {q.error && <ErrorBox error={q.error} />}
-      {!q.isLoading && !q.items.length && <Empty>No submissions yet.</Empty>}
+      <QueryError query={q} />
+      {!q.isLoading && !q.error && !q.items.length && (
+        <Empty>No submissions yet.</Empty>
+      )}
       {q.items.map((s) => (
         <Link className="card stack" key={s.id} to={`/submissions/${s.id}`}>
           <strong>{labels[s.action] ?? "Submission"}</strong>
@@ -178,7 +180,7 @@ export function SubmissionDetailPage() {
   });
   if (!user) return <SignInGate title="Submission" />;
   if (q.isLoading) return <Loading />;
-  if (q.error) return <ErrorBox error={q.error} />;
+  if (q.error) return <QueryError query={q} />;
   if (!q.data) return <Empty>Submission unavailable.</Empty>;
   const s = q.data,
     canCancel = ["pending", "processing", "needs_review"].includes(s.status);

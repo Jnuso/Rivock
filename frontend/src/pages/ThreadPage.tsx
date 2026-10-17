@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, type Reply, ApiError } from "../api";
 import { Markdown } from "../components/Markdown";
 import { MarkdownEditor, useDraft } from "../components/MarkdownEditor";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { useAuth } from "../auth/AuthContext";
 import { cpLen, LIMITS } from "../lib/limits";
 import { usePaged, More } from "../lib/paging";
@@ -426,7 +426,7 @@ function ReplyNode({
       {expanded && (
         <div className="replyBranch stack">
           {children.isLoading && <Loading />}
-          {children.error && <ErrorBox error={children.error} />}
+          <QueryError query={children} />
           {children.items.map((r) => (
             <ReplyNode
               key={r.id}
@@ -540,7 +540,7 @@ export function ThreadPage() {
     onSuccess: refresh,
   });
   if (thread.isLoading) return <Loading />;
-  if (thread.error) return <ErrorBox error={thread.error} />;
+  if (thread.error) return <QueryError query={thread} />;
   if (!thread.data) return <Empty>Thread unavailable.</Empty>;
   const t = thread.data,
     mine = user?.id === t.author?.id,
@@ -631,7 +631,7 @@ export function ThreadPage() {
         </p>
       )}
       {linkedId && context.isLoading && <Loading />}
-      {linkedId && context.error && <ErrorBox error={context.error} />}
+      {linkedId && <QueryError query={context} />}
       {linkedId &&
         context.data &&
         (context.data.thread_id === id ? (
@@ -650,10 +650,13 @@ export function ThreadPage() {
         <Link to={`/threads/${id}`}>Show all replies</Link>
       )}
       {!linkedId && replies.isLoading && <Loading />}
-      {!linkedId && replies.error && <ErrorBox error={replies.error} />}
-      {!linkedId && !replies.isLoading && !replies.items.length && (
-        <Empty>No replies yet. Start the conversation.</Empty>
-      )}
+      {!linkedId && <QueryError query={replies} />}
+      {!linkedId &&
+        !replies.isLoading &&
+        !replies.error &&
+        !replies.items.length && (
+          <Empty>No replies yet. Start the conversation.</Empty>
+        )}
       {!linkedId &&
         replies.items.map((r) => (
           <ReplyNode

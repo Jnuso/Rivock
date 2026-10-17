@@ -110,3 +110,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 
 - [x] Replace append-only Markdown buttons with selection/cursor formatting, focus restoration, line formatting and editable link destinations. Verify 55 frontend tests/types/build plus local keyboard/mobile component checks.
 - [ ] Include the local writing-editor improvements with keyboard navigation in a future reviewed release and verify the complete hosted composer/reply flows.
+
+- [x] Distinguish failed reads from empty lists across account/profile/reply/admin views; add safe user-initiated query retry, preserve cached saved content and useful string errors. Verify 71 frontend tests/types/build and controlled local HTTP recovery.
+- [ ] Include query recovery in the next reviewed keyboard/editor release and verify hosted recovery behavior separately.

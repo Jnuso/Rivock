@@ -2,7 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { api, type ThreadSummary } from "../api";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, Loading, QueryError } from "../components/States";
 import { cpLen, LIMITS } from "../lib/limits";
 
 function ThreadCard({ t }: { t: ThreadSummary }) {
@@ -143,7 +143,7 @@ export function FeedPage() {
         ))}
       </div>
       {query.isLoading && <Loading />}
-      {query.error && <ErrorBox error={query.error} />}
+      <QueryError query={query} />
       {!query.isLoading && !query.error && !items.length && (
         <Empty>No threads yet.</Empty>
       )}

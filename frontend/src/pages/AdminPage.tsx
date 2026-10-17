@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { Markdown } from "../components/Markdown";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { More, usePaged } from "../lib/paging";
 
 const REASON_MAX = 1000;
@@ -138,7 +138,7 @@ export function AdminPage() {
       <section className="card stack" aria-labelledby="mod-status">
         <h2 id="mod-status">Moderation status</h2>
         {statusQ.isLoading && <Loading />}
-        {statusQ.error && <ErrorBox error={statusQ.error} />}
+        <QueryError query={statusQ} />
         {statusQ.data && (
           <>
             <p className="row">
@@ -146,7 +146,9 @@ export function AdminPage() {
               <span className="badge">
                 {statusQ.data.moderation_mode === "off"
                   ? "AI reviews off"
-                  : statusQ.data.ai_paused ? "paused" : "running"}
+                  : statusQ.data.ai_paused
+                    ? "paused"
+                    : "running"}
               </span>
               <span className="muted">queue {statusQ.data.queue_count}</span>
               <span className="muted">
@@ -158,7 +160,11 @@ export function AdminPage() {
               <button
                 type="button"
                 className="btn btnPrimary"
-                disabled={busy || statusQ.data.moderation_mode === "off" || !statusQ.data.ai_paused}
+                disabled={
+                  busy ||
+                  statusQ.data.moderation_mode === "off" ||
+                  !statusQ.data.ai_paused
+                }
                 onClick={() => withReason((r) => api.adminPause(false, r))}
               >
                 Resume AI
@@ -166,7 +172,11 @@ export function AdminPage() {
               <button
                 type="button"
                 className="btn btnDanger"
-                disabled={busy || statusQ.data.moderation_mode === "off" || statusQ.data.ai_paused}
+                disabled={
+                  busy ||
+                  statusQ.data.moderation_mode === "off" ||
+                  statusQ.data.ai_paused
+                }
                 onClick={() => withReason((r) => api.adminPause(true, r))}
               >
                 Pause AI
@@ -191,8 +201,8 @@ export function AdminPage() {
           </select>
         </label>
         {reports.isLoading && <Loading />}
-        {reports.error && <ErrorBox error={reports.error} />}
-        {!reports.isLoading && !reports.items.length && (
+        <QueryError query={reports} />
+        {!reports.isLoading && !reports.error && !reports.items.length && (
           <Empty>No reports.</Empty>
         )}
         {reports.items.map((r) => (
@@ -306,8 +316,8 @@ export function AdminPage() {
           </select>
         </label>
         {subs.isLoading && <Loading />}
-        {subs.error && <ErrorBox error={subs.error} />}
-        {!subs.isLoading && !subs.items.length && (
+        <QueryError query={subs} />
+        {!subs.isLoading && !subs.error && !subs.items.length && (
           <Empty>No submissions.</Empty>
         )}
         {subs.items.map((s) => {
@@ -520,7 +530,7 @@ export function AdminPage() {
           </div>
         </form>
         {topicsQ.isLoading && <Loading />}
-        {topicsQ.error && <ErrorBox error={topicsQ.error} />}
+        <QueryError query={topicsQ} />
         {topicsQ.data?.map((t) => (
           <div key={t.id} className="row">
             <span className="badge">{t.is_active ? "active" : "archived"}</span>
@@ -580,8 +590,10 @@ export function AdminPage() {
       <section className="card stack" aria-labelledby="audit">
         <h2 id="audit">Audit log</h2>
         {audit.isLoading && <Loading />}
-        {audit.error && <ErrorBox error={audit.error} />}
-        {!audit.isLoading && !audit.items.length && <Empty>No actions.</Empty>}
+        <QueryError query={audit} />
+        {!audit.isLoading && !audit.error && !audit.items.length && (
+          <Empty>No actions.</Empty>
+        )}
         {audit.items.map((a) => (
           <div key={a.id} className="row">
             <span className="badge">{a.action}</span>

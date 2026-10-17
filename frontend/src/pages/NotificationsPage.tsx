@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { api } from "../api";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { useAuth } from "../auth/AuthContext";
 import { SignInGate } from "../components/SignInGate";
 import { More } from "../lib/paging";
@@ -54,11 +54,13 @@ export function NotificationsPage() {
         </button>
       </div>
       {q.isLoading && <Loading />}
-      {q.error && <ErrorBox error={q.error} />}
+      <QueryError query={q} />
       {(mark.error || all.error) && (
         <ErrorBox error={mark.error || all.error} />
       )}
-      {!q.isLoading && !items.length && <Empty>No notifications yet.</Empty>}
+      {!q.isLoading && !q.error && !items.length && (
+        <Empty>No notifications yet.</Empty>
+      )}
       {items.map((n) => (
         <article className="card stack" key={n.id}>
           <p>

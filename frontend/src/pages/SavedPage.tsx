@@ -5,8 +5,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { More } from "../lib/paging";
 import { api, type ThreadSummary } from "../api";
-import { Empty, ErrorBox, Loading } from "../components/States";
+import { Empty, ErrorBox, Loading, QueryError } from "../components/States";
 import { useAuth } from "../auth/AuthContext";
 
 export function SavedPage() {
@@ -57,14 +58,15 @@ export function SavedPage() {
     );
   }
 
-  if (q.isLoading) return <Loading />;
-  if (q.error) return <ErrorBox error={q.error} />;
-
   return (
     <div className="stack">
       <h1 style={{ margin: 0 }}>Saved</h1>
+      {q.isLoading && <Loading />}
+      <QueryError query={q} />
       {unsave.error && <ErrorBox error={unsave.error} />}
-      {!items.length && <Empty>No saved threads.</Empty>}
+      {!q.isLoading && !q.error && !items.length && (
+        <Empty>No saved threads.</Empty>
+      )}
       {items.map((t) => (
         <article key={t.id} className="card stack">
           {t.state && t.state !== "published" ? (
@@ -89,15 +91,7 @@ export function SavedPage() {
           </button>
         </article>
       ))}
-      {q.hasNextPage && (
-        <button
-          type="button"
-          className="btn"
-          onClick={() => void q.fetchNextPage()}
-        >
-          Load more
-        </button>
-      )}
+      <More query={q} />
     </div>
   );
 }

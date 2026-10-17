@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, ApiError } from "../api";
 import { useNavigate } from "react-router-dom";
 import { useDraft } from "../components/MarkdownEditor";
-import { ErrorBox, Loading } from "../components/States";
+import { ErrorBox, Loading, QueryError } from "../components/States";
 import { clearRivockDrafts, useAuth } from "../auth/AuthContext";
 import { cpLen, LIMITS } from "../lib/limits";
 
@@ -206,8 +206,10 @@ function AccountSettings() {
       <section className="card stack">
         <h2 style={{ margin: 0 }}>Blocked users</h2>
         {blocks.isLoading && <Loading />}
-        {blocks.error && <ErrorBox error={blocks.error} />}
-        {!blocks.data?.length && <p className="muted">No blocks.</p>}
+        <QueryError query={blocks} />
+        {!blocks.isLoading && !blocks.error && !blocks.data?.length && (
+          <p className="muted">No blocks.</p>
+        )}
         {blocks.data?.map((b) => (
           <div
             key={b.user_id}
