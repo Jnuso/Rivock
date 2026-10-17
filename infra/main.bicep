@@ -8,15 +8,17 @@ param name string = 'rivock'
 param deploymentEnvironment string = 'production'
 @description('Combined website/API GHCR image pinned by sha256 digest. Build/publish after CI passes.')
 param image string
-@description('Existing reviewed PostgreSQL runtime connection URL, including sslmode=verify-full.')
+@description('Reviewed runtime URL with sslmode=verify-full and sslrootcert=/etc/ssl/certs/ca-certificates.crt for this Linux image.')
 @secure()
 param databaseUrl string
+@description('Separate migration URL with the same verified Linux CA bundle path; never use the administrator login.')
 @secure()
 param migrationDatabaseUrl string
 @secure()
 param rateHmacSecret string
 @secure()
 param aiApiKey string = ''
+@description('Exact production website HTTPS origin. Preview derives the included Azure address.')
 param frontendOrigin string
 @description('Matching Clerk Frontend API HTTPS origin, without a trailing slash. Development instance only for preview.')
 param clerkIssuer string
@@ -28,20 +30,25 @@ param aiModel string = ''
 param aiBillingMode string = 'metered'
 param aiInputPrice string = '0'
 param aiOutputPrice string = '0'
-@description('Enable only after the explicit migration job succeeds. No automatic schema upgrades.')
+@description('Create the combined website/API; public ingress stays separately gated until migration succeeds.')
 param enableApi bool = false
+@description('Enable public traffic only after narrow database routing and migration checks succeed.')
+param enablePublicIngress bool = false
 @description('Enable after migration and cost review. Every five minutes; no parallel replicas.')
 param enableWorker bool = false
 
-var sharedEnv = [
+var effectiveFrontendOrigin = deploymentEnvironment == 'preview'
+  ? 'https://${name}-api.${environment.properties.defaultDomain}'
+  : frontendOrigin
+
+var sharedEnv = concat([
   { name: 'ENVIRONMENT', value: deploymentEnvironment }
   { name: 'DATABASE_URL', secretRef: 'database-url' }
   { name: 'RATE_HMAC_SECRET', secretRef: 'rate-hmac' }
-  { name: 'AI_API_KEY', secretRef: 'ai-key' }
   { name: 'CLERK_ISSUER', value: clerkIssuer }
-  { name: 'CLERK_AUTHORIZED_PARTIES', value: frontendOrigin }
+  { name: 'CLERK_AUTHORIZED_PARTIES', value: effectiveFrontendOrigin }
   { name: 'CLERK_AUDIENCE', value: clerkAudience }
-  { name: 'CORS_ORIGINS', value: frontendOrigin }
+  { name: 'CORS_ORIGINS', value: effectiveFrontendOrigin }
   { name: 'MODERATION_MODE', value: moderationMode }
   { name: 'AI_MODEL', value: aiModel }
   { name: 'AI_BILLING_MODE', value: aiBillingMode }
@@ -49,18 +56,19 @@ var sharedEnv = [
   { name: 'AI_OUTPUT_USD_PER_MILLION', value: aiOutputPrice }
   { name: 'AI_MONTHLY_BUDGET_USD', value: '2' }
   { name: 'AI_DAILY_CALL_CAP', value: '100' }
-]
-var secrets = [
+], empty(aiApiKey) ? [] : [{ name: 'AI_API_KEY', secretRef: 'ai-key' }])
+var secrets = concat([
   { name: 'database-url', value: databaseUrl }
   { name: 'rate-hmac', value: rateHmacSecret }
-  { name: 'ai-key', value: aiApiKey }
-]
+], empty(aiApiKey) ? [] : [{ name: 'ai-key', value: aiApiKey }])
 
-resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource environment 'Microsoft.App/managedEnvironments@2026-07-01' = {
   name: '${name}-env'
   location: location
+  // Omission selects no log sink; the literal string 'none' is rejected by ARM.
   properties: {
-    appLogsConfiguration: { destination: 'none' }
+    environmentMode: 'WorkloadProfiles'
+    workloadProfiles: [{ name: 'Consumption', workloadProfileType: 'Consumption' }]
   }
 }
 
@@ -69,6 +77,7 @@ resource migrate 'Microsoft.App/jobs@2024-03-01' = {
   location: location
   properties: {
     environmentId: environment.id
+    workloadProfileName: 'Consumption'
     configuration: {
       triggerType: 'Manual'
       replicaTimeout: 120
@@ -97,10 +106,11 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = if (enableApi) {
   location: location
   properties: {
     managedEnvironmentId: environment.id
+    workloadProfileName: 'Consumption'
     configuration: {
       activeRevisionsMode: 'Single'
       secrets: secrets
-      ingress: { external: true, targetPort: 8000, transport: 'http', allowInsecure: false }
+      ingress: { external: enablePublicIngress, targetPort: 8000, transport: 'http', allowInsecure: false }
     }
     template: {
       scale: { minReplicas: 0, maxReplicas: 1 }
@@ -123,6 +133,7 @@ resource worker 'Microsoft.App/jobs@2024-03-01' = if (enableWorker) {
   location: location
   properties: {
     environmentId: environment.id
+    workloadProfileName: 'Consumption'
     configuration: {
       triggerType: 'Schedule'
       replicaTimeout: 60
@@ -144,4 +155,5 @@ resource worker 'Microsoft.App/jobs@2024-03-01' = if (enableWorker) {
 
 output frontendHostname string = enableApi ? api!.properties.configuration.ingress.fqdn : ''
 output migrationJobName string = migrate.name
+output publicSiteEnabled bool = enableApi && enablePublicIngress
 output apiHostname string = enableApi ? api!.properties.configuration.ingress.fqdn : ''

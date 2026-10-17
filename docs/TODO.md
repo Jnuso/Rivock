@@ -1,6 +1,6 @@
 # Rivock implementation checklist
 
-Updated October 14, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The Azure database is Ready; the cloud application is not deployed.
+Updated October 16, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The public Azure test preview is live and HTTP checks pass; hosted browser checks remain pending.
 
 ## Repository and application foundation
 
@@ -56,9 +56,14 @@ Updated October 14, 2026. Checked items have the implementation/check evidence d
 - [x] Add and compile Azure app/job/migration/static-site and budget Bicep templates.
 - [x] Verify the running native API and production frontend preview over HTTP, including deep-route fallback; no browser layout claim.
 - [x] Build Docker images, start Compose, seed the local app and verify public HTTP health/discovery plus authorization errors. Services are bound to localhost.
-- [ ] Run the workflows on GitHub after the initial repository publication.
+- [x] Run GitHub CI and the manual preview image workflow after publication; independently verify their successful results and the immutable public image digest.
 - [x] Implement/verify hosted preview configuration: Clerk development keys with exact HTTPS origin, full cloud TLS/HMAC/token/fixture protections, disabled docs and visible Preview notice. Verify 211 backend/script and 34 frontend tests, ten build guards, image smoke and Bicep; user configured the GitHub preview public-key variable.
-- [ ] Publish preview changes, run CI and release a preview image; complete the narrow database route/cost review and deploy to Azure's provided address. Follow PREVIEW_SETUP.md; no hosted preview exists yet.
+- [x] Activate the preview at Azure's provided HTTPS address after reviewed resource/image/network setup; run the explicit migration and verify runtime health, original demo data, API authorization, deep links and headers. Follow PREVIEW_DEPLOYMENT.md for evidence and limits.
+- [ ] Verify real Google sign-in/username onboarding and account/conversation flows in the hosted browser. Local data was not copied; cloud AI remains pending.
+- [x] Publish preview commit 2d2ca5c, verify GitHub CI/image publication and anonymous access to the exact digest; create the private app/manual migration job and explicitly job-capable Consumption environment. Create/verify the requested monthly spending alerts.
+- [x] Obtain explicit user approval for the exact frozen 161 shared egress IP rules after the initial automatic approval rejection; apply and verify that exact set, preserving the two operator rules with zero ranges/all-Azure rules. Record the user's required security tightening before production.
+- [x] Confirm the exact approved rules and successful cloud migration before HTTPS ingress; correct the Linux CA bundle path without weakening TLS, refresh the failed app revision and verify live runtime readiness afterward.
+- [ ] Before production, review and implement a narrower database connection, verify its cost/connectivity, and remove shared-pool preview rules and obsolete operator rules. This is an explicit user requirement.
 - [ ] Inspect real browser layouts at 320/390/768/1440px and keyboard/focus/accessibility flows. Browser permission remains pending after an earlier denial; component tests do not establish visual correctness.
 - [x] Locate new replies/deep notification targets with bounded safe ancestor context and return to normal ranking.
 - [x] Preserve full drafts and original revisions; add explicit compare/reload/rebase controls, memory fallback and tab-close warning when storage fails.
@@ -72,9 +77,9 @@ Updated October 14, 2026. Checked items have the implementation/check evidence d
 - [x] Complete project-scoped Azure CLI login; verify subscription Enabled/spending limit On, actual five-region policy, Canada Central app/job support, 0/1 environment quota and the narrow database firewall. Register Microsoft.App without creating hosting resources.
 - [x] Replace region-blocked Static Web Apps with a combined website/API Container App build and template; preserve the local development stack.
 - [x] Build the combined image with a synthetic public key; verify live local HTTP, production route/cache/security guards, non-root/private-file boundaries, final source hash, frontend tests/build, configuration guards and Bicep. Full Docker suite 201 plus final focused static suite 18; no production identity/browser claim.
-- [ ] Verify exact Azure credit expiry/current balance, backup/usage billing, app/job narrow egress route, workload quota/capacity and complete monthly estimate before provisioning app hosting.
-- [ ] Configure actual cloud secrets, deployment identity, GHCR package visibility, migration/runtime DB roles, TLS/CORS/CSP and alert recipients.
-- [ ] Provision after concrete hosting/cost review, run migrations, enable API/job and publish the frontend.
+- [ ] Verify exact remaining Azure credit/expiry and observed app/job/backup/transfer billing. Preview capacity/connectivity and the concrete cost configuration are verified; the shared-pool route still needs replacement before production.
+- [x] Configure protected preview secrets, public immutable GHCR image, restricted migration/runtime roles, exact HTTPS Clerk/CORS/CSP settings and requested budget recipients. No production deployment identity or cloud AI key is claimed.
+- [x] Provision reviewed Consumption preview resources, successfully run migrations and publish the combined frontend/API. The scheduled worker remains disabled pending separate provider/route review.
 - [ ] Verify hosted real-identity journeys, managed backup restoration, previous-image rollback and operator pause.
 - [ ] Buy/configure the domain and DNS/TLS.
 - [ ] Record day/week actual costs, cold starts and hosted latency; add verified screenshots/demo journey to README.

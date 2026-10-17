@@ -4,6 +4,8 @@ A public advice and discussion app for college life: shared threads, useful answ
 
 Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alembic, and Clerk**. The approved visual demo is kept at [reference/design-demo.html](reference/design-demo.html). Product choices and acceptance criteria are in [docs/README.md](docs/README.md).
 
+**[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; hosted browser sign-in and visual review remain pending. Cloud AI moderation is not enabled, so new submissions may remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
+
 ## What works in the implementation
 
 - Public feed, seven topics, PostgreSQL full-text search, Trending/Latest and ranked answers.
@@ -13,9 +15,9 @@ Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alemb
 - Durable moderation with deterministic local fixtures, a bounded Google AI adapter, retries/leases, cost reservations and persistent pause control.
 - Generated OpenAPI TypeScript contracts, PostgreSQL integration tests, frontend component tests, Docker Compose, GitHub Actions and Azure Bicep templates.
 
-**Local Google sign-in and the core two-account journey passed the user's browser checks.** Gemma 4 passed a limited live synthetic evaluation and is now enabled locally with explicit user approval. API/worker configuration and health checks pass; a browser-created question is now confirmed AI-approved and published. Remaining account methods, broader model quality and public Azure deployment need separate verification. Automated tests exclude the real AI key. DMs, ongoing bots, uploads and personalization remain later milestones.
+**Local Google sign-in and the core two-account journey passed the user's browser checks.** Gemma 4 passed a limited live synthetic evaluation and was enabled locally with explicit user approval; a browser-created question was confirmed AI-approved and published. Hosted account methods, broader model quality and cloud AI activation need separate verification. Automated tests exclude the real AI key. DMs, ongoing bots, uploads and personalization remain later milestones.
 
-Start with the [single review and setup handoff](docs/REVIEW.md). The local app is running at [localhost:5173](http://localhost:5173), with Clerk and approved Gemma moderation. My submissions identifies completed AI/rules/demo/moderator checks. The Azure database/schema/restricted logins are initialized and independently verified over TLS. Management sign-in and [authenticated preflight](docs/AZURE_PREFLIGHT.md) are complete: the student's region policy blocks Static Web Apps, so the deployment build now serves React and FastAPI together in one Container App. No app hosting is deployed. Domain/production Clerk, publication, narrow database routing and billing remain release work. Check local configuration presence without printing secrets:
+Start with the [single review and setup handoff](docs/REVIEW.md). Local development uses [localhost:5173](http://localhost:5173); My submissions identifies completed AI/rules/demo/moderator checks. The Azure preview serves React and FastAPI together in one Consumption Container App with restricted database roles and verified TLS. Migration and live HTTP checks pass. The exact shared egress set was explicitly approved for preview; tightening that route is required before production. Domain/production Clerk, managed recovery and observed billing remain release work. Check local configuration presence without printing secrets:
 
 ```powershell
 backend/.venv/Scripts/python.exe scripts/check-setup.py
