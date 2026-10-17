@@ -6,7 +6,7 @@ Updated October 16, 2026. The [Azure preview is live](https://rivock-api.wittymu
 
 **Hosted account check passed:** the user confirmed Google sign-in/onboarding, votes/saves and repeat-login persistence and identified username `jack`. The audited operator command assigned admin to that existing account; an independent read-only check confirmed active/linked/admin state and one grant audit. Refresh [the hosted admin page](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/admin) to verify the visible controls. Hosted two-account conversation checks remain pending.
 
-**Current product change:** the user withdrew cloud Gemma activation and wants immediate publication. Explicit reviews-off mode is implemented and verified locally, with honest unreviewed publication metadata, reports/manual moderation and existing validation/rate/duplicate/state protections. AI assistance after reports is a [future design](REPORT_MODERATION.md). The updated combined image must replace the older cloud pending-mode image; no AI key or Google worker is being enabled. Release the one ordinary pending item through the shared validated service after rollout. The cloud database remains separate from local data.
+**Immediate publication is live:** the user withdrew cloud Gemma activation. Application commit `d3879aa` passed CI/image publication and is deployed with reviews off, honest unreviewed metadata, reports/manual moderation and existing validation/rate/duplicate/state protections. Live health/privacy/headers/auth checks pass. The one ordinary pending item was published through the shared validated service; read-only metadata confirms zero pending items and zero cloud AI attempts. No AI key or scheduled Google worker was enabled. AI assistance after reports is a [future design](REPORT_MODERATION.md).
 
 Azure's app, WorkloadProfiles/Consumption environment and manual migration job are provisioned; the corrected migration succeeded and HTTPS-only ingress is enabled. The $10/month budget and $5/$8/$10 notifications are active. After the initial automatic approval rejection, the user explicitly approved the frozen 161 shared egress IP rules; read-back verified that exact set. The user required tighter security later: review/implement a narrower database route and remove the preview rules before production. [Deployment and approval evidence](PREVIEW_DEPLOYMENT.md).
 
@@ -53,8 +53,8 @@ Hosted real sign-in, email/password/recovery, browser layouts/accessibility/CSP 
 
 ## Then proceed in this order
 
-1. Complete the user's hosted browser check on the included Azure address, including sign-in/onboarding and the two-account journey.
-2. Establish the cloud operator account; review/authorize cloud provider handling and verify the worker route before enabling cloud AI. Keep pending states honest until then.
+1. Refresh the hosted app and verify a fresh post/reply publishes immediately, followed by the admin/report and two-account conversation journeys. Initial Google/onboarding/vote/save checks and the operator grant are complete.
+2. Keep Gemma reviews off. Design report-assisted AI separately without reinstating the initial-publication gate; review its triggers, data handling, outcomes/appeals and budgets before implementation.
 3. Verify managed backup restoration, prior-image rollback and operator pause; record day/week costs and cold starts. Target $10/month excluding domain, including up to $2 AI; alerts do not cap spending.
 4. Before production, implement the narrower, cost-reviewed database connection requested by the user and remove shared-pool/obsolete rules. Then buy/bind the domain, configure Clerk production, rebuild with its real public key and recheck browser/auth/TLS behavior.
 

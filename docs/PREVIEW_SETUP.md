@@ -48,6 +48,8 @@ Open the actual generated HTTPS link. It should display **Rivock Preview**. Use 
 
 Initial submissions can remain pending while cloud moderation is disabled. Establish the operator account and review provider/data settings before enabling AI and the scheduled worker; pending is not an AI approval. Use the existing explicitly labeled fictional seed only as a deliberate preview operator action. Verify day/week costs and cold starts before considering a public launch.
 
+**Superseding policy update:** the reviewed off-mode image is now deployed. Valid submissions publish immediately without AI/content checks; reports and manual moderation remain. The earlier pending test item is published, and cloud metadata shows zero AI attempts. Refresh and test a fresh post/reply. Do not follow the older Google activation proposal; future report-assisted AI is separate work in [REPORT_MODERATION.md](REPORT_MODERATION.md).
+
 ## Later: custom domain and production
 
 Buy the domain after the preview is satisfactory. Configure Clerk production, rebuild with the production public key, switch runtime/build profiles together, bind DNS/TLS and verify the real production journey. Review handling of preview accounts/content before that transition. Do not create a second environment assuming another free quota slot.

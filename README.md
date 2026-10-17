@@ -4,7 +4,7 @@ A public advice and discussion app for college life: shared threads, useful answ
 
 Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alembic, and Clerk**. The approved visual demo is kept at [reference/design-demo.html](reference/design-demo.html). Product choices and acceptance criteria are in [docs/README.md](docs/README.md).
 
-**[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; the owner confirmed hosted Google sign-in, onboarding and vote/save persistence. Broader browser/account checks remain pending. Cloud AI moderation is not enabled, so new submissions may remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
+**[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; the owner confirmed hosted Google sign-in, onboarding and vote/save persistence. Gemma reviews are off: valid contributions publish immediately, with reports/manual moderation available. The older pending test submission has been published without AI. Broader browser/account checks remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
 
 ## What works in the implementation
 
@@ -12,12 +12,12 @@ Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alemb
 - Threads, depth-five replies, accepted answers, content votes, private saves and public profiles.
 - Owner edits/deletes, placeholders, private pending/rejected submissions and revision controls.
 - Notifications, blocking, reports, admin review/removal/restoration/suspension, topic management and audit history.
-- Durable moderation with deterministic local fixtures, a bounded Google AI adapter, retries/leases, cost reservations and persistent pause control.
+- Immediate publication with validation and posting limits; private reports and audited manual moderation. Legacy AI adapters/leases/budgets remain tested but inactive.
 - Generated OpenAPI TypeScript contracts, PostgreSQL integration tests, frontend component tests, Docker Compose, GitHub Actions and Azure Bicep templates.
 
-**Local Google sign-in and the core two-account journey passed the user's browser checks.** Gemma 4 passed a limited live synthetic evaluation and was enabled locally with explicit user approval; a browser-created question was confirmed AI-approved and published. Hosted account methods, broader model quality and cloud AI activation need separate verification. Automated tests exclude the real AI key. DMs, ongoing bots, uploads and personalization remain later milestones.
+**Local Google sign-in and the core two-account journey passed the user's browser checks.** The owner also confirmed hosted Google sign-in/onboarding/vote/save persistence. On October 16 the user changed moderation: Gemma reviews are temporarily off; valid contributions publish immediately. Reports and manual admin review remain. AI assistance after reports is a [future design](docs/REPORT_MODERATION.md). The earlier local Gemma evaluation remains historical evidence, not the current product policy. DMs, ongoing bots, uploads and personalization remain later milestones.
 
-Start with the [single review and setup handoff](docs/REVIEW.md). Local development uses [localhost:5173](http://localhost:5173); My submissions identifies completed AI/rules/demo/moderator checks. The Azure preview serves React and FastAPI together in one Consumption Container App with restricted database roles and verified TLS. Migration and live HTTP checks pass. The exact shared egress set was explicitly approved for preview; tightening that route is required before production. Domain/production Clerk, managed recovery and observed billing remain release work. Check local configuration presence without printing secrets:
+Start with the [single review and setup handoff](docs/REVIEW.md). Local development uses [localhost:5173](http://localhost:5173); My submissions identifies publication without automated review and preserves genuine historical check labels. The Azure preview serves React and FastAPI together in one Consumption Container App with restricted database roles and verified TLS. Migration and live HTTP checks pass. The exact shared egress set was explicitly approved for preview; tightening that route is required before production. Domain/production Clerk, managed recovery and observed billing remain release work. Check local configuration presence without printing secrets:
 
 ```powershell
 backend/.venv/Scripts/python.exe scripts/check-setup.py
