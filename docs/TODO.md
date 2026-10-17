@@ -117,3 +117,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Publish/deploy exact CI-approved source 7bc80ad at digest b8d0905d…; verify Healthy revision 0000004, 100% traffic and preserved AI/TLS/firewall/replica/manual-job settings. No migration or schedule ran.
 - [x] Prepare a managed restore drill configuration/cost proposal and read-only backup-readiness metadata; see [RESTORE_DRILL.md](RESTORE_DRILL.md). No restore resource was created.
 - [ ] Establish protected complete erasure-journal storage and review the exact temporary restore target/duration/cost before performing a managed restore/replay drill.
+
+- [x] Reject malformed/unsupported/duplicate erasure-journal entries before opening a replay transaction; verify existing export compatibility and other-author reply preservation with 259 backend tests.
+- [ ] Review/release the local recovery-command validation candidate separately; live application source remains 7bc80ad.
