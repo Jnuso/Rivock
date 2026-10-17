@@ -81,3 +81,13 @@ it("does not infer a historical review source from a published status", () => {
   expect(screen.getByText("Review details unavailable")).toBeVisible();
   expect(screen.queryByText(/Reviewed by AI/)).not.toBeInTheDocument();
 });
+
+it("identifies immediate publication without claiming an automated review", () => {
+  render(
+    <SubmissionReview
+      submission={{ ...base, reason_code: "moderation_disabled", review: null }}
+    />,
+  );
+  expect(screen.getByText("Published without automated review")).toBeVisible();
+  expect(screen.queryByText(/Reviewed by AI|Checked by automatic rules/)).not.toBeInTheDocument();
+});

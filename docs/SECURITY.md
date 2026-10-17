@@ -1,5 +1,7 @@
 # Rivock security and moderation
 
+Current October 16 policy: explicit `MODERATION_MODE=off` publishes validated posts/replies/profile edits without content review and makes no provider calls or synthetic approval records. Authentication, ownership/revision/target checks, Markdown sanitization, account restrictions, blocks, duplicate and rate limits remain. User reports and audited manual moderation remain. The AI pipeline details below describe retained inactive capabilities; report-assisted post-publication AI requires a separate review before activation. AI pause or provider failure alone never changes a gated mode into immediate publication.
+
 Security policy and implementation guidance. See [SPECIFICATION](SPECIFICATION.md) for public behavior, [API](API.md) for contracts and [IMPLEMENTATION](IMPLEMENTATION.md) for actual verification and launch gates. Provider quality evaluation and live identity/cloud checks remain pending.
 
 ## Identity, secrets, and permissions

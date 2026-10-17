@@ -8,6 +8,8 @@ Read the project README and current task first, then only the relevant specifica
 
 Rivock is a public thread-based advice/discussion application, with no communities, user karma, or reputation gates. Stack: React + TypeScript + Vite; FastAPI REST; PostgreSQL; SQLAlchemy/Alembic; Clerk; Docker/GitHub Actions. Keep one backend codebase and shared services for API/worker. Do not add microservices, Redis, alternate databases, or unrelated frameworks without a concrete need.
 
+Current product decision (October 16): `MODERATION_MODE=off` publishes posts/replies/profile edits immediately after normal validation, authorization, rate/duplicate and target/revision checks. It makes no AI/rules review claim. Keep user reports and manual admin moderation. AI assistance triggered by reports is future work; do not reactivate Gemma's old pre-publication gate. Historical provider/pending/fixture modes remain implementation/test history, not the current policy.
+
 ## Working rules
 
 - Work in the dedicated Rivock checkout; inspect instructions, git status, and relevant code before editing. Preserve unrelated changes. Do not commit/push the broad Codex workspace as Rivock.
@@ -29,4 +31,6 @@ Run checks appropriate to the change: backend unit/integration/auth/concurrency 
 Report what changed, what passed, and material remaining limitations. Include a concrete failing condition when work is blocked. Azure eligibility/prices/domain ownership are unverified until inspected; budget alerts do not cap spend. Before provisioning, produce the concrete hosting/cost configuration for review and use the session's existing authorization rather than asking repeatedly for routine reversible work.
 
 Cursor or another agent may be delegated focused work only with human authorization or applicable instructions. Give it the minimum relevant context and no credentials. Review its output against the specification before integration; its suggestions do not override confirmed decisions.
+
+The user permits Google Gemma coding workers in this chat with a maximum of two Google requests per minute across workers. Cap a batch to at most two calls and wait at least 65 seconds after its terminal/update timestamp before another batch; do not resume with a larger unconsumed allowance. This coding authorization does not authorize application content reviews.
 

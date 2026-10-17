@@ -7,6 +7,11 @@ export function SubmissionReview({
   submission: Submission;
   detailed?: boolean;
 }) {
+  if (
+    submission.status === "published" &&
+    submission.reason_code === "moderation_disabled"
+  )
+    return <p className="muted">Published without automated review</p>;
   const review = submission.review;
   if (!review)
     return (

@@ -13,41 +13,22 @@ export function PrivacyPage() {
         </p>
       </section>
       <section className="card stack">
-        <h2>Checks before publication</h2>
+        <h2>Publication and reports</h2>
         <p>
-          Submitted text is checked for spam and abuse before it appears
-          publicly. When AI moderation is enabled, submitted text is sent to the
-          configured third-party AI provider. Rivock does not send your sign-in
-          token, email or password with that check. Pending drafts stay visible
-          only to you and administrators.
+          Posts, replies and profile changes publish without automated content
+          review in this version. Publication does not mean that a moderator or AI
+          has checked the text. Account restrictions, posting limits and content
+          validation still apply.
         </p>
         <p>
-          AI review for fictional preview testing uses Google’s Gemma API when
-          enabled. New or edited thread, reply and profile text can be sent to
-          Google for that review.
+          You can report a post, reply or profile for moderator review. Reports
+          are private and do not automatically hide content; a moderator can
+          remove content or restrict an account after reviewing it.
         </p>
         <p>
-          Google’s free service may use submitted text and responses to improve
-          its products, and human reviewers may read them. Do not submit personal,
-          sensitive or confidential information. Use fictional examples in this
-          preview. Read Google’s{" "}
-          <a
-            href="https://ai.google.dev/gemini-api/terms#unpaid-services"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            unpaid-service data terms
-          </a>{" "}
-          and{" "}
-          <a
-            href="https://policies.google.com/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            privacy policy
-          </a>
-          . The retention periods below apply to Rivock’s records; Google handles
-          its copies under its own terms.
+          Gemma reviews are currently disabled. Rivock does not send contribution
+          text to an AI provider in this mode. AI assistance with reported content
+          is a future design; we will update this notice before enabling it.
         </p>
         <p>
           Completed submission text expires after seven days; unresolved

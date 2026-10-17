@@ -301,7 +301,7 @@ def submission_out(row, snapshot=False, review=None):
         "created_at": row.created_at,
         "snapshot_available": row.snapshot is not None,
         "snapshot": row.snapshot if snapshot else None,
-        "review": review,
+        "review": None if row.reason_code == "moderation_disabled" else review,
     }
 
 

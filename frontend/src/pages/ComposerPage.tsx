@@ -224,8 +224,8 @@ function ThreadComposer({ mode, id }: { mode: "new" | "edit"; id: string }) {
         onChange={(body) => update({ body })}
       />
       <p className="muted">
-        Your text is checked before publication. An edit leaves the previous
-        approved version visible while it is checked.
+        Contributions can be reported for moderator review. Avoid sharing
+        personal information in public posts.
       </p>
       {error && <ErrorBox error={error} />}
       {!draft.persisted && (

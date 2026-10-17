@@ -23,8 +23,8 @@ param frontendOrigin string
 @description('Matching Clerk Frontend API HTTPS origin, without a trailing slash. Development instance only for preview.')
 param clerkIssuer string
 param clerkAudience string = ''
-@allowed(['pending', 'google'])
-param moderationMode string = 'pending'
+@allowed(['off', 'pending', 'google'])
+param moderationMode string = 'off'
 param aiModel string = ''
 @allowed(['metered', 'free'])
 param aiBillingMode string = 'metered'

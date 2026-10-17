@@ -251,6 +251,14 @@ def process(submission_id, force=False):
         if not row or row.status not in {"pending", "processing"}:
             return
         stamp = m.now()
+        if cfg.moderation_mode == "off":
+            # Explicit publication policy, not an AI/rules approval or provider fallback.
+            # Invalidate any old lease so its eventual result cannot replace this decision.
+            row.lease_token, row.lease_until = None, None
+            apply(db, row, "allow", "moderation_disabled")
+            row.error_category, row.updated_at = None, stamp
+            db.commit()
+            return
         if row.status == "processing" and row.lease_until and row.lease_until > stamp:
             return
         if not force and row.next_attempt_at > stamp:
@@ -367,7 +375,9 @@ def process(submission_id, force=False):
             db.commit()
             return
         row.lease_until, row.lease_token = None, None
-        if error:
+        if settings().moderation_mode == "off":
+            apply(db, row, "allow", "moderation_disabled")
+        elif error:
             row.status, row.error_category = "pending", error
             delay = max(retry_after, [5, 15, 60, 60][min(row.ai_attempt_count - 1, 3)] * 60)
             row.next_attempt_at = m.now() + timedelta(seconds=delay)

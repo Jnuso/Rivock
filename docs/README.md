@@ -21,7 +21,7 @@ Rivock is a public, text-first advice and discussion site. The primary users are
 | Ordering | Trending feed with Latest alternative; votes and freshness only; Recommended replies mix votes and freshness, accepted answer first; nested replies chronological |
 | Search | Thread titles and bodies; topic filtering; Relevance or Newest |
 | Other launch features | Private saved threads, profiles/history, editing/deleting, blocks, reports, in-app notifications, basic admin controls |
-| Moderation | Rules and rate/spam checks plus AI; clear violations rejected; uncertain cases publish/log; AI outages leave submissions pending for retry |
+| Moderation | Immediate publication after validation/rate/duplicate checks; user reports and manual admin review; Gemma reviews temporarily disabled; report-assisted AI is future work |
 | Delivery | Docker + GitHub Actions; Azure preferred; target $10/month excluding domain |
 | Later | DMs, personalized feeds, uploads, and labeled fictional bot activity |
 
@@ -30,7 +30,7 @@ Rivock is a public, text-first advice and discussion site. The primary users are
 | Area | Proposed default and reason |
 | --- | --- |
 | Usernames | Unique, case-insensitive, 3–24 ASCII letters/digits/underscores; fixed after onboarding for a simpler v1 |
-| Profiles | Optional moderated 300-character bio and preset avatar; last approved profile stays visible during review; no public email, real-name requirement, or profile score |
+| Profiles | Optional 300-character bio and preset avatar, updated immediately with revision checks; no public email, real-name requirement, or profile score |
 | Roles | Member and admin; admin assigned by an explicit operator command, never by email domain |
 | Permissions | Backend checks ownership/account status on every write; members cannot set admin or bot flags |
 | Sign-in | Clerk-hosted account portal through the React SDK; return to the original screen after onboarding |
@@ -39,8 +39,8 @@ Rivock is a public, text-first advice and discussion site. The primary users are
 | Frontend tooling | React Router, TanStack Query, native Fetch, shared CSS/design tokens; preserve the approved demo's visual direction |
 | Ranking | For both threads and direct replies, `net_votes / (age_hours + 2)^0.5`; ties newest first; edits do not reset age |
 | Voting | No self-votes; block relationships prevent votes on each other's contributions |
-| Moderated edits | Last approved version stays visible; pending replacement is private; a stale decision cannot overwrite a newer revision |
-| Outages/retries | Durable submission records; bounded inline AI attempt, then worker retries every five minutes; unresolved items go to admin review |
+| Edits | Publish immediately with revision checks in off mode; legacy pending replacement stays private; a stale result cannot overwrite a newer revision |
+| Outages/retries | Current off mode has no provider dependency; legacy bounded AI retries remain inactive and cannot act as implicit approval |
 | Notifications | Poll while the app is visible; direct replies notify thread author, nested replies notify addressed author; no own/blocked-user events |
 | Deletion | Author deletion removes their text and leaves a structural placeholder; questions lose an accepted answer if that answer is deleted/removed |
 | Account departure | Self-service deactivation hides the profile, labels contributions `[deleted]`, clears bookmarks/notifications/bio, and prevents writes; full identity erasure is an operator procedure |
@@ -57,12 +57,10 @@ flowchart LR
     Browser[React browser application] -->|Sign in| Clerk[Clerk]
     Browser -->|REST + access token| API[FastAPI]
     API --> DB[(PostgreSQL)]
-    API -->|Bounded moderation attempt| AI[Google AI moderation API]
     Worker[Scheduled worker, same backend code] --> DB
-    Worker -->|Retry pending checks| AI
 ```
 
-The browser displays screens and requests operations. FastAPI validates input, verifies identity, enforces permissions, runs moderation, and writes records. PostgreSQL enforces relationships and uniqueness. Clerk manages credentials; the Google AI service receives only the text needed for moderation.
+The browser displays screens and requests operations. FastAPI validates input, verifies identity, enforces permissions and writes records. PostgreSQL enforces relationships and uniqueness. Clerk manages credentials. Current `off` mode sends no contribution text to an AI service; report-assisted AI needs a separate future design.
 
 ## Screens and important behavior
 
@@ -74,9 +72,9 @@ Blocking hides the other person's content in the blocker's signed-in experience 
 
 ## Moderation and cost controls
 
-Ordinary profanity and disagreement are allowed. Rules target spam, scams, threats, hateful attacks, and targeted harassment rather than rejecting every word on a profanity list. AI decisions use a structured decision and safe reason code, with uncertain results published and logged. Provider errors, malformed results, and unavailable budget remain pending instead of being treated as approval.
+The user changed this policy on October 16: Gemma/content reviews are temporarily off and ordinary validated submissions publish immediately. Reports go to manual review and do not automatically hide content. Publication is not a claim of AI approval. Future AI may help assess reported posts/replies after publication; triggers, context, decisions, data handling and appeals are not implemented yet.
 
-Proposed launch caps: five new threads/hour and twenty/day per member; thirty replies/hour and one hundred/day; no duplicate copy-paste submission from the same user within 24 hours. Each check is configurable. Start the AI adapter disabled locally, use deterministic fixtures for tests, and enable a verified model for deployment. Proposed AI ceiling: $2/month within the overall $10 target, plus a 100-call/day hard cap and one concurrent call. Cost metering must be configured from the selected model's real pricing before enabling it.
+Posting caps remain five new threads/hour and twenty/day per member; thirty replies/hour and one hundred/day, with duplicate checks. Legacy AI cost/pause/retry protections remain tested but inactive. Re-enabling AI requires a new reviewed post-publication policy and provider/data configuration; an outage in a legacy AI mode is still never implicit approval.
 
 Azure eligibility, region capacity, domain purchase, identity configuration, and actual model access have not been verified in this account. The Azure deployment runbook has an explicit cost/eligibility check before provisioning. A budget alert alone does not stop spend.
 

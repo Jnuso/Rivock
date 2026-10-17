@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     clerk_issuer: str = ""
     clerk_authorized_parties: str = "http://localhost:5173,http://127.0.0.1:5173"
     clerk_audience: str = ""
-    moderation_mode: str = "pending"
+    moderation_mode: str = "off"
     ai_model: str = ""
     ai_api_key: str = ""
     ai_billing_mode: Literal["metered", "free"] = "metered"
@@ -92,7 +92,7 @@ class Settings(BaseSettings):
 
             if make_url(self.database_url).query.get("sslmode") != "verify-full":
                 raise RuntimeError("Production PostgreSQL requires sslmode=verify-full")
-        if self.moderation_mode not in {"pending", "fixture", "google"}:
+        if self.moderation_mode not in {"off", "pending", "fixture", "google"}:
             raise RuntimeError("Unknown moderation adapter")
 
 

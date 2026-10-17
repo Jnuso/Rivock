@@ -4,6 +4,8 @@ October 16, 2026. This records the reviewed configuration, actual provisioning e
 
 **Live preview:** [Rivock on Azure](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/). HTTPS/API/database HTTP checks pass. The owner confirmed hosted Google sign-in, username onboarding and vote/save persistence as `jack`. Visual review, additional account methods and the hosted two-account conversation journey remain pending.
 
+**Policy update staged:** the user withdrew the cloud Gemma proposal and selected immediate publication without automated reviews. The updated source/image is verified locally; cloud rollout still needs the new published digest. Keep the old cloud image in pending mode until the matching off-mode image and configuration can switch together. No provider key or Google worker is added. After rollout, process the existing ordinary pending item through the same validated apply service; preserve old rejected/cancelled/manual-review decisions. See [REPORT_MODERATION.md](REPORT_MODERATION.md).
+
 The existing audited operator command assigned admin to that user-confirmed account, using its exact Rivock UUID. Independent read-only verified-TLS metadata confirmed active/linked/admin state and exactly one grant audit entry. One pending submission was counted without reading its text. Cloud AI still has no key and the worker remains disabled. The Google-specific privacy disclosure is prepared in source for a later image publication; it has not yet replaced the live image. That publication, fictional-content confirmation and explicit cloud-transfer approval precede any provider activation.
 
 ## Verified release and account state

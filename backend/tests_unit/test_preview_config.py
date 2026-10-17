@@ -33,3 +33,16 @@ def test_preview_accepts_real_development_issuer_but_production_still_refuses_it
 def test_preview_retains_hosted_security_requirements(change):
     with pytest.raises(RuntimeError):
         preview(**change).validate_production()
+
+
+@pytest.mark.parametrize("environment,issuer", [
+    ("preview", "https://synthetic.clerk.accounts.dev"),
+    ("production", "https://clerk.rivock.example"),
+])
+def test_explicit_reviews_off_is_valid_in_hosted_environments(environment, issuer):
+    preview(environment=environment, clerk_issuer=issuer, moderation_mode="off").validate_production()
+
+
+def test_new_installations_default_to_reviews_off(monkeypatch):
+    monkeypatch.delenv("MODERATION_MODE", raising=False)
+    assert Settings(_env_file=None).moderation_mode == "off"

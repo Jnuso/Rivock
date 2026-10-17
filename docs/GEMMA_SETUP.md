@@ -1,6 +1,12 @@
 # Google AI Studio Gemma 4 setup
 
-## Current state
+## Current product decision
+
+On October 16 the user withdrew the proposed cloud activation and temporarily removed Gemma reviews. Current `MODERATION_MODE=off` publishes validated posts/replies/profile edits immediately, preserves reports/manual admin actions, and makes no provider calls. Local API/worker settings are off with the AI pause override enabled; private keys were preserved without printing or exporting them. The cloud has never received an AI key; its off-mode image rollout is recorded in PREVIEW_DEPLOYMENT.md. Do not apply the old activation procedure below. Future AI assistance after reports needs a separate [policy/design](REPORT_MODERATION.md).
+
+The user separately permits Google Gemma coding workers in this chat, at most two requests per minute. That does not authorize application-content reviews.
+
+## Historical provider setup
 
 The user selected **Gemma 4 from Google AI Studio** on October 14, 2026. Model: `gemma-4-26b-a4b-it`, documented in Google's [Gemma API guide](https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api). Authenticated model metadata confirmed access, `generateContent` support and input/output limits of 262,144/32,768 tokens. A real request with system instructions, JSON MIME type and response schema succeeded with HTTP 200 and a complete `STOP` response. The initial fictional request took about 0.94 seconds; this single observation is not a latency benchmark.
 
@@ -8,11 +14,11 @@ The model is set in the ignored root/backend `.env` files. The user added the AP
 
 The isolated evaluation passed all eight limited cases: five benign examples allowed by Gemma, three spam vectors rejected by rules, no deferrals. Including the initial smoke, six model attempts recorded zero reserved/actual cost and no unknown cost. See the reviewed [sanitized report](gemma-evaluation.json) and [coverage limits](MODERATION_EVALUATION.md). The backend suite passes 153 tests in Docker with PostgreSQL; 96 unit tests also passed natively. Ruff, Compose validation and Bicep compilation passed.
 
-## Local activation completed
+## Historical local activation, superseded
 
-**Azure preview checkpoint, October 16:** the owner’s hosted account `jack` is active and has an audited admin grant. Hosted sign-in/vote/save persistence was confirmed by the user. Cloud AI still has no provider key, uses `pending`, and has no scheduled worker. One queued submission was counted without reading its text. The Google-specific privacy notice is prepared in source but is not yet in the deployed image. Before cloud activation, publish that notice and obtain explicit approval for fictional-only new/edited text and the queued submission; confirm it contains no personal, sensitive or confidential information. Local activation authorization below does not grant that cloud transfer. Public real-life advice needs a separate suitable provider/data arrangement.
+The owner’s hosted account `jack` has a verified audited admin grant. The cloud originally used pending mode without an AI key or scheduled worker, with one ordinary queued submission. The proposed Google-specific activation was withdrawn in favor of immediate publication. Its prepared privacy text was replaced with an honest reviews-off/reporting notice before image publication.
 
-The concrete proposed preview settings reuse `gemma-4-26b-a4b-it` with explicit free billing, zero input/output prices, at most 100 calls/day, one concurrent provider reservation, the existing input/output bounds and persistent pause controls. No paid fallback is selected. Reuse the existing protected local key only after cloud-transfer authorization; put it in server-side Azure secrets, never build arguments/browser values. First publish/deploy the privacy-notice image and verify it at the live URL, then review any queued item for the approved fictional scope. Verify the shared API settings and a bounded synthetic provider check before enabling the five-minute worker (one execution, 60-second timeout, no retries); independently verify its database/provider route and audit resulting review source/cost. Recheck queue/pause state immediately before activation. The $2/month reservation ceiling remains for any future metered configuration; it is not an Azure spending cap.
+The earlier free-model/cap/worker activation proposal is inactive. Preserve the existing provider adapter tests/cost controls for later design, but do not transfer the key or enable a Google worker during this reviews-off phase.
 
 Automatic approval review initially rejected the persistent switch because authorization covered isolated fictional evaluation rather than future user-content transfer. The user subsequently answered **yes** to enabling Gemma for new local post/reply/profile text. That explicit authorization resolved the block on October 14. A fresh check found zero pending/processing submissions and no operator pause before activation.
 

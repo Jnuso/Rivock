@@ -144,7 +144,9 @@ export function AdminPage() {
             <p className="row">
               <span className="badge">{statusQ.data.moderation_mode}</span>
               <span className="badge">
-                {statusQ.data.ai_paused ? "paused" : "running"}
+                {statusQ.data.moderation_mode === "off"
+                  ? "AI reviews off"
+                  : statusQ.data.ai_paused ? "paused" : "running"}
               </span>
               <span className="muted">queue {statusQ.data.queue_count}</span>
               <span className="muted">
@@ -156,7 +158,7 @@ export function AdminPage() {
               <button
                 type="button"
                 className="btn btnPrimary"
-                disabled={busy || !statusQ.data.ai_paused}
+                disabled={busy || statusQ.data.moderation_mode === "off" || !statusQ.data.ai_paused}
                 onClick={() => withReason((r) => api.adminPause(false, r))}
               >
                 Resume AI
@@ -164,7 +166,7 @@ export function AdminPage() {
               <button
                 type="button"
                 className="btn btnDanger"
-                disabled={busy || statusQ.data.ai_paused}
+                disabled={busy || statusQ.data.moderation_mode === "off" || statusQ.data.ai_paused}
                 onClick={() => withReason((r) => api.adminPause(true, r))}
               >
                 Pause AI

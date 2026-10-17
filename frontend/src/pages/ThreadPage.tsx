@@ -139,7 +139,7 @@ function ReplyComposer({
         max={LIMITS.reply}
       />
       <p className="muted">
-        Submitted text is checked before publication. Avoid sharing personal
+        Replies can be reported for moderator review. Avoid sharing personal
         information.
       </p>
       {mutation.error && <ErrorBox error={mutation.error} />}
