@@ -42,6 +42,8 @@ For the combined Linux image, set both cloud connection URLs to `sslmode=verify-
 
 ## 6. Test the preview together
 
+The owner confirmed the initial hosted Google sign-in/onboarding, vote/save and repeat-login checks worked, identifying `jack`. That exact account now has an independently verified audited admin grant. Refresh `/admin` for the next visible check. The two-account conversation journey and cloud AI activation remain pending; the provider-specific privacy notice is prepared but still needs publication in a new image.
+
 Open the actual generated HTTPS link. It should display **Rivock Preview**. Use test accounts and fictional text to check sign-in, username onboarding, browsing, direct thread refresh, saves, replies, accepted answers and mobile navigation. Cloud account/conversation data starts separately from the local database; no local rows are copied.
 
 Initial submissions can remain pending while cloud moderation is disabled. Establish the operator account and review provider/data settings before enabling AI and the scheduled worker; pending is not an AI approval. Use the existing explicitly labeled fictional seed only as a deliberate preview operator action. Verify day/week costs and cold starts before considering a public launch.

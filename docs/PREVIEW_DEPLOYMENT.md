@@ -2,7 +2,9 @@
 
 October 16, 2026. This records the reviewed configuration, actual provisioning evidence and remaining activation checks. It is not an uptime or cost guarantee.
 
-**Live preview:** [Rivock on Azure](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/). HTTPS/API/database HTTP checks pass. Real hosted sign-in and visual review still need the user's browser.
+**Live preview:** [Rivock on Azure](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/). HTTPS/API/database HTTP checks pass. The owner confirmed hosted Google sign-in, username onboarding and vote/save persistence as `jack`. Visual review, additional account methods and the hosted two-account conversation journey remain pending.
+
+The existing audited operator command assigned admin to that user-confirmed account, using its exact Rivock UUID. Independent read-only verified-TLS metadata confirmed active/linked/admin state and exactly one grant audit entry. One pending submission was counted without reading its text. Cloud AI still has no key and the worker remains disabled. The Google-specific privacy disclosure is prepared in source for a later image publication; it has not yet replaced the live image. That publication, fictional-content confirmation and explicit cloud-transfer approval precede any provider activation.
 
 ## Verified release and account state
 

@@ -22,8 +22,32 @@ export function PrivacyPage() {
           only to you and administrators.
         </p>
         <p>
-          The provider’s exact data-retention terms must be published here
-          before the live service enables that provider.
+          AI review for fictional preview testing uses Google’s Gemma API when
+          enabled. New or edited thread, reply and profile text can be sent to
+          Google for that review.
+        </p>
+        <p>
+          Google’s free service may use submitted text and responses to improve
+          its products, and human reviewers may read them. Do not submit personal,
+          sensitive or confidential information. Use fictional examples in this
+          preview. Read Google’s{" "}
+          <a
+            href="https://ai.google.dev/gemini-api/terms#unpaid-services"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            unpaid-service data terms
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            privacy policy
+          </a>
+          . The retention periods below apply to Rivock’s records; Google handles
+          its copies under its own terms.
         </p>
         <p>
           Completed submission text expires after seven days; unresolved

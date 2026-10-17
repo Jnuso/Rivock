@@ -4,7 +4,7 @@ A public advice and discussion app for college life: shared threads, useful answ
 
 Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alembic, and Clerk**. The approved visual demo is kept at [reference/design-demo.html](reference/design-demo.html). Product choices and acceptance criteria are in [docs/README.md](docs/README.md).
 
-**[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; hosted browser sign-in and visual review remain pending. Cloud AI moderation is not enabled, so new submissions may remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
+**[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; the owner confirmed hosted Google sign-in, onboarding and vote/save persistence. Broader browser/account checks remain pending. Cloud AI moderation is not enabled, so new submissions may remain pending. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
 
 ## What works in the implementation
 
