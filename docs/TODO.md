@@ -104,3 +104,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Release UI/cleanup source 1ae86a7 through successful exact-commit CI/publication, anonymously verify digest c5421835…, update the existing app/manual-job image and verify ready revision 0000003 plus the changed hosted interface. No schema migration, schedule or network change.
 - [ ] Review/enable the cleanup schedule only after cost and existing-firewall connectivity checks; no new egress rules are implied.
 - [x] Read current month-to-date Rivock resource-group billing: USD 0.0034713738696 app and USD 0 PostgreSQL at October 17 07:11 UTC. Exact credit/expiry and broader observation period remain open.
+
+- [x] Add and locally verify a keyboard skip link/main landmark, preserve linked-reply fragments and account for the mobile sticky header. Types, 39 frontend tests and build pass.
+- [ ] Include the local keyboard follow-up in a future reviewed source release; the current Azure source remains 1ae86a7.

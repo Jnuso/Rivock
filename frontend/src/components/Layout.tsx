@@ -38,6 +38,7 @@ export function Layout() {
       document.visibilityState === "visible" ? 30000 : false,
   });
   const [open, setOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
@@ -64,6 +65,19 @@ export function Layout() {
 
   return (
     <div className="appShell">
+      <a
+        href="#main-content"
+        className={styles.skipLink}
+        onClick={(event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+            return;
+          event.preventDefault();
+          mainRef.current?.focus({ preventScroll: true });
+          mainRef.current?.scrollIntoView({ block: "start" });
+        }}
+      >
+        Skip to main content
+      </a>
       <aside className={styles.sidebar} aria-label="Primary">
         <Link to="/" className={styles.brand}>
           Rivock
@@ -257,7 +271,14 @@ export function Layout() {
               Local demo: moderation checks use a deterministic fixture.
             </p>
           )}
-          <Outlet />
+          <main
+            id="main-content"
+            ref={mainRef}
+            tabIndex={-1}
+            className={styles.mainContent}
+          >
+            <Outlet />
+          </main>
           <footer style={{ marginTop: "2rem" }}>
             <Link to="/privacy">Privacy and participation</Link>
           </footer>

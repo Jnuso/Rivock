@@ -42,6 +42,10 @@ At 320 CSS pixels, the hosted Health & Wellbeing empty topic uses its canonical 
 
 Live HTTP checks passed for liveness/readiness, seven topics, SPA deep links, private/missing resources, anonymous read/write authorization, security/cache headers, false fixture indicator and the changed linked JavaScript bundles. Final Azure readback confirmed the exact digest/ready revision, moderation off, no AI key, min/max 0/1, the same frozen 161 egress rules plus two operator rules, verified-TLS URLs and only the existing manual migration job. No cleanup schedule, paid resource or network rule was created.
 
+## Local keyboard follow-up after release
+
+Added a first keyboard stop, Skip to main content, and one focusable main landmark around the page outlet. Ordinary activation focuses and scrolls to the content without replacing a reply notification fragment. The link appears on focus above the sticky header; modified clicks retain normal anchor behavior. Local desktop and 320px browser checks verified first-Tab visibility, focus on MAIN, the next Tab reaching Search, a visible heading below the mobile header, no horizontal overflow and preservation of the exact linked reply/context. This is local follow-up work after release 1ae86a7; it is not included in the running Azure image. The local preview used the existing localhost API without signing in, changing account state or editing existing data. Frontend types, 39 tests and build passed. Temporary viewport sizing was reset.
+
 ## Remaining checks
 
 Email/password/recovery, wider screen-reader/touch testing, managed Azure restore/erasure replay, previous-image rollback, retention scheduling and database network tightening remain separate work. Sign-in redirects were exercised through user authentication, but this run does not establish every recovery/return-path variant.
