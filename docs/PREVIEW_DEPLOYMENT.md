@@ -2,7 +2,19 @@
 
 Updated October 17, 2026. This records the reviewed configuration, actual provisioning evidence and remaining checks. It is not an uptime or cost guarantee.
 
-## Current release
+## Current release — 7bc80ad
+
+Application source `7bc80adfe11394deb0e3d6e4e819fd4abf1a6644` passed [exact-commit CI](https://github.com/Jnuso/Rivock/actions/runs/39072833183) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39072992347). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e`. After the user's release authorization, image-only updates moved the existing app and manual migration job to that digest. Ready revision `rivock-api--0000004` is Healthy with 100% traffic. No migration ran and no new ARM group deployment was created.
+
+The batch adds a first-focus Skip to main content link that preserves reply fragments, selection-aware Markdown formatting with restored focus/caret, and honest failed-read states with an explicit Try again control. Cached saved items survive refresh errors. Frontend types, all 71 tests and the production build passed; the exact-commit CI also passed backend, frontend and both container checks. The earlier directly run PostgreSQL suite had 205 backend tests and 22 helper tests; no backend source changed in this batch.
+
+Hosted selection-aware composition/reply preview, draft reload/discard, keyboard main navigation, linked accepted-answer preservation and validation-error recovery passed. Final Azure readback confirmed the pinned digest/ready revision, moderation off, no AI key, min/max 0/1, 0.25 vCPU/0.5 GiB, verified-TLS database URLs, the frozen 161 shared egress addresses plus two operator rules, and only the existing manual migration job. Health/readiness, seven topics, SPA deep links, private/missing resources, anonymous protected reads/writes, security/cache headers, false fixture indicator and changed frontend bundles passed HTTP checks. No schedule, paid resource or network rule was created.
+
+A [managed restore drill proposal](RESTORE_DRILL.md) and [retail snapshot](restore-retail-snapshot.json) are prepared for separate review. Read-only metadata at October 17 22:03 UTC reported Ready, seven-day retention and earliest restore point October 14 23:43:47 UTC. No restore server, managed restore, rollback, durable encrypted erasure-journal storage or cleanup schedule was created. A reported backup window is not evidence of successful recovery.
+
+See [BROWSER_CHECKS.md](BROWSER_CHECKS.md) for the actual hosted/local scope. The prior source/digest below remains a recorded rollback candidate; a live rollback drill has not been performed.
+
+## Previous release — 1ae86a7, October 17
 
 Application source `1ae86a721d27a07edf2b9123b372c1207a0c6d75` passed [Rivock CI](https://github.com/Jnuso/Rivock/actions/runs/39014440542) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39014599571). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:c54218359754604551736fcf70de2dc6132bf01ff89f0c1de7819617693af479`.
 
@@ -35,7 +47,7 @@ The existing audited operator command assigned admin to that user-confirmed acco
 | Resource | Concrete configuration |
 | --- | --- |
 | `rivock-env` | WorkloadProfiles mode with only Consumption in Canada Central; no custom VNet, NAT, private endpoint, Dedicated profile or log sink |
-| `rivock-api` | Current digest `c5421835…` above; 0.25 vCPU / 0.5 GiB; min 0 / max 1; HTTPS; exact Azure preview origin |
+| `rivock-api` | Current digest `b8d0905d…` above; 0.25 vCPU / 0.5 GiB; min 0 / max 1; HTTPS; exact Azure preview origin |
 | `rivock-migrate` | Same digest; explicit manual Alembic job; 0.25 vCPU / 0.5 GiB; 120-second timeout; no retries/parallel executions |
 | Existing PostgreSQL | Consumed in place with separate restricted runtime/migration credentials; no database recreation or local data copy |
 | Worker / AI | Scheduled worker disabled; moderation off; no cloud AI key. One explicit off-mode run released earlier ordinary pending work without provider calls |

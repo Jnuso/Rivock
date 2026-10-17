@@ -1,0 +1,24 @@
+# Rivock managed restore drill proposal
+
+Prepared October 17, 2026. This is a proposed operation, not a completed restore or permission to create resources. The application release approval does not authorize this separate drill.
+
+Azure's read-only server metadata reports Ready, B1ms/32 GB/P4, seven-day backup retention, no high availability or geo backup, and earliest restore point 2026-10-14 23:43:47 UTC. A reported recovery window does not prove that a restore succeeds. The earlier synthetic local drill remains separate evidence.
+
+## Configuration and cost for review
+
+Use one uniquely named temporary server in Canada Central, restored from the existing server to an explicitly recorded UTC point inside its available window. Keep B1ms, 32 GB and the source's existing storage type; add no HA, geo backup, premium IOPS, VNet or app hosting. Keep the live application, source server and live connection strings unchanged. Azure point-in-time recovery creates a separate server; network rules need separate setup, and public-access recovery cannot be used as a switch to private VNet access. [Microsoft restore guidance](https://learn.microsoft.com/en-us/azure/postgresql/backup-restore/concepts-backup-restore).
+
+The current [retail snapshot](restore-retail-snapshot.json) quotes USD 0.0185/hour for B1ms and USD 0.1265/GB-month for ordinary storage. At 32 billed storage units and a 730-hour planning month, two hours of base compute/storage is approximately USD 0.0481. This excludes backup excess, transfer, taxes and billing granularity; it assumes no student discount. Extra backup storage is quoted at USD 0.105/GB-month. The full-month base is about USD 17.55 if a clone is left running. These are estimates, not a spending cap or verified bill. Verify actual SKU/offer and billing granularity before approval. Stopping compute is not equivalent to removing the server's storage charges. [Microsoft PostgreSQL pricing](https://azure.microsoft.com/en-us/pricing/details/postgresql/flexible-server/).
+
+## Execution gates
+
+1. Review the exact target name, resource ID, restore point, maximum planned duration, cost allowance, operator address and cleanup owner. Recheck quota/policy and the source restore window. Never infer approval from the existing app release or firewall exception.
+2. Keep the restored copy disconnected from public app traffic and scheduled jobs. Review a single operator-address rule for the temporary target; do not copy the 161 shared app-egress rules or add any rule to the source. Preserve verified TLS and restricted runtime/migration roles.
+3. Prepare the latest complete erasure journal in an owner-protected, encrypted location. The existing export CLI writes JSON; it does not itself provide encrypted off-provider storage. Establish protection, integrity and completeness before using it. Keep records and credentials out of Git, screenshots, logs and public output reports. If a journal is missing or incomplete, keep the restoration isolated.
+4. Restore once. If a call times out, inspect that operation/server/activity state before retrying; a timeout does not establish failure or authorize another clone. Record start/end times and actual result rather than assuming a recovery-time guarantee.
+5. Check the restored target's identity before every database operation. Confirm the target is not the live hostname. Inspect the schema and restricted role boundaries without upgrading or downgrading migrations automatically. The last verified Rivock schema is 31c7a48a90c1; recent usability releases make no schema change.
+6. Replay only the trusted, reviewed journal on the isolated target, then run cleanup-only using an image that includes that command. Verify a deliberately disposable synthetic deletion from after the backup point stays erased while another author's reply structure survives. Review any synthetic-data creation/deletion as part of this drill. Do not use existing user text as a test fixture.
+7. Verify connectivity, integrity, retained/deleted-state projections and application compatibility while isolated. Record which checks used actual managed restoration and which used fixtures. A successful local replay does not establish managed recovery.
+8. This drill performs no live cutover. Remove only the explicitly approved temporary target after evidence is saved, and verify its removal and final cost observation. Never delete or repoint the source. Keep the working live route and image unchanged.
+
+The installed official CLI exposes `postgres flexible-server restore` with source, target and UTC restore-time arguments; its help was inspected, but no restore command was executed. Review a production cutover and a narrower network route separately. Retention scheduling, durable erasure-journal storage and an actual managed restore/rollback drill remain open.

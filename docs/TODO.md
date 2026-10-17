@@ -106,10 +106,14 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Read current month-to-date Rivock resource-group billing: USD 0.0034713738696 app and USD 0 PostgreSQL at October 17 07:11 UTC. Exact credit/expiry and broader observation period remain open.
 
 - [x] Add and locally verify a keyboard skip link/main landmark, preserve linked-reply fragments and account for the mobile sticky header. Types, 39 frontend tests and build pass.
-- [ ] Include the local keyboard follow-up in a future reviewed source release; the current Azure source remains 1ae86a7.
+- [x] Release the keyboard follow-up in reviewed source 7bc80ad; verify hosted MAIN/Search focus, 320px layout and preserved accepted-reply fragment.
 
 - [x] Replace append-only Markdown buttons with selection/cursor formatting, focus restoration, line formatting and editable link destinations. Verify 55 frontend tests/types/build plus local keyboard/mobile component checks.
-- [ ] Include the local writing-editor improvements with keyboard navigation in a future reviewed release and verify the complete hosted composer/reply flows.
+- [x] Release selection-aware editing in source 7bc80ad; verify hosted composer Bold/Link/preview/reload and reply keyboard Italic/preview. Discard synthetic drafts without posting.
 
 - [x] Distinguish failed reads from empty lists across account/profile/reply/admin views; add safe user-initiated query retry, preserve cached saved content and useful string errors. Verify 71 frontend tests/types/build and controlled local HTTP recovery.
-- [ ] Include query recovery in the next reviewed keyboard/editor release and verify hosted recovery behavior separately.
+- [x] Release query recovery in source 7bc80ad and verify hosted invalid-sort validation/retry followed by valid-sort recovery. Controlled 503 recovery remains separate local evidence.
+
+- [x] Publish/deploy exact CI-approved source 7bc80ad at digest b8d0905d…; verify Healthy revision 0000004, 100% traffic and preserved AI/TLS/firewall/replica/manual-job settings. No migration or schedule ran.
+- [x] Prepare a managed restore drill configuration/cost proposal and read-only backup-readiness metadata; see [RESTORE_DRILL.md](RESTORE_DRILL.md). No restore resource was created.
+- [ ] Establish protected complete erasure-journal storage and review the exact temporary restore target/duration/cost before performing a managed restore/replay drill.

@@ -30,7 +30,7 @@ Keep the current preview operating while evaluating a route that fits the existi
 
 Once a route is selected: review a complete monthly configuration, verify quota/policy, create the replacement privately, test migration/runtime roles over verify-full TLS, run the full hosted two-account journey and job connectivity, then cut traffic. Only after that succeeds should shared and obsolete operator firewall rules be removed and public PostgreSQL access disabled where the replacement permits it. Confirm app/job connectivity still passes and an unapproved public route fails. Keep the prior image/route available until the rollback/recovery procedure is proven; never widen firewall ranges or disable TLS to rescue a failed cutover.
 
-Managed Azure backup restoration and erasure replay remain unverified. A networking migration does not replace that recovery gate.
+Managed Azure backup restoration and erasure replay remain unverified. A [separate restore-drill configuration and cost proposal](RESTORE_DRILL.md) is prepared; no clone was created. A networking migration does not replace that recovery gate.
 
 ## Cleanup schedule is a separate small change
 

@@ -1,0 +1,41 @@
+{
+  "currency": "USD",
+  "meters": [
+    {
+      "productName": "Azure Database for PostgreSQL Flexible Server Burstable BS Series Compute",
+      "skuName": "B1MS",
+      "meterName": "B1MS",
+      "retailPrice": 0.0185,
+      "unitOfMeasure": "1 Hour",
+      "type": "Consumption",
+      "effectiveStartDate": "2021-12-01T00:00:00Z"
+    },
+    {
+      "productName": "Azure Database for PostgreSQL Flex Server Storage",
+      "skuName": "Storage",
+      "meterName": "Storage Data Stored",
+      "retailPrice": 0.1265,
+      "unitOfMeasure": "1 GB/Month",
+      "type": "Consumption",
+      "effectiveStartDate": "2021-06-01T00:00:00Z"
+    },
+    {
+      "productName": "Azure Database for PostgreSQL Flexible Server Backup Storage",
+      "skuName": "Backup Storage LRS",
+      "meterName": "Backup Storage LRS Data Stored",
+      "retailPrice": 0.105,
+      "unitOfMeasure": "1 GB/Month",
+      "type": "Consumption",
+      "effectiveStartDate": "2021-06-01T00:00:00Z"
+    }
+  ],
+  "assumptions": [
+    "Undiscounted consumption prices; student eligibility not assumed.",
+    "32 billed storage units, B1ms, no premium-IOPS or new network resources.",
+    "Two-hour base estimate is about USD 0.05 before backup excess, data transfer, taxes and billing granularity.",
+    "This is a proposal; no restore server was created."
+  ],
+  "region": "canadacentral",
+  "retrievedAtUtc": "2026-10-17T21:56:58.1739034Z",
+  "source": "https://prices.azure.com/api/retail/prices"
+}
