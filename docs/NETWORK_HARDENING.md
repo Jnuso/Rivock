@@ -35,3 +35,7 @@ Managed Azure backup restoration and erasure replay remain unverified. A [separa
 ## Cleanup schedule is a separate small change
 
 infra/cleanup-job.bicep is disabled by default. If separately approved, its one daily execution uses 0.25 vCPU/0.5 GiB, a sixty-second timeout and zero retries; a 31-day upper bound is 465 vCPU-seconds and 930 GiB-seconds for the scheduled executions. Shared monthly free grants may cover this, but are not a spending cap. Verify the existing exact firewall allows the job before scheduling; do not add new shared addresses automatically. It forces moderation off, has no AI key, and runs only --cleanup-only. It was compiled, not deployed. [Job billing](https://learn.microsoft.com/en-us/azure/container-apps/billing#jobs).
+
+## October 17 alternative review
+
+[App Service with a private PostgreSQL endpoint](NETWORK_ALTERNATIVE.md) has a researched app/network base of USD 20.94/month before database and other costs. It is cheaper than the current-stack private-network estimate but still exceeds the total target. Hosting/job/migration proofs and a complete budget remain open; no change was deployed.

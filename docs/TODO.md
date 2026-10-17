@@ -117,3 +117,13 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Publish/deploy exact CI-approved source 7bc80ad at digest b8d0905d…; verify Healthy revision 0000004, 100% traffic and preserved AI/TLS/firewall/replica/manual-job settings. No migration or schedule ran.
 - [x] Prepare a managed restore drill configuration/cost proposal and read-only backup-readiness metadata; see [RESTORE_DRILL.md](RESTORE_DRILL.md). No restore resource was created.
 - [ ] Establish protected complete erasure-journal storage and review the exact temporary restore target/duration/cost before performing a managed restore/replay drill.
+
+## Independent follow-up
+
+- [x] Reproduce/fix discarded-draft revival and restored-draft loss after storage failures; verify 80 frontend tests/types/build and local mobile/browser recovery.
+- [x] Clarify preview retention targets while automatic cleanup remains disabled.
+- [x] Add/run bounded read-only HTTP observation; inspect preview settings and one-time daily billing without cloud mutations.
+- [x] Prepare rollback/operations and consolidated owner-input checklists.
+- [x] Research a cheaper App Service/private-endpoint alternative; document its USD 20.94 app/network base, exclusions and unresolved deployment gates. It still exceeds the total target.
+- [ ] Review/release the independent browser-recovery candidate separately and verify changed hosted flows.
+- [ ] Complete the remaining managed recovery, account/device and longer observation gates; see OWNER_CHECKLIST.md for necessary owner input.

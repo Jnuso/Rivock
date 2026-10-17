@@ -24,7 +24,7 @@ import {
   type ClerkPublicConfig,
 } from "./config";
 import { safeReturnPath } from "./safeReturnPath";
-import { clearDraftMemory } from "../lib/drafts";
+import { clearAllDrafts } from "../lib/drafts";
 
 const UNAVAILABLE =
   "Sign-in is unavailable. You can still browse public pages.";
@@ -45,7 +45,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function clearRivockDrafts(): void {
-  clearDraftMemory();
+  clearAllDrafts();
   clearIdempotencyMemory();
   const clear = (store: Storage) => {
     const keys: string[] = [];
