@@ -1,6 +1,14 @@
 # Rivock: start the next chat here
 
-Checkpoint: October 16, 2026. This is the current handoff, not a new implementation plan or deployment authorization. Read the repository's [AGENTS.md](../AGENTS.md) first. Older chronological notes describe superseded states; the current moderation decision below takes precedence.
+Checkpoint: October 17, 2026. This is the current handoff, not a new implementation plan or deployment authorization. Read the repository's [AGENTS.md](../AGENTS.md) first. Older chronological notes describe superseded states; the current moderation decision below takes precedence.
+
+## October 17 continuation
+
+The user reauthorized built-in-browser testing and the two existing accounts jack/jack1 for Rivock only. The hosted immediate-publication, private report/manual moderation, two-account reply/accept and both notification-link journeys now passed. See [browser evidence and limits](BROWSER_CHECKS.md). Firefox remains unsupported by the current Windows browser tool; use the built-in browser.
+
+Current source corrects topic headings, outdated submission text, menu Escape/focus behavior and the feed error/empty distinction. Local verification passed 39 frontend tests/build/types, 205 PostgreSQL backend tests, 22 helper tests and Ruff. It also adds a cleanup-only CLI and a compiled daily-job template that defaults to disabled. These additions are not a claim that the running image has changed; preserve the deployment table until the next verified rollout.
+
+Next: publish a CI-approved image containing these fixes, verify the changed hosted interface, then close the remaining operations/security gaps. Keep application AI off. The existing environment was read back as Consumption-only profiles with no custom VNet; a private database route therefore needs an explicit migration/cost review. Month-to-date resource-group cost at 2026-10-17 07:11 UTC was USD 0.0034713738696 for the app and USD 0 for PostgreSQL; billing can lag and exact credit balance/expiry remain unverified.
 
 ## Where we are
 
@@ -19,35 +27,31 @@ The user temporarily removed Gemma reviews. **Keep `MODERATION_MODE=off`.** Vali
 
 Reports remain private and do not automatically hide content. Manual administrator review/removal/restoration/suspension remains available. **AI assistance combined with user reports after publication is a future design, not implemented.** Do not reactivate the old initial-publication gate or enable cloud Google calls as a routine next step. Historical Google/fixture/pending adapters and earlier evaluations are retained but inactive. See [REPORT_MODERATION.md](REPORT_MODERATION.md).
 
-The previous ordinary pending submission was released through the validated publication service. The last read-only cloud check found one unreviewed published submission, zero pending/processing submissions and zero cloud AI attempts. Its content/type was not inspected; do not describe it as a new thread. Previously rejected/cancelled/manual-review items were not automatically published. No scheduled cloud worker or cloud AI key is enabled.
+The previous ordinary pending submission was released through the validated publication service. The October 16 read-only checkpoint, before the new browser tests, found one unreviewed published submission, zero pending/processing submissions and zero cloud AI attempts. Its content/type was not inspected; do not describe it as a new thread. Previously rejected/cancelled/manual-review items were not automatically published. No scheduled cloud worker or cloud AI key is enabled.
 
 ## What is verified, and what is still a check
 
 **User-confirmed in the hosted preview:** Google sign-in, username creation, voting/saving and persistence after sign-out/repeat login. Username **`jack`** is the existing owner account. An audited operator command granted that exact account admin; an independent database check confirmed active, Clerk-linked admin state and one grant audit. Do not create a replacement account or link identities by email/domain.
 
-**User-confirmed locally:** the two-account question → reply → accept answer → notification-link journey. This is not yet confirmation of the same journey in Azure.
+**Hosted continuation:** the agent verified the same two-account journey in Azure, including both the question-owner reply alert and the reply-author acceptance alert. The user handled sign-in; account/ownership boundaries and report/manual moderation were exercised in the real browser.
 
-**Technical evidence:** the latest app release passed GitHub CI and image publication. Backend tests used real PostgreSQL 17.11; frontend tests/types/build, helper checks, Ruff, Bicep and preview-image checks passed. Live readiness, privacy, headers, served frontend bundle and anonymous protected-route rejection passed. No completed independent coding-worker review or agent visual/browser inspection is claimed. Detailed counts/checkpoints are in [IMPLEMENTATION.md](IMPLEMENTATION.md).
+**Technical evidence:** the latest app release passed GitHub CI and image publication. Backend tests used real PostgreSQL 17.11; frontend tests/types/build, helper checks, Ruff, Bicep and preview-image checks passed. Live readiness, privacy, headers, served frontend bundle and anonymous protected-route rejection passed. The targeted agent browser checks are now recorded in BROWSER_CHECKS.md; no completed independent coding-worker review is claimed. Detailed counts/checkpoints are in [IMPLEMENTATION.md](IMPLEMENTATION.md).
 
-**Still needed:** fresh hosted immediate-publication test, visible admin/report controls, hosted two-account conversation, additional login/recovery methods, phone/desktop accessibility/layout checks, managed recovery/rollback and actual hosting cost observations.
+**Still needed:** next-release verification, additional login/recovery methods, wider accessibility/device checks, managed recovery/rollback, retention scheduling and day/week cost/cold-start observations. The core hosted conversation/report/admin journeys are now verified.
 
 ## Next work, in order
 
-### 1. Finish the hosted user journey
+### 1. Verify the next preview release and finish account/accessibility coverage
 
-Use fictional content and refresh the live site to load the current release.
+The core hosted journey is complete; preserve [the actual browser evidence](BROWSER_CHECKS.md). Publish the current fixes only after their exact commit passes CI, pin the resulting preview digest and recheck topic names, submission text and menu Escape/focus in the hosted build.
 
-1. As `jack`, publish a question and a reply. Confirm immediate visibility and honest unreviewed status in My submissions.
-2. Open `/admin` and verify the expected controls. With a second test account, submit a report; confirm reporting alone does not hide content. Verify authorized removal/restoration and privacy of reports/submission details.
-3. Complete the hosted two-account question/reply/accepted-answer/notification journey. Recheck blocks and ownership if a defect appears.
-4. Review phone/desktop layouts, keyboard/focus, draft recovery, sign-in return paths and deep links; verify email/password/recovery if those methods are offered.
-5. Record what the user actually verified and fix concrete defects. Do not repeat completed Clerk/Azure setup or mark browser checks passed based only on HTTP results.
+Remaining account/browser work: test additional offered sign-in/recovery methods without changing credentials automatically; expand screen-reader, touch, blocked-storage draft recovery and return-path coverage; fix concrete defects and record the real check scope. The 320/390/768/1440 review is targeted rather than a full accessibility certification.
 
-Earlier browser automation permission was denied. Ask for explicit reauthorization before automating a browser, or walk the user through these checks manually.
+The user explicitly authorized the built-in browser and the existing jack/jack1 accounts for Rivock only. Firefox is blocked by the Windows browser tool. Do not repeat Clerk/Azure setup or claim fixtures establish real account/browser success.
 
 ### 2. Close operations and security gaps before production
 
-- **Required security follow-up:** cost-review a narrower PostgreSQL connection, implement and verify the replacement, then remove the shared Azure egress rules and obsolete operator-IP rules. Do not remove the working route first or silently provision paid networking.
+- **Required security follow-up:** read [the new network/cost review](NETWORK_HARDENING.md), validate the selected lower-cost alternative or approve a changed budget, then implement/verify the replacement before removing the shared Azure egress and obsolete operator-IP rules. Do not remove the working route first or silently provision paid networking.
 - Exercise Azure-managed backup restoration and erasure replay, a previous-image rollback, and administrator recovery/pause procedures. Earlier synthetic local restore evidence does not prove managed Azure recovery.
 - Arrange/verify retention cleanup while keeping AI disabled. The scheduled cloud worker is currently disabled; one queue-release run was not a recurring cleanup schedule.
 - Check exact student-credit balance/expiration, actual day/week costs and cold-start latency. Record an operator contact and recovery/retention policy before a real launch.
@@ -94,7 +98,7 @@ The UConn directory is not a blocker: Clerk handles application login. Static We
 - Credentials are in ignored, owner-protected local files, including `.env.azure` and `.azure/preview.parameters.json`. Preserve ACLs. Do not print, commit, paste into prompts or request private keys/passwords. The administrator password was not saved. Use supported authenticated tools and request host access if required; never weaken permissions.
 - Azure wrapper: `scripts/azure.ps1`, with portable Azure CLI and project-local auth cache. Existing login is established. Browser OAuth replaced the failing Windows broker; do not assume login must be redone. Inspect deployment/job state before retrying an interrupted mutation.
 - Image workflow: `.github/workflows/publish-image.yml`, “Publish reviewed Rivock image,” `deployment_environment=preview`. Exact source commit must pass CI first; pin its published digest. GitHub environment `preview` already has the public `CLERK_PUBLISHABLE_KEY` variable. No private Clerk key is required. `gh` was not installed; existing Git Credential Manager authentication was used through its supported helper without printing/saving credentials. If unavailable, use the GitHub Actions UI rather than asking for a pasted token.
-- Local Compose file is `compose.yaml`; preserve the PostgreSQL volume. Native frontend already occupied port 5173 when Docker frontend was last attempted. Identify the listener before changing it. API/worker were verified off locally; the existing native frontend's updated visual state was not verified.
+- Local Compose file is `compose.yaml`; preserve the PostgreSQL volume. Port 5173 is currently another app; do not stop or replace it. A separate task-local Rivock preview used port 5174 with a localhost API proxy for visual checks. The existing local API/worker were read back with moderation off.
 - Run meaningful checks appropriate to code changes: real PostgreSQL backend tests, frontend tests/types/build and relevant image/config guards. Do not claim fixtures prove real login, provider quality or hosted browser layouts. Windows frontend checks previously needed a shared task-local TEMP/TMP directory and one test worker to avoid IPC-file errors.
 - The user permitted Google Gemma **coding help in this chat**, at a maximum of two Google requests/minute across workers. Root instructions require batches of at most two calls and at least 65 seconds after the previous terminal/update timestamp before another batch. This does not enable application content review. Last worker attempts failed with HTTP 503 and returned no review; do not claim independent review success. Confirm applicable authorization/instructions in a new chat before delegation.
 
@@ -113,4 +117,4 @@ The UConn directory is not a blocker: Clerk handles application login. Static We
 
 Copy the paragraph below into a new chat opened in this project:
 
-> Continue Rivock in `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`. Read AGENTS.md and docs/HANDOFF.md, inspect Git status, and use the current source and latest verified deployment evidence. The Azure preview works and my hosted username is jack, already granted admin. Keep Gemma/application AI reviews off: valid contributions publish immediately; reports and manual moderation remain. Start with the remaining hosted publication/admin/report/two-account checks, then operations/security readiness. Browser automation needs my explicit reauthorization, so guide me through checks unless I authorize it. Design future report-assisted AI separately. The shared database firewall rules must be narrowed before production after reviewing cost and verifying a replacement. Continue useful work and make routine decisions; ask me only for missing account setup, required authorization or material product choices. Do not repeat completed setup or expose secrets. Give me one consolidated review of changes and remaining decisions.
+> Continue Rivock in `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`. Read AGENTS.md and docs/HANDOFF.md, inspect Git status, and use the current source and latest verified deployment evidence. The Azure preview works and my hosted username is jack, already granted admin. Keep Gemma/application AI reviews off: valid contributions publish immediately; reports and manual moderation remain. Read docs/BROWSER_CHECKS.md for the completed hosted publication/admin/report/two-account checks, verify the next source release, then continue operations/security readiness. Built-in browser testing and the existing jack/jack1 accounts were authorized for Rivock only in the continuation chat. Design future report-assisted AI separately. The shared database firewall rules must be narrowed before production after reviewing cost and verifying a replacement. Continue useful work and make routine decisions; ask me only for missing account setup, required authorization or material product choices. Do not repeat completed setup or expose secrets. Give me one consolidated review of changes and remaining decisions.

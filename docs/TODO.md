@@ -1,6 +1,6 @@
 # Rivock implementation checklist
 
-Updated October 16, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The public Azure test preview is live and HTTP checks pass; hosted browser checks remain pending.
+Updated October 17, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The public Azure test preview is live and HTTP checks pass; the targeted hosted core browser journeys now pass. See BROWSER_CHECKS.md for exact scope and remaining checks.
 
 ## Repository and application foundation
 
@@ -61,16 +61,16 @@ Updated October 16, 2026. Checked items have the implementation/check evidence d
 - [x] Activate the preview at Azure's provided HTTPS address after reviewed resource/image/network setup; run the explicit migration and verify runtime health, original demo data, API authorization, deep links and headers. Follow PREVIEW_DEPLOYMENT.md for evidence and limits.
 - [x] Verify hosted Google sign-in, username onboarding, votes/saves and repeat-login persistence through the user's confirmation; the owner identified username jack.
 - [x] Assign admin to that exact existing hosted account through the audited operator command; independently read back active/linked/admin state and one grant audit record.
-- [ ] Verify fresh hosted immediate publication, the admin/report controls and the two-account question/reply/accepted-answer journey. Cloud AI is off; the earlier ordinary pending item was released and the last metadata check found zero pending/processing items. See [the current handoff](HANDOFF.md).
+- [x] Verify hosted immediate publication, admin/report controls, two-account reply/accepted-answer and both notification links with jack/jack1 in the authorized built-in browser. Reports leave content visible; manual removal/restoration preserves replies; private submission/admin access is denied to jack1. See [browser evidence](BROWSER_CHECKS.md).
 - [x] Replace the withdrawn cloud-Gemma proposal with explicit reviews-off immediate publication, honest private labels, preserved reports/manual actions, validated concurrency/state/rate boundaries and updated privacy/product guidance. Verify backend/frontend/image checks.
 - [x] Publish/deploy the CI-approved off-mode image and matching cloud setting; release the ordinary pending item through shared apply and verify live health/privacy/auth/headers, zero pending items/AI attempts and retained admin. No AI key or scheduled Google worker was added.
-- [ ] Verify fresh immediate publication and report/admin behavior in the user's hosted browser after refresh; agent checks do not claim that browser journey.
+- [x] Run actual hosted browser publication/report/admin checks using the two real test accounts; user authentication and agent browser actions are distinguished in BROWSER_CHECKS.md.
 - [ ] Design report-assisted post-publication AI separately: triggers/context, false-report protection, human decisions/appeals, privacy and budgets. The initial post must remain ungated by AI.
 - [x] Publish preview commit 2d2ca5c, verify GitHub CI/image publication and anonymous access to the exact digest; create the private app/manual migration job and explicitly job-capable Consumption environment. Create/verify the requested monthly spending alerts.
 - [x] Obtain explicit user approval for the exact frozen 161 shared egress IP rules after the initial automatic approval rejection; apply and verify that exact set, preserving the two operator rules with zero ranges/all-Azure rules. Record the user's required security tightening before production.
 - [x] Confirm the exact approved rules and successful cloud migration before HTTPS ingress; correct the Linux CA bundle path without weakening TLS, refresh the failed app revision and verify live runtime readiness afterward.
 - [ ] Before production, review and implement a narrower database connection, verify its cost/connectivity, and remove shared-pool preview rules and obsolete operator rules. This is an explicit user requirement.
-- [ ] Inspect real browser layouts at 320/390/768/1440px and keyboard/focus/accessibility flows. Browser permission remains pending after an earlier denial; component tests do not establish visual correctness.
+- [x] Inspect representative real browser layouts at 320/390/768/1440px and mobile navigation/search focus. Fix confirmed topic/submission/menu defects and verify locally. Wider screen-reader/touch/recovery checks remain; this is not a full accessibility certification.
 - [x] Locate new replies/deep notification targets with bounded safe ancestor context and return to normal ranking.
 - [x] Preserve full drafts and original revisions; add explicit compare/reload/rebase controls, memory fallback and tab-close warning when storage fails.
 - [x] Add a setup checker that reports missing values and local tooling without exposing credentials.
@@ -86,7 +86,7 @@ Updated October 16, 2026. Checked items have the implementation/check evidence d
 - [ ] Verify exact remaining Azure credit/expiry and observed app/job/backup/transfer billing. Preview capacity/connectivity and the concrete cost configuration are verified; the shared-pool route still needs replacement before production.
 - [x] Configure protected preview secrets, public immutable GHCR image, restricted migration/runtime roles, exact HTTPS Clerk/CORS/CSP settings and requested budget recipients. No production deployment identity or cloud AI key is claimed.
 - [x] Provision reviewed Consumption preview resources, successfully run migrations and publish the combined frontend/API. The scheduled worker remains disabled pending separate provider/route review.
-- [ ] Verify hosted real-identity journeys, managed backup restoration, previous-image rollback and operator pause.
+- [ ] Verify managed Azure backup restoration, previous-image rollback and operator recovery/pause; core hosted identity/conversation/report journeys now pass, with additional offered login/recovery methods still open.
 - [ ] Buy/configure the domain and DNS/TLS.
 - [ ] Record day/week actual costs, cold starts and hosted latency; add verified screenshots/demo journey to README.
 
@@ -96,3 +96,11 @@ Updated October 16, 2026. Checked items have the implementation/check evidence d
 - [ ] Review and implement DM request/privacy/moderation/retention behavior separately.
 - [ ] Evaluate ongoing labeled bots with explicit frequency, model, budget and pause controls; no automated votes or unsolicited DMs.
 - [ ] Consider server rendering/link previews, personalization and uploads as separate exercises.
+
+## October 17 continuation
+
+- [x] Add and verify the cleanup-only CLI without changing retention semantics or processing the moderation queue.
+- [x] Compile a separate daily cleanup template that defaults to disabled and carries no AI key.
+- [ ] Release the current UI/cleanup additions through exact-commit CI and immutable preview image publication; verify the changed hosted UI afterward.
+- [ ] Review/enable the cleanup schedule only after cost and existing-firewall connectivity checks; no new egress rules are implied.
+- [x] Read current month-to-date Rivock resource-group billing: USD 0.0034713738696 app and USD 0 PostgreSQL at October 17 07:11 UTC. Exact credit/expiry and broader observation period remain open.

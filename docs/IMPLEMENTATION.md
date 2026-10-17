@@ -123,3 +123,17 @@ This is a small single-client baseline, without cloud latency, concurrent traffi
 Remaining hosted real-identity/browser checks, Clerk email/password/recovery and production domain configuration; broader moderation evaluation/data suitability and cloud-provider activation; exact credit expiry and observed day/week costs; required narrowing of the preview database route before production; domain purchase/DNS/TLS; managed backup recovery and prior-image rollback; browser layout/accessibility verification. The Azure preview resources, approved firewall, migration and live HTTP checks have evidence above. The owner review-source display is implemented/tested locally. Google sign-in/core conversation, local Gemma integration and a browser-created AI-approved thread have local evidence above. Start with [the review and setup handoff](REVIEW.md).
 
 Browser permission was requested separately because an earlier session denial was still in effect. No DOM-only test is presented as phone/desktop visual verification. No platform spending cap, public uptime, or production moderation accuracy is claimed.
+
+## October 17, 2026 — hosted browser checks and current source improvements
+
+The user reauthorized built-in-browser testing and the existing jack/jack1 accounts for Rivock only. Actual hosted browser evidence now covers public discovery, immediate question/reply publication, draft recovery, private report/manual remove/restore/dismiss, ownership/private-submission/admin boundaries, question-owner reply notification and answer-author acceptance notification/deep links. Representative 320/390/768/1440 layouts were inspected. See BROWSER_CHECKS.md; these claims are distinct from earlier HTTP-only checks and do not imply a full accessibility or recovery matrix.
+
+Current source fixes canonical topic headings (including empty feeds), outdated submission copy, the mobile menu's Escape/focus behavior and erroneous empty messaging after a failed feed request. Local browser confirmation verifies the topic/menu changes. Frontend types, 39 tests and build passed.
+
+Added worker --cleanup-only, mutually exclusive with --once, to run retention without moderation processing or daemon sleeping. Four CLI regression tests cover isolation and preserved existing modes. Real-PostgreSQL Docker backend suite: 205 passed; helper suite: 22 passed; backend/scripts Ruff passed with --no-cache under the non-root image. Retention semantics and application AI policy are unchanged.
+
+infra/cleanup-job.bicep compiled successfully. Its daily 06:00 UTC schedule defaults to disabled, uses the restricted runtime connection, forces moderation off/AI paused, has no AI key, and caps execution to one replica/sixty seconds/no retry. It was not deployed or enabled. A new source image/CI/rollout still needs its own evidence; the prior deployed image remains the one recorded in PREVIEW_DEPLOYMENT.md.
+
+Two bounded coding-worker attempts failed with Google HTTP 503 and returned no changes. Their baseline environments did not establish a passing test run. No worker-produced code was applied and no independent worker review is claimed. All passing checks above ran directly in the project environment.
+
+Read-only cloud observations: environment Succeeded, Consumption profile only, no custom VNet. Resource-group month-to-date ActualCost at 07:11 UTC: USD 0.0034713738696 app, USD 0 PostgreSQL. Posted billing is subject to lag; no current credit/expiry or production-readiness claim follows.

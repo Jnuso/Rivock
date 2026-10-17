@@ -1,0 +1,84 @@
+{
+  "checked_at_utc": "2026-10-17",
+  "currency": "USD",
+  "hours_assumed": 730,
+  "paid_retail_base_estimate": 33.35,
+  "assumptions": [
+    "One external workload-profile environment in a custom VNet",
+    "One Standard load balancer and two Standard IPv4 addresses, per Microsoft managed-resource guidance",
+    "One PostgreSQL private endpoint and one private DNS zone",
+    "No student/free allowance assumed for these network meters",
+    "Excludes data, DNS queries, app/database/storage and migration overlap"
+  ],
+  "sources": [
+    "https://prices.azure.com/api/retail/prices?$filter=productName%20eq%20%27Virtual%20Network%20Private%20Link%27%20and%20skuName%20eq%20%27Standard%27",
+    "https://prices.azure.com/api/retail/prices?$filter=productName%20eq%20%27Azure%20DNS%27%20and%20skuName%20eq%20%27Private%27",
+    "https://prices.azure.com/api/retail/prices?$filter=serviceName%20eq%20%27Load%20Balancer%27%20or%20contains%28productName%2C%20%27IP%20Addresses%27%29"
+  ],
+  "meters": [
+    {
+      "productName": "Virtual Network Private Link",
+      "skuName": "Standard",
+      "meterName": "Standard Private Endpoint",
+      "armRegionName": "Global",
+      "unitPrice": 0.01,
+      "unitOfMeasure": "1 Hour",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2020-02-01T00:00:00Z",
+      "meterId": "e6ab7238-e433-4fe0-a2b2-2b2564df2cdb"
+    },
+    {
+      "productName": "Azure DNS",
+      "skuName": "Private",
+      "meterName": "Private Zone",
+      "armRegionName": "",
+      "unitPrice": 0.5,
+      "unitOfMeasure": "1",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2019-12-01T00:00:00Z",
+      "meterId": "0b608a26-f611-4232-8192-ce81b6b57194"
+    },
+    {
+      "productName": "Azure DNS",
+      "skuName": "Private",
+      "meterName": "Private Queries",
+      "armRegionName": "Zone 1",
+      "unitPrice": 0.4,
+      "unitOfMeasure": "1M",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2019-12-01T00:00:00Z",
+      "meterId": "46cff9cb-4b15-4af0-bf41-25143827fef8"
+    },
+    {
+      "productName": "Load Balancer",
+      "serviceName": "Load Balancer",
+      "skuName": "Standard",
+      "meterName": "Standard Included LB Rules and Outbound Rules",
+      "armRegionName": "Global",
+      "location": "Global",
+      "unitPrice": 0.025,
+      "unitOfMeasure": "1 Hour",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2018-04-11T00:00:00Z",
+      "meterId": "27827eb0-7f60-4928-940b-f5fe15e7a4cb"
+    },
+    {
+      "productName": "IP Addresses",
+      "serviceName": "Virtual Network",
+      "skuName": "Standard",
+      "meterName": "Standard IPv4 Static Public IP",
+      "armRegionName": "canadacentral",
+      "location": "CA Central",
+      "unitPrice": 0.005,
+      "unitOfMeasure": "1 Hour",
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0,
+      "effectiveStartDate": "2018-06-01T00:00:00Z",
+      "meterId": "9c150bf9-2bad-430e-a53c-c213804f49ef"
+    }
+  ]
+}

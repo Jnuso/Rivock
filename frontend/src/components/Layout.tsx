@@ -39,6 +39,7 @@ export function Layout() {
   });
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -119,10 +120,25 @@ export function Layout() {
           <Link to="/" className={styles.brand}>
             Rivock
           </Link>
-          <div className={styles.menu} ref={menuRef}>
+          <div
+            className={styles.menu}
+            ref={menuRef}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && open) {
+                event.stopPropagation();
+                setOpen(false);
+                menuButtonRef.current?.focus();
+              }
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget))
+                setOpen(false);
+            }}
+          >
             <button
               type="button"
               className="btn"
+              ref={menuButtonRef}
               aria-expanded={open}
               aria-controls="mobile-menu"
               onClick={() => setOpen((v) => !v)}
@@ -130,7 +146,11 @@ export function Layout() {
               <Menu size={18} aria-hidden /> Menu
             </button>
             {open && (
-              <div className={styles.menuPanel} id="mobile-menu">
+              <nav
+                className={styles.menuPanel}
+                id="mobile-menu"
+                aria-label="Topics and account"
+              >
                 {topics.data?.map((t) => (
                   <Link
                     key={t.id}
@@ -149,30 +169,20 @@ export function Layout() {
                   <>
                     <Link
                       to={`/u/${user.username}`}
-                      role="menuitem"
                       onClick={() => setOpen(false)}
                     >
                       Profile
                     </Link>
-                    <Link
-                      to="/submissions"
-                      role="menuitem"
-                      onClick={() => setOpen(false)}
-                    >
+                    <Link to="/submissions" onClick={() => setOpen(false)}>
                       Submissions
                     </Link>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => void signOut()}
-                    >
+                    <button type="button" onClick={() => void signOut()}>
                       Sign out
                     </button>
                   </>
                 ) : (
                   <button
                     type="button"
-                    role="menuitem"
                     onClick={() => {
                       if (!configured) {
                         window.alert(authMessage);
@@ -184,7 +194,7 @@ export function Layout() {
                     Sign in
                   </button>
                 )}
-              </div>
+              </nav>
             )}
           </div>
         </header>

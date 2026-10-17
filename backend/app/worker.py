@@ -70,8 +70,15 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--once", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--once", action="store_true", help="Process a bounded queue batch and clean up")
+    mode.add_argument(
+        "--cleanup-only", action="store_true", help="Run retention cleanup once without processing submissions"
+    )
     args = parser.parse_args()
+    if args.cleanup_only:
+        cleanup()
+        return
     if args.once:
         once()
         return

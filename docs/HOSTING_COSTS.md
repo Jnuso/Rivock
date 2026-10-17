@@ -1,5 +1,18 @@
 # Rivock hosting cost review
 
+## Current operating checkpoint — October 17, 2026
+
+The combined Azure preview is live on one Consumption Container App, min 0/max 1. The migration job is manual; the moderation worker is disabled and application AI is off with no cloud provider key. A new daily cleanup template is compiled but disabled and not deployed. The environment was read back with only a Consumption profile and no custom virtual-network integration.
+
+A read-only resource-group ActualCost/MonthToDate query at 2026-10-17 07:11 UTC returned **USD 0.0034713738696 for rivock-api** and **USD 0 for PostgreSQL**. These are posted costs at that time, not a forecast, a complete day/week, or remaining credit. Billing may lag. Student spending limit/budget alert setup is recorded in PREVIEW_DEPLOYMENT.md; exact credit balance and expiry still need verification.
+
+The current database has the explicitly approved frozen set of 161 shared Azure egress addresses plus two operator-IP rules. This is a preview exception; narrowing the route remains required before production. No paid networking is approved by this checkpoint. The new [network hardening review](NETWORK_HARDENING.md) estimates the current-stack private route at USD 33.35/month of undiscounted network base charges, above the total target, and requires an alternative/verified offer or budget decision. See HANDOFF.md for current release/security status.
+
+## Historical October 14 planning review
+
+The material below records the original pre-deployment assumptions and retail comparison. Its statements about unprovisioned app hosting, worker/provider settings and earlier firewall/quota counts are historical, superseded by the checkpoint above and PREVIEW_DEPLOYMENT.md. Do not repeat those setup steps or enable the old five-minute moderation worker as a default.
+
+
 Updated October 14, 2026. The PostgreSQL server/schema are ready and Azure management preflight is authenticated. Spending limit is **On**; exact credit expiry/current balance, measured charges and cloud app networking still need verification. The app/jobs are not deployed. See [account evidence and revised hosting decision](AZURE_PREFLIGHT.md).
 
 ## Credit and budget

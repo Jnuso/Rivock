@@ -1,5 +1,5 @@
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { api, type ThreadSummary } from "../api";
 import { Empty, ErrorBox, Loading } from "../components/States";
@@ -39,6 +39,14 @@ function ThreadCard({ t }: { t: ThreadSummary }) {
 export function FeedPage() {
   const { topicSlug } = useParams();
   const [sp, setSp] = useSearchParams();
+  const topics = useQuery({
+    queryKey: ["topics"],
+    queryFn: () => api.getTopics(false),
+    enabled: !!topicSlug,
+  });
+  const topicName = topics.data?.find(
+    (topic) => topic.slug === topicSlug,
+  )?.name;
   const q = sp.get("q") ?? "";
   const sort = sp.get("sort") ?? (q.trim() ? "relevance" : "trending");
   const [draft, setDraft] = useState(q);
@@ -84,7 +92,9 @@ export function FeedPage() {
   return (
     <div className="stack">
       <h1 style={{ margin: 0 }}>
-        {topicSlug ? topicSlug.replaceAll("-", " ") : "Life has questions."}
+        {topicSlug
+          ? (topicName ?? "Topic conversations")
+          : "Life has questions."}
       </h1>
       <p className="muted">
         Ask honestly. Share what helped. Find a different perspective.
@@ -134,7 +144,9 @@ export function FeedPage() {
       </div>
       {query.isLoading && <Loading />}
       {query.error && <ErrorBox error={query.error} />}
-      {!query.isLoading && !items.length && <Empty>No threads yet.</Empty>}
+      {!query.isLoading && !query.error && !items.length && (
+        <Empty>No threads yet.</Empty>
+      )}
       {items.map((t) => (
         <ThreadCard key={t.id} t={t} />
       ))}

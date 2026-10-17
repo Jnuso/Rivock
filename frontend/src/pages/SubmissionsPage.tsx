@@ -29,7 +29,7 @@ export function SubmissionsListPage() {
     <div className="stack">
       <h1>My submissions</h1>
       <p className="muted">
-        Track your drafts while they are checked before publication.
+        See the publication status and review history of your contributions.
       </p>
       {q.isLoading && <Loading />}
       {q.error && <ErrorBox error={q.error} />}
