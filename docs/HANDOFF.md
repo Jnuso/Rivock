@@ -20,6 +20,14 @@ A [managed restore drill proposal](RESTORE_DRILL.md) and [retail snapshot](resto
 
 Next: improve recovery safeguards, expand account/accessibility coverage and close the remaining network/cost/retention gates. Keep application AI off. The current environment is Consumption-only with no custom VNet; a private route needs its own migration/cost review. Month-to-date resource-group cost at October 17 07:11 UTC was USD 0.0034713738696 for the app and USD 0 for PostgreSQL; billing can lag and exact credit balance/expiry remain unverified.
 
+## Local recovery validation follow-up
+
+The replay-erasure operator command previously accepted unsupported target types/actions and could print success after silently ignoring an entry. A synthetic fake-session container check reproduced that failure without connecting to a database. The new loader validates the entire existing JSON-array export before opening a Session: exact fields, UUID strings, supported target/action pairs, duplicate event IDs (including identical repeats), duplicate JSON fields and readable UTF-8/valid JSON. Invalid input exits with a sanitized message and no success claim; valid replay behavior remains unchanged.
+
+The original reproducer now rejects the unsupported journal without opening a Session. All 259 backend tests passed in a disposable Docker test container against the isolated PostgreSQL 17 test database; this includes 46 new parser/CLI unit cases and eight real-database integration cases. Tests cover actual export/replay compatibility, thread/reply erasure with other-author replies and their snapshots preserved, accepted-answer clearing, the distinct clear_bio/deactivate effects, and rejection of a bad later marker without changing an earlier valid target. Ruff and git diff --check passed. No frontend or schema change was needed.
+
+This recovery fix is a separate local review candidate, not part of the running Azure source 7bc80ad/revision 0000004. No cloud journal was exported or replayed and no managed restore, resource, schedule, network, secret or AI setting changed. Two bounded coding-worker jobs returned no changes or completed review; their baseline lacked the required isolated test database. All passing test evidence above was produced directly in the project environment. Input validation does not establish journal authenticity/completeness, encrypted storage, destination identity, exactly-once replay or managed recovery. See [the operator journal contract](ERASURE_REPLAY.md).
+
 ## Where we are
 
 Rivock is a working college-life advice/discussion project for learning and a résumé. It has a shared text-first feed, questions/discussions, seven topics, replies, accepted answers and content votes. There are **no communities, user karma or reputation gates**. Public visitors can read; participation requires an account. The approved look is light, readable, blue-accented and responsive.

@@ -4,6 +4,7 @@ from pathlib import Path
 from uuid import UUID
 from sqlalchemy import select
 from .db import Session
+from .erasure_journal import InvalidErasureJournal, load_erasure_journal
 from . import models as m, moderation as mod, services as s
 from .config import settings
 
@@ -132,7 +133,10 @@ def main():
             ]
         Path(args.path).write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
     else:
-        rows = json.loads(Path(args.path).read_text(encoding="utf-8"))
+        try:
+            rows = load_erasure_journal(args.path)
+        except InvalidErasureJournal as error:
+            raise SystemExit(str(error)) from None
         with Session() as db:
             mod.mutation_lock(db)
             for marker in rows:
