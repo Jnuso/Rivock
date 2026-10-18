@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
 
 
 class Input(BaseModel):
@@ -240,7 +240,7 @@ class Deactivate(Input):
 
 
 class ReadIn(Input):
-    read: Literal[True]
+    read: StrictBool
 
 
 class ReadAll(Input):

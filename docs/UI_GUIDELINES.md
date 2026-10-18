@@ -61,3 +61,6 @@ Local candidate: direct reply lists offer Recommended/Newest/Oldest, with visibl
 
 
 Local draft-backup candidate: provide a current-editor plain-text download and a manual retry when browser saving fails. Preserve text/original revisions, retry pending cleanup before persisting, and do not resurrect a discarded or former-account value. Do not claim an untouched initial editor value is a saved draft or a requested download is confirmed disk persistence. Explain downloaded copies remain separate from browser-draft cleanup.
+
+
+Local notification candidate: each item offers Mark read or Mark unread, changing only that recipient’s read state. Refresh All/Unread and the badge together; disable individual/read-all controls until the pending change and refresh finish. Preserve visible state on failure. Unavailable items have no actor/target links.

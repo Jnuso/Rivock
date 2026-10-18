@@ -316,10 +316,10 @@ export const api = {
   ) => apiFetch<NotificationsPage>(`/me/notifications${q(params)}`),
   unreadCount: () =>
     apiFetch<{ count: number }>("/me/notifications/unread-count"),
-  markRead: (id: string) =>
+  markRead: (id: string, read = true) =>
     apiFetch<NotificationItem>(`/me/notifications/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ read: true }),
+      body: JSON.stringify({ read }),
     }),
   readAll: (through: string) =>
     apiFetch<null>("/me/notifications/read-all", {

@@ -108,7 +108,7 @@ Revise by issuing a new normal POST/PATCH with a fresh idempotency key. Revision
 | --- | --- |
 | `GET /me/notifications` | Private list, `unread_only=false`, pagination; unavailable targets render placeholders |
 | `GET /me/notifications/unread-count` | `{count}` for visible/suppression-filtered notifications |
-| `PATCH /me/notifications/{id}` | `{read: true}`; 200; owner only, idempotent |
+| `PATCH /me/notifications/{id}` | `{read: true|false}`; explicit JSON boolean; 200; owner only, idempotent |
 | `POST /me/notifications/read-all` | `{through: <as_of from list response>}`; reject future timestamps; 204; notifications created after the cutoff remain unread |
 | `GET /me/blocks` | Private blocked-user list |
 | `PUT /me/blocks/{user_id}` | 204; no self-block; blocking an admin's personal content does not disable their privileged moderation access |
@@ -135,7 +135,7 @@ Admin reason length 1–1,000 code points. Admin content mutations recheck statu
 
 Notification insertion skips self/inactive actors or recipients and blocks in either direction. List and unread-count share one visibility predicate. Existing events from deactivated actors use `[deleted]`; unavailable targets show placeholders without original text. Recipient deactivation erases their events. These rules do not delete historical events solely because an actor later deactivates.
 
-Notification output includes nullable `reply_id` for an exact answer/reply destination. It is null when the target is unavailable; clients must not construct links to hidden targets from other metadata.
+Notification output includes nullable `reply_id` for an exact answer/reply destination. It is null when the target is unavailable; actor and target IDs are also null in that placeholder. Clients must not construct links to hidden targets from other metadata.
 
 Public content can be reported; pending submissions are visible only to owner/admin and have their own review queue. Reports never automatically remove content based solely on count. Do not expose reporters to the reported user.
 

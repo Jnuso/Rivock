@@ -31,7 +31,8 @@ export function NotificationsPage() {
       qc.invalidateQueries({ queryKey: ["unread"] }),
     ]);
   const mark = useMutation({
-    mutationFn: (id: string) => api.markRead(id),
+    mutationFn: ({ id, read }: { id: string; read: boolean }) =>
+      api.markRead(id, read),
     onSuccess: refresh,
   });
   const all = useMutation({
@@ -51,7 +52,7 @@ export function NotificationsPage() {
         <h1>Notifications</h1>
         <button
           className="btn"
-          disabled={!items.length || all.isPending}
+          disabled={!items.length || all.isPending || mark.isPending}
           onClick={() => all.mutate()}
         >
           Mark all read
@@ -108,15 +109,14 @@ export function NotificationsPage() {
             <span className={n.read ? "muted" : "badge"}>
               {n.read ? "Read" : "Unread"}
             </span>
-            {!n.read && (
-              <button
-                className="btn"
-                disabled={mark.isPending}
-                onClick={() => mark.mutate(n.id)}
-              >
-                Mark read
-              </button>
-            )}
+            <button
+              type="button"
+              className="btn"
+              disabled={mark.isPending || all.isPending}
+              onClick={() => mark.mutate({ id: n.id, read: !n.read })}
+            >
+              {n.read ? "Mark unread" : "Mark read"}
+            </button>
           </div>
         </article>
       ))}

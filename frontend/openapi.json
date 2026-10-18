@@ -7709,7 +7709,6 @@
         "properties": {
           "read": {
             "type": "boolean",
-            "const": true,
             "title": "Read"
           }
         },

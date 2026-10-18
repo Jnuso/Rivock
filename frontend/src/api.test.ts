@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { webcrypto } from "node:crypto";
-import { api, ApiError, setTokenGetter, clearIdempotencyMemory } from "./api";
+import {
+  API_BASE,
+  api,
+  ApiError,
+  setTokenGetter,
+  clearIdempotencyMemory,
+} from "./api";
 beforeEach(() => {
   sessionStorage.clear();
   clearIdempotencyMemory();
@@ -182,4 +188,35 @@ it("sends reply order with its page offset and preserves the existing limit argu
     limit: "5",
     sort: "oldest",
   });
+});
+
+it.each([false, true])(
+  "sends explicit notification read=%s changes",
+  async (read) => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ id: "note", read }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetch);
+    await api.markRead("note", read);
+    expect(fetch).toHaveBeenCalledExactlyOnceWith(
+      API_BASE + "/me/notifications/note",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ read }),
+      }),
+    );
+  },
+);
+
+it("preserves the existing markRead default for older callers", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ id: "note", read: true }), { status: 200 }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await api.markRead("note");
+  expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({ read: true }));
 });

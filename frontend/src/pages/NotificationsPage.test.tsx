@@ -60,6 +60,7 @@ function show(path = "/notifications") {
       </MemoryRouter>
     </QueryClientProvider>,
   );
+  return client;
 }
 
 it("restores an unread-only link and asks the server for that filter", async () => {
@@ -129,7 +130,7 @@ it("removes a newly read item from unread results and refreshes its badge query"
   show("/notifications?view=unread");
   fireEvent.click(await screen.findByRole("button", { name: "Mark read" }));
   expect(await screen.findByText("You’re all caught up.")).toBeVisible();
-  expect(fixture.mark).toHaveBeenCalledExactlyOnceWith("note");
+  expect(fixture.mark).toHaveBeenCalledExactlyOnceWith("note", true);
 });
 
 it("uses the server snapshot time when marking all read", async () => {
@@ -151,4 +152,125 @@ it("shows a failed unread request without a caught-up claim", async () => {
   );
   expect(screen.queryByText("You’re all caught up.")).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Mark all read" })).toBeDisabled();
+});
+
+it("marks an item unread again and refreshes both list filters and the badge", async () => {
+  let read = true;
+  fixture.get.mockImplementation(async ({ unread_only }) => ({
+    items: unread_only && read ? [] : [{ ...note, read }],
+    next_offset: null,
+    as_of: asOf,
+  }));
+  fixture.mark.mockImplementation(async (_id, value) => {
+    read = value;
+    return { ...note, read };
+  });
+  const client = show();
+  const refresh = vi.spyOn(client, "invalidateQueries");
+  fireEvent.click(await screen.findByRole("button", { name: "Mark unread" }));
+  await screen.findByRole("button", { name: "Mark read" });
+  expect(fixture.mark).toHaveBeenCalledExactlyOnceWith("note", false);
+  expect(refresh).toHaveBeenCalledWith({ queryKey: ["notifications"] });
+  expect(refresh).toHaveBeenCalledWith({ queryKey: ["unread"] });
+  fireEvent.click(screen.getByRole("button", { name: "Unread" }));
+  expect(
+    await screen.findByRole("button", { name: "Mark read" }),
+  ).toBeEnabled();
+  expect(screen.getByRole("link", { name: note.summary })).toHaveAttribute(
+    "href",
+    "/threads/thread#reply-reply",
+  );
+});
+
+it.each([false, true])(
+  "preserves the notification's read=%s state after a failed change",
+  async (read) => {
+    fixture.get.mockResolvedValue({
+      items: [{ ...note, read }],
+      next_offset: null,
+      as_of: asOf,
+    });
+    fixture.mark.mockRejectedValue(
+      new Error("The notification could not be updated."),
+    );
+    show();
+    const label = read ? "Mark unread" : "Mark read";
+    fireEvent.click(await screen.findByRole("button", { name: label }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "could not be updated",
+    );
+    expect(screen.getByRole("button", { name: label })).toBeEnabled();
+    expect(screen.queryByText("You’re all caught up.")).not.toBeInTheDocument();
+    expect(fixture.mark).toHaveBeenCalledExactlyOnceWith("note", !read);
+  },
+);
+
+it("disables individual and read-all actions while a read-state change is pending", async () => {
+  let finish: (value: unknown) => void = () => {};
+  fixture.get.mockResolvedValue({
+    items: [{ ...note, read: true }],
+    next_offset: null,
+    as_of: asOf,
+  });
+  fixture.mark.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  show();
+  fireEvent.click(await screen.findByRole("button", { name: "Mark unread" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Mark unread" })).toBeDisabled(),
+  );
+  expect(screen.getByRole("button", { name: "Mark all read" })).toBeDisabled();
+  finish({ ...note, read: false });
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Mark all read" })).toBeEnabled(),
+  );
+});
+
+it("disables individual changes while marking all read", async () => {
+  let finish: (value: null) => void = () => {};
+  fixture.all.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  show();
+  await screen.findByText(note.summary);
+  fireEvent.click(screen.getByRole("button", { name: "Mark all read" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Mark read" })).toBeDisabled(),
+  );
+  finish(null);
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Mark read" })).toBeEnabled(),
+  );
+});
+
+it("can retain an unavailable notification as unread without inventing a target link", async () => {
+  fixture.get.mockResolvedValue({
+    items: [
+      {
+        ...note,
+        read: true,
+        available: false,
+        target_id: null,
+        reply_id: null,
+        summary: "This conversation is unavailable.",
+      },
+    ],
+    next_offset: null,
+    as_of: asOf,
+  });
+  show();
+  fireEvent.click(await screen.findByRole("button", { name: "Mark unread" }));
+  await waitFor(() =>
+    expect(fixture.mark).toHaveBeenCalledExactlyOnceWith("note", false),
+  );
+  expect(
+    screen.queryByRole("link", { name: "This conversation is unavailable." }),
+  ).not.toBeInTheDocument();
 });

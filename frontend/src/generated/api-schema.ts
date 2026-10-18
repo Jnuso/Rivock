@@ -1103,11 +1103,8 @@ export interface components {
         };
         /** ReadIn */
         ReadIn: {
-            /**
-             * Read
-             * @constant
-             */
-            read: true;
+            /** Read */
+            read: boolean;
         };
         /** Reason */
         Reason: {

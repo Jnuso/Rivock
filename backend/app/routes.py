@@ -535,7 +535,7 @@ def notification_out(db, row, user):
         "reply_response": "replied to you",
         "answer_accepted": "accepted your answer",
     }.get(row.kind, "updated a conversation")
-    actor = s.public_user(db.get(m.User, row.actor_id))
+    actor = s.public_user(db.get(m.User, row.actor_id)) if available else None
     return {
         "id": row.id,
         "kind": row.kind,
@@ -582,7 +582,7 @@ def read_notification(id: UUID, body: v.ReadIn, db: DB, user: Member):
     row = db.scalar(notification_stmt(db, user).where(m.Notification.id == str(id)))
     if not row:
         s.fail(404, "not_found", "This notification is unavailable.")
-    row.read_at = row.read_at or m.now()
+    row.read_at = (row.read_at or m.now()) if body.read else None
     return notification_out(db, row, user)
 
 
