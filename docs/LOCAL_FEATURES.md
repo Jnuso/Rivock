@@ -28,3 +28,7 @@ Answer-state semantics: only published direct answers visible to the requesting 
 ## Review and release limits
 
 Nothing in this batch was pushed, merged, published or deployed. No new PR/CI run, cloud resource, schema migration, schedule, app AI call/key, network rule or authentication-provider configuration was created. AI remains off. Review the new filter semantics and interface before deciding which features to keep. Real hosted identity/device checks, wider accessibility/screen-reader coverage, hosted/concurrent performance, and hosted release verification remain separate. This small synthetic local database is not a production load test. Native browser undo/redo is not reimplemented by the formatting shortcuts.
+
+## Saved checkpoint and cleanup
+
+Implementation commit: **1928c8297b061873be54e599f80fb181cddf9c2e**, local only. Additional real-browser checks confirmed the Back to results destination survives a thread reload, Ctrl/Command+K selects an editable destination and previews the intended link with ugc/nofollow/noopener/noreferrer, and Ctrl/Command+I previews emphasized text. No link was opened and no reply was posted. The synthetic draft was discarded, the temporary browser tab closed and viewport overrides reset. Both temporary local servers stopped. Cleanup verified the exact dedicated fictional account/thread set and zero active database connections, dropped only rivock_features_test and verified its absence. The existing app and standard test databases were preserved.
