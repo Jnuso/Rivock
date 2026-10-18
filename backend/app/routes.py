@@ -137,7 +137,11 @@ def feed(
     topic: str | None = None,
     q: Annotated[str, Query(max_length=200)] = "",
     sort: str | None = None,
+    thread_type: Annotated[Literal["question", "discussion"] | None, Query(alias="type")] = None,
+    answer_status: Literal["unanswered", "answered", "accepted"] | None = None,
 ):
+    if thread_type == "discussion" and answer_status is not None:
+        s.fail(422, "invalid_answer_filter", "Answer filters apply to questions only.")
     q = q.strip()
     sort = sort or ("relevance" if q else "trending")
     if sort not in ({"relevance", "newest"} if q else {"trending", "latest"}):
@@ -147,11 +151,31 @@ def feed(
         .group_by(m.ThreadVote.thread_id)
         .subquery()
     )
+    hidden = s.hidden_ids(db, user)
     stmt = (
         select(m.Thread)
         .outerjoin(votes, votes.c.thread_id == m.Thread.id)
-        .where(m.Thread.state == "published", m.Thread.author_id.not_in(s.hidden_ids(db, user)))
+        .where(m.Thread.state == "published", m.Thread.author_id.not_in(hidden))
     )
+    if thread_type is not None or answer_status is not None:
+        stmt = stmt.where(m.Thread.type == (thread_type or "question"))
+    if answer_status is not None:
+        visible_answer = (
+            select(m.Reply.id)
+            .where(
+                m.Reply.thread_id == m.Thread.id,
+                m.Reply.parent_reply_id.is_(None),
+                m.Reply.state == "published",
+                m.Reply.author_id.not_in(hidden),
+            )
+            .correlate(m.Thread)
+        )
+        if answer_status == "unanswered":
+            stmt = stmt.where(~visible_answer.exists())
+        elif answer_status == "answered":
+            stmt = stmt.where(visible_answer.exists())
+        else:
+            stmt = stmt.where(visible_answer.where(m.Reply.id == m.Thread.accepted_reply_id).exists())
     if topic:
         stmt = stmt.join(m.Topic).where(m.Topic.slug == topic)
     if q:

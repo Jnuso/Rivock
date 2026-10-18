@@ -33,13 +33,15 @@ Creation/edit routes require an `Idempotency-Key` UUID header. Reuse the same ke
 | --- | --- | --- |
 | `GET /topics` | `include_archived=false` | Ordered topic IDs/slugs/names/active flags; archived option supports old filters |
 | `GET /info` | — | Public local-fixture indicator used to label demonstrations |
-| `GET /threads` | `topic=<slug>`, optional `q`, `sort`, pagination | Thread-summary list |
+| `GET /threads` | `topic=<slug>`, optional `q`, `sort`, `type=question|discussion`, `answer_status=unanswered|answered|accepted`, pagination | Thread-summary list |
 | `GET /threads/{id}` | — | Thread detail; deleted/removed thread may return a shell with conversation context |
 | `POST /threads` | `{type, topic_id, title, body_markdown}` | Moderated creation outcome below |
 | `PATCH /threads/{id}` | `{base_revision, topic_id, title, body_markdown}` full editable snapshot | Moderated edit outcome; author only |
 | `DELETE /threads/{id}` | — | 204; author only; under target/lease locks cancel open edits, clear text/acceptance, retain shell |
 
 For a blank/absent `q`, `sort=trending|latest`, default trending. With a nonblank `q`, `sort=relevance|newest`, default relevance. Invalid combinations return 422. Query up to 200 code points. Thread type cannot change after publication. Search excludes deleted/removed/pending content; topic filtering applies before ranking/pagination.
+
+Local-only feature branch addition: type and answer_status apply before search ranking and pagination. Any answer_status restricts to questions; combining it with type=discussion returns 422. unanswered/answered use absence/presence of a published direct answer visible in the viewer’s normal block projection. accepted requires such an answer to match the question’s acceptance pointer. Deleted/removed/blocked answers and nested replies do not count. Omitting both preserves existing feed behavior. These additions have not been released.
 
 Thread summary includes ID, type, topic, title, a plain-text excerpt up to 240 code points, public author, publication/edit timestamps, revision, score, published reply count, acceptance flag, and (for a viewer) `my_vote`, `is_saved`. Count includes published descendants but excludes hidden blocked-author content in the viewer's filtered projection. Thread detail adds body Markdown, accepted reply ID, and state. Deleted/removed/blocked shells expose no original text or hidden author metadata; state/placeholder explains availability.
 

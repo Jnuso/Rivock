@@ -234,3 +234,33 @@ button:disabled {
 .markdown iframe {
   display: none !important;
 }
+
+.copyLink {
+  max-width: 100%;
+  gap: 0.25rem;
+}
+.copyLink > [role="status"]:empty {
+  display: none;
+}
+.copyLinkFallback {
+  width: min(100%, 32rem);
+}
+.copyLinkFallback input {
+  width: 100%;
+}
+.acceptedAnswer {
+  border-color: #b9caf8;
+  background: #f3f6ff;
+}
+.formattingHelp {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.formattingHelp summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.formattingHelp summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}

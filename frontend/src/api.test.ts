@@ -138,3 +138,31 @@ it("does not send a protected request anonymously when token acquisition fails",
   await expect(api.getMe()).rejects.toThrow("sign in again");
   expect(fetch).not.toHaveBeenCalled();
 });
+
+it("sends feed filters, search and pagination together as encoded query parameters", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ items: [], next_offset: null })),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await api.getThreads({
+    topic: "education",
+    type: "question",
+    answer_status: "unanswered",
+    q: "office & hours",
+    sort: "newest",
+    offset: 20,
+    limit: 20,
+  });
+  const url = new URL(fetch.mock.calls[0][0]);
+  expect(Object.fromEntries(url.searchParams)).toEqual({
+    topic: "education",
+    type: "question",
+    answer_status: "unanswered",
+    q: "office & hours",
+    sort: "newest",
+    offset: "20",
+    limit: "20",
+  });
+});

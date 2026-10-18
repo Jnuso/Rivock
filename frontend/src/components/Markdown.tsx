@@ -31,7 +31,11 @@ export function Markdown({ source }: { source: string }) {
         components={{
           a: ({ href, children }) =>
             href && isAllowedHttpUrl(href) ? (
-              <a href={href} rel="noopener noreferrer" target="_blank">
+              <a
+                href={href}
+                rel="ugc nofollow noopener noreferrer"
+                target="_blank"
+              >
                 {children}
               </a>
             ) : (

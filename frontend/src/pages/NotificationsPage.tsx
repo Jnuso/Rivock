@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   useInfiniteQuery,
   useMutation,
@@ -12,20 +12,24 @@ import { More } from "../lib/paging";
 
 export function NotificationsPage() {
   const { user } = useAuth();
+  const [params, setParams] = useSearchParams();
+  const unreadOnly = params.get("view") === "unread";
   const qc = useQueryClient();
   const q = useInfiniteQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", unreadOnly],
     initialPageParam: 0,
     enabled: !!user,
-    queryFn: ({ pageParam }) => api.getNotifications({ offset: pageParam }),
+    queryFn: ({ pageParam }) =>
+      api.getNotifications({ offset: pageParam, unread_only: unreadOnly }),
     getNextPageParam: (page) => page.next_offset ?? undefined,
     refetchInterval: () =>
       document.visibilityState === "visible" ? 30000 : false,
   });
-  const refresh = () => {
-    void qc.invalidateQueries({ queryKey: ["notifications"] });
-    void qc.invalidateQueries({ queryKey: ["unread"] });
-  };
+  const refresh = () =>
+    Promise.all([
+      qc.invalidateQueries({ queryKey: ["notifications"] }),
+      qc.invalidateQueries({ queryKey: ["unread"] }),
+    ]);
   const mark = useMutation({
     mutationFn: (id: string) => api.markRead(id),
     onSuccess: refresh,
@@ -53,13 +57,36 @@ export function NotificationsPage() {
           Mark all read
         </button>
       </div>
+      <div className="row" role="group" aria-label="Notification filter">
+        {[false, true].map((unread) => (
+          <button
+            key={String(unread)}
+            type="button"
+            className={unreadOnly === unread ? "btn btnPrimary" : "btn"}
+            aria-pressed={unreadOnly === unread}
+            onClick={() => {
+              const next = new URLSearchParams(params);
+              if (unread) next.set("view", "unread");
+              else next.delete("view");
+              setParams(next);
+            }}
+          >
+            {unread ? "Unread" : "All"}
+          </button>
+        ))}
+      </div>
+      <p className="muted">
+        Mark all read includes notifications on other pages.
+      </p>
       {q.isLoading && <Loading />}
       <QueryError query={q} />
       {(mark.error || all.error) && (
         <ErrorBox error={mark.error || all.error} />
       )}
       {!q.isLoading && !q.error && !items.length && (
-        <Empty>No notifications yet.</Empty>
+        <Empty>
+          {unreadOnly ? "You’re all caught up." : "No notifications yet."}
+        </Empty>
       )}
       {items.map((n) => (
         <article className="card stack" key={n.id}>
@@ -75,7 +102,12 @@ export function NotificationsPage() {
             )}
           </p>
           <div className="row muted">
-            <time>{new Date(n.created_at).toLocaleString()}</time>
+            <time dateTime={n.created_at}>
+              {new Date(n.created_at).toLocaleString()}
+            </time>
+            <span className={n.read ? "muted" : "badge"}>
+              {n.read ? "Read" : "Unread"}
+            </span>
             {!n.read && (
               <button
                 className="btn"

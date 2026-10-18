@@ -10,8 +10,11 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, expect, it, vi } from "vitest";
 const fixture = vi.hoisted(() => ({
+  accepted: "00000000-0000-4000-8000-000000000001" as string | null,
+  threadType: "question",
+  threadState: "published",
   reply: {
-    id: "direct",
+    id: "00000000-0000-4000-8000-000000000001",
     thread_id: "thread",
     depth: 1,
     author: { id: "b", username: "bruce" },
@@ -43,18 +46,18 @@ vi.mock("../api", () => ({
   api: {
     getThread: async () => ({
       id: "thread",
-      type: "question",
+      type: fixture.threadType,
       topic: { name: "Education", slug: "education" },
       title: "Question",
       body_markdown: "Original body",
       author: { id: "a", username: "alice" },
-      state: "published",
+      state: fixture.threadState,
       published_at: "2026-10-11T00:00:00Z",
       score: 0,
       my_vote: null,
       is_saved: false,
       reply_count: 2,
-      accepted_reply_id: "direct",
+      accepted_reply_id: fixture.accepted,
     }),
     getReplies: async () => ({ items: [fixture.reply], next_offset: null }),
     getChildren: fixture.getChildren,
@@ -64,7 +67,13 @@ vi.mock("../api", () => ({
   },
 }));
 import { ThreadPage } from "./ThreadPage";
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  fixture.accepted = "00000000-0000-4000-8000-000000000001";
+  fixture.threadType = "question";
+  fixture.threadState = "published";
+  vi.clearAllMocks();
+});
 it("expands nested responses, limits answer acceptance to direct replies and routes pending text privately", async () => {
   fixture.getChildren.mockResolvedValue({
     items: [
@@ -162,4 +171,129 @@ it("opens a linked nested reply with its parent context without paging through r
   ).toBeNull();
   fireEvent.click(screen.getByRole("link", { name: "Show all answers" }));
   await screen.findByRole("button", { name: "Clear accepted answer" });
+});
+
+function showThread(feedReturn?: string) {
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter
+        initialEntries={[
+          { pathname: "/threads/thread", state: { feedReturn } },
+        ]}
+      >
+        <Routes>
+          <Route path="/threads/:id" element={<ThreadPage />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
+it("jumps to the accepted answer with the existing focused reply context", async () => {
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [{ ...fixture.reply, child_count: 0 }],
+  });
+  showThread();
+  const shortcut = await screen.findByRole("link", {
+    name: "View accepted answer →",
+  });
+  expect(shortcut).toHaveAttribute(
+    "href",
+    "/threads/thread#reply-" + fixture.accepted,
+  );
+  fireEvent.click(shortcut);
+  expect(await screen.findByLabelText("Linked reply")).toHaveFocus();
+  expect(fixture.context).toHaveBeenCalledWith(fixture.accepted);
+  expect(
+    screen.getByText("You’re viewing the accepted answer below."),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("link", { name: "View accepted answer →" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "Show all answers" }));
+  expect(
+    await screen.findByRole("link", { name: "View accepted answer →" }),
+  ).toBeVisible();
+});
+
+it.each(["no acceptance", "discussion", "unavailable thread"])(
+  "omits the accepted shortcut for %s",
+  async (condition) => {
+    if (condition === "no acceptance") fixture.accepted = null;
+    if (condition === "discussion") fixture.threadType = "discussion";
+    if (condition === "unavailable thread") fixture.threadState = "deleted";
+    showThread();
+    await screen.findByRole("heading", { name: "Question", level: 1 });
+    expect(
+      screen.queryByRole("complementary", { name: "Accepted answer" }),
+    ).not.toBeInTheDocument();
+  },
+);
+
+it("retains the originating search and filters through accepted-answer navigation", async () => {
+  const path =
+    "/t/education?q=office&sort=newest&type=question&answer_status=accepted";
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [{ ...fixture.reply, child_count: 0 }],
+  });
+  showThread(path);
+  expect(
+    await screen.findByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", path);
+  fireEvent.click(screen.getByRole("link", { name: "View accepted answer →" }));
+  await screen.findByLabelText("Linked reply");
+  expect(
+    screen.getByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", path);
+  fireEvent.click(screen.getByRole("link", { name: "Show all answers" }));
+  await screen.findByRole("link", { name: "View accepted answer →" });
+  expect(
+    screen.getByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", path);
+});
+
+it("uses the public feed for untrusted or unrelated return destinations", async () => {
+  showThread("https://example.test/settings");
+  expect(
+    await screen.findByRole("link", { name: "← All conversations" }),
+  ).toHaveAttribute("href", "/");
+  expect(
+    screen.queryByRole("link", { name: "← Back to results" }),
+  ).not.toBeInTheDocument();
+});
+
+it("keeps the originating results after a newly published reply opens its context", async () => {
+  const path = "/?q=office&sort=newest&type=question";
+  const targetId = "00000000-0000-4000-8000-000000000088";
+  fixture.replyPost.mockResolvedValue({
+    submission: { status: "published" },
+    content: { id: targetId },
+  });
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [
+      {
+        ...fixture.reply,
+        id: targetId,
+        child_count: 0,
+        body_markdown: "My published response",
+      },
+    ],
+  });
+  showThread(path);
+  const input = await screen.findByLabelText("Your reply");
+  fireEvent.change(input, { target: { value: "My published response" } });
+  fireEvent.click(screen.getByRole("button", { name: "Submit reply" }));
+  const target = await screen.findByLabelText("Linked reply");
+  expect(within(target).getByText("My published response")).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", path);
+  expect(screen.getByLabelText("Your reply")).toHaveValue("");
 });

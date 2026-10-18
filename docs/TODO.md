@@ -127,3 +127,8 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Research a cheaper App Service/private-endpoint alternative; document its USD 20.94 app/network base, exclusions and unresolved deployment gates. It still exceeds the total target.
 - [ ] Review/release the independent browser-recovery candidate separately and verify changed hosted flows.
 - [ ] Complete the remaining managed recovery, account/device and longer observation gates; see OWNER_CHECKLIST.md for necessary owner input.
+
+## Local feature candidate — do not push
+
+- [x] Prepare seven complete local feature journeys and generated feed contracts on features/local-conversation-tools; types/139 frontend tests/build, 226 PostgreSQL tests and Ruff pass. See LOCAL_FEATURES.md for precise scope and local browser evidence.
+- [ ] Owner review of potential features and answer-state semantics; keep this branch unpushed. No release authorization is implied by these implementation checks.

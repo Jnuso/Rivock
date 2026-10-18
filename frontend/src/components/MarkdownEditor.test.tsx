@@ -140,3 +140,64 @@ it("renders an italic selection within a word and preserves surrounding letters"
   fireEvent.click(screen.getByRole("button", { name: "Preview" }));
   expect(screen.getByText("play", { selector: "em" })).toBeInTheDocument();
 });
+
+it.each([
+  ["b", "**selected**", false],
+  ["i", "*selected*", true],
+  ["k", "[selected](https://)", false],
+])(
+  "formats a selection with the %s shortcut without submitting",
+  (key, expected, meta) => {
+    const submit = vi.fn((event) => event.preventDefault());
+    render(
+      <form onSubmit={submit}>
+        <EditorExample initial="selected" />
+      </form>,
+    );
+    const input = screen.getByRole("textbox", {
+      name: "Your text",
+    }) as HTMLTextAreaElement;
+    input.focus();
+    input.setSelectionRange(0, 8);
+    expect(
+      fireEvent.keyDown(input, { key, ctrlKey: !meta, metaKey: meta }),
+    ).toBe(false);
+    expect(input).toHaveValue(expected);
+    expect(input).toHaveFocus();
+    expect(submit).not.toHaveBeenCalled();
+    if (key === "k")
+      expect(input.value.slice(input.selectionStart, input.selectionEnd)).toBe(
+        "https://",
+      );
+  },
+);
+
+it("leaves plain typing, alternate shortcuts and composing input to the browser", () => {
+  render(<EditorExample initial="selected" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(0, 8);
+  for (const options of [
+    { key: "b" },
+    { key: "b", ctrlKey: true, altKey: true },
+    { key: "i", metaKey: true, shiftKey: true },
+    { key: "a", ctrlKey: true },
+    { key: "b", ctrlKey: true, isComposing: true },
+  ])
+    expect(fireEvent.keyDown(input, options)).toBe(true);
+  expect(input).toHaveValue("selected");
+});
+
+it("does not repeatedly toggle formatting when a shortcut key is held down", () => {
+  render(<EditorExample initial="selected" />);
+  const input = screen.getByRole("textbox", {
+    name: "Your text",
+  }) as HTMLTextAreaElement;
+  input.setSelectionRange(0, 8);
+  fireEvent.keyDown(input, { key: "b", ctrlKey: true });
+  fireEvent.keyDown(input, { key: "b", ctrlKey: true, repeat: true });
+  expect(input).toHaveValue("**selected**");
+  fireEvent.keyDown(input, { key: "b", ctrlKey: true });
+  expect(input).toHaveValue("selected");
+});

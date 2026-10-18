@@ -2009,6 +2009,8 @@ export interface operations {
                 topic?: string | null;
                 q?: string;
                 sort?: string | null;
+                type?: ("question" | "discussion") | null;
+                answer_status?: ("unanswered" | "answered" | "accepted") | null;
             };
             header?: never;
             path?: never;

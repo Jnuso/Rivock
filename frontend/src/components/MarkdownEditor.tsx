@@ -86,6 +86,8 @@ export function MarkdownEditor({
           type="button"
           className="btn"
           disabled={tab === "preview"}
+          aria-keyshortcuts="Control+b Meta+b"
+          title="Bold (Ctrl/⌘+B)"
           onClick={() => format("bold")}
         >
           Bold
@@ -94,6 +96,8 @@ export function MarkdownEditor({
           type="button"
           className="btn"
           disabled={tab === "preview"}
+          aria-keyshortcuts="Control+i Meta+i"
+          title="Italic (Ctrl/⌘+I)"
           onClick={() => format("italic")}
         >
           Italic
@@ -118,6 +122,8 @@ export function MarkdownEditor({
           type="button"
           className="btn"
           disabled={tab === "preview"}
+          aria-keyshortcuts="Control+k Meta+k"
+          title="Link (Ctrl/⌘+K)"
           onClick={() => format("link")}
         >
           Link
@@ -150,6 +156,21 @@ export function MarkdownEditor({
               pendingSelection.current = null;
               onChange(e.target.value);
             }}
+            onKeyDown={(event) => {
+              if (
+                !(event.ctrlKey || event.metaKey) ||
+                event.altKey ||
+                event.shiftKey ||
+                event.nativeEvent.isComposing
+              )
+                return;
+              const action = ({ b: "bold", i: "italic", k: "link" } as const)[
+                event.key.toLowerCase() as "b" | "i" | "k"
+              ];
+              if (!action) return;
+              event.preventDefault();
+              if (!event.repeat) format(action);
+            }}
             aria-describedby={`${id}-count`}
             aria-invalid={len > max}
             maxLength={max * 2}
@@ -164,6 +185,22 @@ export function MarkdownEditor({
           )}
         </div>
       )}
+      <details className="formattingHelp">
+        <summary>Formatting help</summary>
+        <p>
+          Select words, then choose a formatting button or use Ctrl/⌘+B for
+          bold, Ctrl/⌘+I for italic, and Ctrl/⌘+K for a link.
+        </p>
+        <p>
+          Start a line with <code>- </code> for a list or <code>&gt; </code> for
+          a quote. Leave a blank line between paragraphs. Use Preview to check
+          your text before posting.
+        </p>
+        <p>
+          Links must start with http:// or https://. Images and HTML formatting
+          aren’t supported.
+        </p>
+      </details>
       <p id={`${id}-count`} className={len > max ? "errorBox" : "muted"}>
         {len}/{max}
       </p>

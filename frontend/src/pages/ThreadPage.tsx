@@ -9,6 +9,8 @@ import { useAuth } from "../auth/AuthContext";
 import { cpLen, LIMITS } from "../lib/limits";
 import { usePaged, More } from "../lib/paging";
 import { ReportControl } from "../components/ReportControl";
+import { CopyLink, conversationPath } from "../components/CopyLink";
+import { readFeedReturn, feedReturnState } from "../lib/feedReturn";
 
 function useRefresh(threadId: string) {
   const qc = useQueryClient();
@@ -85,6 +87,7 @@ function ReplyComposer({
   onDone: () => void;
 }) {
   const { user, configured, signIn, authMessage } = useAuth();
+  const location = useLocation();
   const draft = useDraft(`reply:${threadId}:${target?.id ?? "direct"}`);
   const navigate = useNavigate();
   const refresh = useRefresh(threadId);
@@ -101,7 +104,9 @@ function ReplyComposer({
       if (result.submission.status !== "published")
         navigate(`/submissions/${result.submission.id}`);
       else if (result.content)
-        navigate(`/threads/${threadId}#reply-${result.content.id}`);
+        navigate(`/threads/${threadId}#reply-${result.content.id}`, {
+          state: feedReturnState(readFeedReturn(location.state)),
+        });
     },
     onError: (e) => {
       if (e instanceof ApiError && e.body?.error.submission_id)
@@ -282,6 +287,12 @@ function ReplyNode({
             onVote={(v) => changed(api.voteReply(reply.id, v))}
             onClear={() => changed(api.clearReplyVote(reply.id))}
           />
+          {visible && (
+            <CopyLink
+              path={conversationPath(threadId, reply.id)}
+              label="Reply link"
+            />
+          )}
           {canReply && visible && (
             <button className="btn" onClick={() => setResponding((v) => !v)}>
               Reply
@@ -451,6 +462,7 @@ function LinkedConversation({
   mine,
   acceptedId,
   question,
+  returnTo,
 }: {
   chain: Reply[];
   threadId: string;
@@ -458,6 +470,7 @@ function LinkedConversation({
   mine: boolean;
   acceptedId: string | null;
   question: boolean;
+  returnTo: string | null;
 }) {
   const destination = useRef<HTMLDivElement>(null);
   const target = chain[chain.length - 1];
@@ -482,7 +495,10 @@ function LinkedConversation({
           ) : (
             <p className="muted">[{parent.state} reply]</p>
           )}
-          <Link to={`/threads/${threadId}#reply-${parent.id}`}>
+          <Link
+            to={`/threads/${threadId}#reply-${parent.id}`}
+            state={feedReturnState(returnTo)}
+          >
             Open this reply
           </Link>
         </details>
@@ -502,7 +518,11 @@ function LinkedConversation({
           acceptedId={acceptedId}
         />
       </div>
-      <Link className="btn" to={`/threads/${threadId}`}>
+      <Link
+        className="btn"
+        to={`/threads/${threadId}`}
+        state={feedReturnState(returnTo)}
+      >
         Show all {question ? "answers" : "replies"}
       </Link>
     </section>
@@ -513,6 +533,7 @@ export function ThreadPage() {
   const { id = "" } = useParams();
   const { user } = useAuth();
   const location = useLocation();
+  const returnTo = readFeedReturn(location.state);
   const linkedId = /^#reply-([a-f0-9-]{36})$/i.exec(location.hash)?.[1] ?? "";
   const context = useQuery({
     queryKey: ["reply-context", id, linkedId],
@@ -552,7 +573,9 @@ export function ThreadPage() {
   };
   return (
     <div className="stack">
-      <Link to="/">← All conversations</Link>
+      <Link to={returnTo ?? "/"}>
+        {returnTo ? "← Back to results" : "← All conversations"}
+      </Link>
       <p className="muted">
         <Link to={`/t/${t.topic.slug}`}>{t.topic.name}</Link> · {t.type}
       </p>
@@ -567,6 +590,21 @@ export function ThreadPage() {
         </time>
         {t.edited_at && <span>edited</span>}
       </div>
+      {available && t.type === "question" && t.accepted_reply_id && (
+        <aside className="card row acceptedAnswer" aria-label="Accepted answer">
+          <span className="badge">✓ Accepted answer</span>
+          {linkedId === t.accepted_reply_id ? (
+            <span>You’re viewing the accepted answer below.</span>
+          ) : (
+            <Link
+              to={conversationPath(id, t.accepted_reply_id)}
+              state={feedReturnState(returnTo)}
+            >
+              View accepted answer →
+            </Link>
+          )}
+        </aside>
+      )}
       {t.body_markdown ? (
         <div className="card">
           <Markdown source={t.body_markdown} />
@@ -583,6 +621,9 @@ export function ThreadPage() {
           onVote={(v) => changed(api.voteThread(id, v))}
           onClear={() => changed(api.clearThreadVote(id))}
         />
+        {available && (
+          <CopyLink path={conversationPath(id)} label="Thread link" />
+        )}
         {user && (available || t.is_saved) && (
           <button
             className="btn"
@@ -642,12 +683,15 @@ export function ThreadPage() {
             mine={mine}
             acceptedId={t.accepted_reply_id}
             question={t.type === "question"}
+            returnTo={returnTo}
           />
         ) : (
           <Empty>This reply belongs to another conversation.</Empty>
         ))}
       {linkedId && (context.error || context.data?.thread_id !== id) && (
-        <Link to={`/threads/${id}`}>Show all replies</Link>
+        <Link to={`/threads/${id}`} state={feedReturnState(returnTo)}>
+          Show all replies
+        </Link>
       )}
       {!linkedId && replies.isLoading && <Loading />}
       {!linkedId && <QueryError query={replies} />}

@@ -211,6 +211,8 @@ export const api = {
     apiFetch<Topic[]>(`/topics${q({ include_archived })}`),
   getThreads: (params: {
     topic?: string;
+    type?: string;
+    answer_status?: string;
     q?: string;
     sort?: string;
     offset?: number;
