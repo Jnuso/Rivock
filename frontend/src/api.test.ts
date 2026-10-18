@@ -220,3 +220,32 @@ it("preserves the existing markRead default for older callers", async () => {
   await api.markRead("note");
   expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({ read: true }));
 });
+
+it("encodes saved search with pagination without changing its text", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ items: [], next_offset: null }), {
+        status: 200,
+      }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await api.getSaved(20, 7, "office & lecture");
+  const url = new URL(fetch.mock.calls[0][0]);
+  expect(url.pathname).toBe("/api/v1/me/saved");
+  expect(url.searchParams.get("offset")).toBe("20");
+  expect(url.searchParams.get("limit")).toBe("7");
+  expect(url.searchParams.get("q")).toBe("office & lecture");
+});
+it("omits an empty saved search for existing callers", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ items: [], next_offset: null }), {
+        status: 200,
+      }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await api.getSaved();
+  expect(new URL(fetch.mock.calls[0][0]).searchParams.has("q")).toBe(false);
+});

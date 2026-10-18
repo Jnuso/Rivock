@@ -261,7 +261,7 @@ it("keeps cached saved threads visible when refreshing fails, then retries the r
   };
   const page = { items: [saved], next_offset: null };
   const cache = client();
-  cache.setQueryData(["saved"], { pages: [page], pageParams: [0] });
+  cache.setQueryData(["saved", ""], { pages: [page], pageParams: [0] });
   fixture.reads.getSaved
     .mockRejectedValueOnce(new Error("Refresh unavailable."))
     .mockResolvedValue(page);

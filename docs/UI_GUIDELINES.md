@@ -64,3 +64,6 @@ Local draft-backup candidate: provide a current-editor plain-text download and a
 
 
 Local notification candidate: each item offers Mark read or Mark unread, changing only that recipient’s read state. Refresh All/Unread and the badge together; disable individual/read-all controls until the pending change and refresh finish. Preserve visible state on failure. Unavailable items have no actor/target links.
+
+
+Local saved-search candidate: search the member’s whole library on the server before paging, ordered by most recent save. Preserve q in the saved URL and the originating saved-list route in local thread navigation state. Back to saved retains the search through focused context/reply order; canonical copied links omit it. Unavailable placeholders appear only with a clear search. Distinguish no matches from an empty library and from failed reads.

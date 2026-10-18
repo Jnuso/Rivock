@@ -297,8 +297,10 @@ export const api = {
     apiFetch<AcceptedAnswerResult>(`/threads/${threadId}/accepted-answer`, {
       method: "DELETE",
     }),
-  getSaved: (offset = 0, limit = 20) =>
-    apiFetch<Page<ThreadSummary>>(`/me/saved${q({ offset, limit })}`),
+  getSaved: (offset = 0, limit = 20, search = "") =>
+    apiFetch<Page<ThreadSummary>>(
+      `/me/saved${q({ offset, limit, q: search || undefined })}`,
+    ),
   saveThread: (id: string) =>
     apiFetch<null>(`/threads/${id}/save`, { method: "PUT" }),
   unsaveThread: (id: string) =>

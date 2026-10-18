@@ -431,3 +431,28 @@ it("opens a nested reply from its timestamp while preserving order and originati
     screen.getByRole("link", { name: "← Back to results" }),
   ).toHaveAttribute("href", returnTo);
 });
+
+it("preserves saved-search return through ordering and accepted-answer context", async () => {
+  const path = "/saved?q=office";
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [{ ...fixture.reply, child_count: 0 }],
+  });
+  showThread(path);
+  expect(
+    await screen.findByRole("link", { name: "← Back to saved" }),
+  ).toHaveAttribute("href", path);
+  fireEvent.click(screen.getByRole("button", { name: "Newest" }));
+  fireEvent.click(screen.getByRole("link", { name: "View accepted answer →" }));
+  await screen.findByLabelText("Linked reply");
+  expect(screen.getByRole("link", { name: "← Back to saved" })).toHaveAttribute(
+    "href",
+    path,
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Show all answers" }));
+  await screen.findByRole("button", { name: "Newest" });
+  expect(screen.getByRole("link", { name: "← Back to saved" })).toHaveAttribute(
+    "href",
+    path,
+  );
+});

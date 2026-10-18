@@ -424,18 +424,27 @@ def unsave(id: UUID, db: DB, user: Member):
 
 
 @router.get("/me/saved", response_model=v.ThreadList)
-def saved(db: DB, user: Member, limit: Limit = 20, offset: Offset = 0):
-    rows = list(
-        db.scalars(
-            select(m.Thread)
-            .join(m.Save)
-            .where(m.Save.user_id == user.id)
-            .order_by(m.Save.created_at.desc(), m.Thread.id)
-            .offset(offset)
-            .limit(limit + 1)
+def saved(
+    db: DB,
+    user: Member,
+    limit: Limit = 20,
+    offset: Offset = 0,
+    q: Annotated[str, Query(max_length=200)] = "",
+):
+    hidden = s.hidden_ids(db, user)
+    stmt = select(m.Thread).join(m.Save).where(m.Save.user_id == user.id)
+    if query_text := q.strip():
+        # Filtering must not reveal whether unavailable saved text matches.
+        stmt = stmt.where(
+            m.Thread.state == "published",
+            m.Thread.author_id.not_in(hidden),
+            m.Thread.search_vector.op("@@")(func.websearch_to_tsquery("english", query_text)),
         )
+    rows = list(
+        db.scalars(stmt.order_by(m.Save.created_at.desc(), m.Thread.id).offset(offset).limit(limit + 1))
     )
-    return s.page(rows, offset, limit, lambda row: s.thread_out(db, row, user, False))
+    summaries = {item["id"]: item for item in s.thread_summaries(db, rows[:limit], user, hidden=hidden)}
+    return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
 def profile(db, username, user):

@@ -62,7 +62,7 @@ Thread summary includes ID, type, topic, title, a plain-text excerpt up to 240 c
 | `DELETE /replies/{id}/vote` | — | 200 `{score, my_vote: null}` |
 | `PUT /threads/{id}/accepted-answer` | `{reply_id}` | 200 `{accepted_reply_id}`; question author only |
 | `DELETE /threads/{id}/accepted-answer` | — | 200 `{accepted_reply_id: null}`; question author only |
-| `GET /me/saved` | Pagination | Private saved summaries or unavailable placeholders |
+| `GET /me/saved` | Optional `q` (up to 200 code points), pagination | Private saved summaries ordered by save time; nonblank search excludes unavailable/blocked text, blank search retains safe placeholders |
 | `PUT /threads/{id}/save` | — | 204; published target; active member |
 | `DELETE /threads/{id}/save` | — | 204 even if target unavailable or already unsaved |
 

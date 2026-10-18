@@ -14,6 +14,8 @@ The following draft-backup checkpoint adds text downloads and retry saving acros
 
 The latest notification checkpoint adds Mark unread and suppresses actor metadata on unavailable placeholders. Current evidence: **276 PostgreSQL tests, backend Ruff, 167 frontend tests/types/build**, generated API and local mobile/desktop read/unread/reload checks. All new feature work remains local and unpushed.
 
+The latest saved-search checkpoint searches the complete private library before paging and preserves Back to saved through reply context/order/reload. Current evidence: **294 PostgreSQL tests, backend Ruff, 183 frontend tests across 23 files, types and build**, regenerated API and actual local search checks. See LOCAL_FEATURES.md for details and limits. No push or deployment.
+
 ## Current usability release — October 17
 
 Application source `7bc80adfe11394deb0e3d6e4e819fd4abf1a6644` passed [exact-commit CI](https://github.com/Jnuso/Rivock/actions/runs/39072833183) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39072992347). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e`. After the user's release authorization, image-only updates moved the existing app and manual migration job to that digest. Ready revision `rivock-api--0000004` is Healthy with 100% traffic. No migration ran and no new ARM group deployment was created.

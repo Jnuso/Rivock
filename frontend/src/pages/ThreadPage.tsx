@@ -640,7 +640,11 @@ export function ThreadPage() {
   return (
     <div className="stack">
       <Link to={returnTo ?? "/"}>
-        {returnTo ? "← Back to results" : "← All conversations"}
+        {returnTo
+          ? returnTo.split("?")[0] === "/saved"
+            ? "← Back to saved"
+            : "← Back to results"
+          : "← All conversations"}
       </Link>
       <p className="muted">
         <Link to={`/t/${t.topic.slug}`}>{t.topic.name}</Link> · {t.type}

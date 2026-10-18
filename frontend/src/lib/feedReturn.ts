@@ -7,7 +7,11 @@ export function readFeedReturn(state: unknown): string | null {
   const url = new URL(path, window.location.origin);
   if (
     url.hash ||
-    !(url.pathname === "/" || /^\/t\/[a-z0-9-]+$/.test(url.pathname))
+    !(
+      url.pathname === "/" ||
+      url.pathname === "/saved" ||
+      /^\/t\/[a-z0-9-]+$/.test(url.pathname)
+    )
   )
     return null;
   return `${url.pathname}${url.search}`;

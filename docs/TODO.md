@@ -143,3 +143,5 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Add current-editor text backups and persistence retry with pending-cleanup/account safeguards; verify 158 frontend tests/types/build and actual local download/reload/mobile checks. Local only.
 
 - [x] Add Mark unread with private state validation, shared list/count refresh, cross-action pending guards and minimized unavailable placeholders; verify 276 PostgreSQL and 167 frontend tests/types/build plus local browser round trip. Local only.
+
+- [x] Add full-library private saved search and Back to saved navigation, retaining safe clear-search placeholders; verify 294 PostgreSQL tests, Ruff, 183 frontend tests/types/build and actual local search/context/reload checks. Local only.

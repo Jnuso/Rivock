@@ -187,3 +187,8 @@ This batch is an independent review candidate on fix/browser-draft-recovery, not
 The separately tested recovery-journal safeguard remains open in [draft PR #1](https://github.com/Jnuso/Rivock/pull/1), not merged or deployed; its 259 backend tests and exact-head CI passed. This branch starts from main and does not include that unmerged backend change.
 
 The preview privacy notice now distinguishes retention targets from the disabled cleanup schedule. The bounded observe-preview.ps1 command passed four public GETs; a separate twelve-read observation passed. A read-only daily-cost query and preview-state check completed. An operations/rollback checklist, owner input checklist and App Service private-endpoint feasibility/retail comparison are prepared. No cloud mutation or managed recovery drill occurred.
+
+
+## October 18 unpublished feature checkpoints
+
+The local features/local-conversation-tools branch includes feed projection batching, direct reply ordering/timestamp links, current-editor text downloads/persistence retry, Mark unread, and private saved-library search on top of the earlier seven-feature candidate. Current directly run checks: 294 Docker/PostgreSQL tests, backend Ruff, 183 frontend tests across 23 files, frontend types and production build. OpenAPI and generated TypeScript are current. Local browser evidence uses actual components/FastAPI/PostgreSQL with a fictional principal at the documented widths; no real Clerk, hosted release or independent worker review is claimed. See LOCAL_FEATURES.md and FEED_PERFORMANCE.md for exact checkpoints and limits. Nothing in these batches was pushed, merged, published or deployed; application AI and cloud configuration remain unchanged.
