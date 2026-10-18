@@ -10,7 +10,8 @@ export function readFeedReturn(state: unknown): string | null {
     !(
       url.pathname === "/" ||
       url.pathname === "/saved" ||
-      /^\/t\/[a-z0-9-]+$/.test(url.pathname)
+      /^\/t\/[a-z0-9-]+$/.test(url.pathname) ||
+      /^\/u\/[a-zA-Z0-9_]{3,24}$/.test(url.pathname)
     )
   )
     return null;

@@ -6,7 +6,12 @@ import {
   screen,
 } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import { CopyLink, conversationPath, conversationViewPath } from "./CopyLink";
+import {
+  CopyLink,
+  conversationPath,
+  conversationViewPath,
+  profilePath,
+} from "./CopyLink";
 
 afterEach(() => {
   cleanup();
@@ -129,3 +134,15 @@ it.each(["recommended", "newest", "oldest"])(
     );
   },
 );
+
+it.each(["threads", "replies"] as const)(
+  "builds a canonical profile link for %s",
+  (view) => {
+    expect(profilePath("dana", view)).toBe(
+      "/u/dana" + (view === "replies" ? "?view=replies" : ""),
+    );
+  },
+);
+it("encodes profile names as a single path component", () => {
+  expect(profilePath("a/b?token#x")).toBe("/u/a%2Fb%3Ftoken%23x");
+});

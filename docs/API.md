@@ -146,3 +146,6 @@ Public content can be reported; pending submissions are visible only to owner/ad
 ## Contract verification
 
 Test every private/public serializer boundary, status/error outcome, idempotency replay/conflict, concurrent same-user vote/upsert, stale edit, block/suspension race, moderation retry, offset validation, and API schema/type generation. Provider calls and Clerk endpoints are fixtures in CI; validate real sign-in separately with test accounts. REST authorization belongs in FastAPI regardless of what buttons React hides.
+
+
+Local profile-history fix: the replies contribution query joins on Reply.thread_id = Thread.id explicitly; it must not infer the accepted-answer foreign key. Existing published-thread, block and author visibility filters still apply before pagination.

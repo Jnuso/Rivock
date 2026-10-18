@@ -7,6 +7,8 @@ it.each([
   "/",
   "/saved?q=office",
   "/saved",
+  "/u/dana?view=replies",
+  "/u/demo_avery",
 ])("preserves local feed navigation: %s", (path) => {
   expect(readFeedReturn(feedReturnState(path))).toBe(path);
 });
@@ -22,6 +24,12 @@ it.each([
   { feedReturn: "/\\example.test" },
   { feedReturn: "/\n/elsewhere" },
   { feedReturn: "/settings" },
+  { feedReturn: "/u/dana/extra" },
+  { feedReturn: "/u/dana%2Fother" },
+  { feedReturn: "/u/a" },
+  { feedReturn: "/u/name%3Ftoken" },
+  { feedReturn: "/u/dana#reply-x" },
+  { feedReturn: "/u/name-with-dash" },
   { feedReturn: "/saved/elsewhere" },
   { feedReturn: "/saved#reply-other" },
   { feedReturn: "/threads/id" },

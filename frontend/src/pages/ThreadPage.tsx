@@ -643,7 +643,9 @@ export function ThreadPage() {
         {returnTo
           ? returnTo.split("?")[0] === "/saved"
             ? "← Back to saved"
-            : "← Back to results"
+            : returnTo.split("?")[0].startsWith("/u/")
+              ? "← Back to profile"
+              : "← Back to results"
           : "← All conversations"}
       </Link>
       <p className="muted">
@@ -732,10 +734,11 @@ export function ThreadPage() {
       {(save.error || remove.error) && (
         <ErrorBox error={save.error || remove.error} />
       )}
-      <h2>
-        {t.type === "question" ? "Answers" : "Replies"}{" "}
-        <span className="muted">({t.reply_count})</span>
-      </h2>
+      <h2>{t.type === "question" ? "Answers" : "Replies"}</h2>
+      <p className="muted">
+        {t.reply_count} total {t.reply_count === 1 ? "reply" : "replies"},
+        including follow-ups.
+      </p>
       {!linkedId && (
         <>
           <div className="row" role="group" aria-label="Reply order">

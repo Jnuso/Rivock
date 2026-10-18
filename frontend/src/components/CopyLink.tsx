@@ -1,5 +1,16 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
+export function profilePath(
+  username: string,
+  view: "threads" | "replies" = "threads",
+) {
+  return (
+    "/u/" +
+    encodeURIComponent(username) +
+    (view === "replies" ? "?view=replies" : "")
+  );
+}
+
 export function conversationPath(threadId: string, replyId?: string) {
   return `/threads/${encodeURIComponent(threadId)}${replyId ? `#reply-${encodeURIComponent(replyId)}` : ""}`;
 }
@@ -22,7 +33,7 @@ export function CopyLink({
   label,
 }: {
   path: string;
-  label: "Thread link" | "Reply link";
+  label: "Thread link" | "Reply link" | "Profile link";
 }) {
   const [state, setState] = useState<"idle" | "copying" | "copied" | "manual">(
     "idle",

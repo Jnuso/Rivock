@@ -456,3 +456,20 @@ it("preserves saved-search return through ordering and accepted-answer context",
     path,
   );
 });
+
+it("retains the profile Replies tab through focused conversation navigation", async () => {
+  const path = "/u/dana?view=replies";
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [{ ...fixture.reply, child_count: 0 }],
+  });
+  showThread(path);
+  expect(
+    await screen.findByRole("link", { name: "← Back to profile" }),
+  ).toHaveAttribute("href", path);
+  fireEvent.click(screen.getByRole("link", { name: "View accepted answer →" }));
+  await screen.findByLabelText("Linked reply");
+  expect(
+    screen.getByRole("link", { name: "← Back to profile" }),
+  ).toHaveAttribute("href", path);
+});

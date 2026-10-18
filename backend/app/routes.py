@@ -473,7 +473,7 @@ def contributions(
     stmt = select(cls).where(cls.author_id == author.id, cls.state == "published")
     # Replies under an unavailable thread are reachable only through its conversation shell.
     if cls == m.Reply:
-        stmt = stmt.join(m.Thread).where(
+        stmt = stmt.join(m.Thread, m.Reply.thread_id == m.Thread.id).where(
             m.Thread.state == "published", m.Thread.author_id.not_in(s.hidden_ids(db, user))
         )
     rows = list(db.scalars(stmt.order_by(cls.published_at.desc(), cls.id).offset(offset).limit(limit + 1)))

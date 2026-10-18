@@ -67,3 +67,6 @@ Local notification candidate: each item offers Mark read or Mark unread, changin
 
 
 Local saved-search candidate: search the member’s whole library on the server before paging, ordered by most recent save. Preserve q in the saved URL and the originating saved-list route in local thread navigation state. Back to saved retains the search through focused context/reply order; canonical copied links omit it. Unavailable placeholders appear only with a clear search. Distinguish no matches from an empty library and from failed reads.
+
+
+Local profile candidate: persist the Threads/Replies public tab in view=replies, share only the canonical username and selected tab, and preserve Back to profile through focused conversation links/reload. A missing/blocked profile has no copy control or contribution read. Use the existing safe Markdown renderer for bounded reply previews. Label total conversation replies separately from direct answers because follow-up replies contribute to that total.
