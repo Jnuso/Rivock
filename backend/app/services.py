@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 from datetime import timedelta
+from dataclasses import dataclass
 from markdown_it import MarkdownIt
 from sqlalchemy import select, func, or_
 from sqlalchemy.dialects.postgresql import insert
@@ -162,17 +163,107 @@ def topic_out(topic):
     return {key: getattr(topic, key) for key in ["id", "slug", "name", "sort_order", "is_active"]}
 
 
-def thread_out(db, row, user=None, detail=True):
-    hide = hidden_ids(db, user)
+@dataclass(frozen=True)
+class _ThreadReadBatch:
+    hidden: set[str]
+    topics: dict[str, m.Topic]
+    authors: dict[str, m.User]
+    accepted: dict[str, m.Reply]
+    reply_counts: dict[str, int]
+    scores: dict[str, int]
+    votes: dict[str, int]
+    saved: set[str]
+
+
+def thread_summaries(db, rows, user=None, *, hidden=None):
+    """Project one bounded page with request-local data; never cache viewer state."""
+    if not rows:
+        return []
+    hide = hidden_ids(db, user) if hidden is None else hidden
+    ids = [row.id for row in rows]
+    topic_ids = {row.topic_id for row in rows}
+    author_ids = {row.author_id for row in rows if row.state == "published" and row.author_id not in hide}
+    accepted_ids = {row.accepted_reply_id for row in rows if row.accepted_reply_id}
+    topics = {row.id: row for row in db.scalars(select(m.Topic).where(m.Topic.id.in_(topic_ids)))}
+    authors = (
+        {row.id: row for row in db.scalars(select(m.User).where(m.User.id.in_(author_ids)))}
+        if author_ids
+        else {}
+    )
+    accepted = (
+        {row.id: row for row in db.scalars(select(m.Reply).where(m.Reply.id.in_(accepted_ids)))}
+        if accepted_ids
+        else {}
+    )
+    reply_counts = dict(
+        db.execute(
+            select(m.Reply.thread_id, func.count())
+            .where(m.Reply.thread_id.in_(ids), m.Reply.state == "published", m.Reply.author_id.not_in(hide))
+            .group_by(m.Reply.thread_id)
+        ).all()
+    )
+    scores = dict(
+        db.execute(
+            select(m.ThreadVote.thread_id, func.sum(m.ThreadVote.value))
+            .where(m.ThreadVote.thread_id.in_(ids))
+            .group_by(m.ThreadVote.thread_id)
+        ).all()
+    )
+    votes = (
+        dict(
+            db.execute(
+                select(m.ThreadVote.thread_id, m.ThreadVote.value).where(
+                    m.ThreadVote.thread_id.in_(ids), m.ThreadVote.user_id == user.id
+                )
+            ).all()
+        )
+        if user
+        else {}
+    )
+    saved = (
+        set(db.scalars(select(m.Save.thread_id).where(m.Save.thread_id.in_(ids), m.Save.user_id == user.id)))
+        if user
+        else set()
+    )
+    batch = _ThreadReadBatch(hide, topics, authors, accepted, reply_counts, scores, votes, saved)
+    return [thread_out(db, row, user, False, _batch=batch) for row in rows]
+
+
+def thread_out(db, row, user=None, detail=True, *, _batch: _ThreadReadBatch | None = None):
+    hide = _batch.hidden if _batch else hidden_ids(db, user)
     visible = row.state == "published" and row.author_id not in hide
     state = row.state if row.author_id not in hide else "blocked"
-    count_stmt = (
-        select(func.count())
-        .select_from(m.Reply)
-        .where(m.Reply.thread_id == row.id, m.Reply.state == "published", m.Reply.author_id.not_in(hide))
-    )
-    vote = db.get(m.ThreadVote, (user.id, row.id)) if user else None
-    accepted = db.get(m.Reply, row.accepted_reply_id) if row.accepted_reply_id else None
+    if _batch:
+        topic = _batch.topics[row.topic_id]
+        author = _batch.authors.get(row.author_id)
+        accepted = _batch.accepted.get(row.accepted_reply_id)
+        reply_count = _batch.reply_counts.get(row.id, 0)
+        score = int(_batch.scores.get(row.id, 0))
+        my_vote = _batch.votes.get(row.id)
+        saved = row.id in _batch.saved
+    else:
+        topic = db.get(m.Topic, row.topic_id)
+        author = db.get(m.User, row.author_id) if visible else None
+        accepted = db.get(m.Reply, row.accepted_reply_id) if row.accepted_reply_id else None
+        reply_count = db.scalar(
+            select(func.count())
+            .select_from(m.Reply)
+            .where(m.Reply.thread_id == row.id, m.Reply.state == "published", m.Reply.author_id.not_in(hide))
+        )
+        score = (
+            int(
+                db.scalar(
+                    select(func.coalesce(func.sum(m.ThreadVote.value), 0)).where(
+                        m.ThreadVote.thread_id == row.id
+                    )
+                )
+            )
+            if visible
+            else None
+        )
+        vote = db.get(m.ThreadVote, (user.id, row.id)) if user else None
+        my_vote = vote.value if vote else None
+        saved = bool(user and db.get(m.Save, (user.id, row.id)))
     accepted_id = (
         accepted.id
         if accepted and accepted.state == "published" and accepted.author_id not in hide and visible
@@ -181,27 +272,21 @@ def thread_out(db, row, user=None, detail=True):
     return {
         "id": row.id,
         "type": row.type,
-        "topic": topic_out(db.get(m.Topic, row.topic_id)),
+        "topic": topic_out(topic),
         "title": row.title if visible else f"[{state.capitalize()} thread]",
         "body_markdown": row.body_markdown if visible and detail else None,
         "excerpt": plain(row.body_markdown)[:240] if visible else "This thread is unavailable.",
-        "author": public_user(db.get(m.User, row.author_id)) if visible else None,
+        "author": public_user(author) if visible else None,
         "published_at": row.published_at,
         "edited_at": row.edited_at,
         "revision": row.revision,
         "state": state,
-        "score": int(
-            db.scalar(
-                select(func.coalesce(func.sum(m.ThreadVote.value), 0)).where(m.ThreadVote.thread_id == row.id)
-            )
-        )
-        if visible
-        else None,
-        "reply_count": db.scalar(count_stmt),
+        "score": score if visible else None,
+        "reply_count": reply_count,
         "accepted_reply_id": accepted_id,
         "has_accepted_answer": bool(accepted_id),
-        "my_vote": vote.value if vote and visible else None,
-        "is_saved": bool(user and db.get(m.Save, (user.id, row.id))),
+        "my_vote": my_vote if visible else None,
+        "is_saved": saved,
     }
 
 

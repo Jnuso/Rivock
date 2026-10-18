@@ -190,7 +190,8 @@ def feed(
             stmt.order_by(m.Thread.published_at.desc(), m.Thread.id.desc()).offset(offset).limit(limit + 1)
         )
     )
-    return s.page(rows, offset, limit, lambda row: s.thread_out(db, row, user, False))
+    summaries = {item["id"]: item for item in s.thread_summaries(db, rows[:limit], user, hidden=hidden)}
+    return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
 @router.get("/threads/{id}", response_model=v.ThreadOut)

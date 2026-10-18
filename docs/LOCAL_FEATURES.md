@@ -32,3 +32,7 @@ Nothing in this batch was pushed, merged, published or deployed. No new PR/CI ru
 ## Saved checkpoint and cleanup
 
 Implementation commit: **1928c8297b061873be54e599f80fb181cddf9c2e**, local only. Additional real-browser checks confirmed the Back to results destination survives a thread reload, Ctrl/Command+K selects an editable destination and previews the intended link with ugc/nofollow/noopener/noreferrer, and Ctrl/Command+I previews emphasized text. No link was opened and no reply was posted. The synthetic draft was discarded, the temporary browser tab closed and viewport overrides reset. Both temporary local servers stopped. Cleanup verified the exact dedicated fictional account/thread set and zero active database connections, dropped only rivock_features_test and verified its absence. The existing app and standard test databases were preserved.
+
+## October 18 performance continuation
+
+The feed now batches per-page projections without sharing private state across requests. The full backend suite passes **237 tests**; unchanged OpenAPI and Ruff checks pass. Paired local 10,000-thread measurements reduced per-page SQL from 81–162 to 5–9 and returned identical payloads for anonymous/member cases. HTTP client regressions bound reads at 1/20/50 items. See [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md) for exact scope and limitations. Frontend source remains at the verified 139-test checkpoint. This continuation stays local and unpushed.
