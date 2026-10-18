@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { DraftRecovery } from "../components/DraftRecovery";
 import { api, type Reply, ApiError } from "../api";
 import { Markdown } from "../components/Markdown";
 import { MarkdownEditor, useDraft } from "../components/MarkdownEditor";
@@ -166,6 +167,12 @@ function ReplyComposer({
         information.
       </p>
       {mutation.error && <ErrorBox error={mutation.error} />}
+      <DraftRecovery
+        draft={draft}
+        hasContent={!!draft.value}
+        filename="rivock-reply-draft.txt"
+        text={draft.value}
+      />
       <div className="row">
         <button
           className="btn btnPrimary"
@@ -390,6 +397,25 @@ function ReplyNode({
               value={draft.value}
               onChange={draft.set}
               max={LIMITS.reply}
+            />
+            <DraftRecovery
+              draft={{
+                ...draft,
+                persisted: draft.persisted && revisionDraft.persisted,
+                savedAt: draft.savedAt ?? revisionDraft.savedAt,
+                retry: () => {
+                  const textSaved = draft.retry();
+                  const revisionSaved = revisionDraft.retry();
+                  return textSaved && revisionSaved;
+                },
+              }}
+              hasContent={!!draft.value}
+              filename="rivock-reply-draft.txt"
+              text={[
+                "Original revision: " + baseRevision,
+                "",
+                draft.value,
+              ].join("\n")}
             />
             {baseRevision !== reply.revision && (
               <section className="stack" aria-label="Compare reply versions">

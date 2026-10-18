@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { DraftRecovery } from "../components/DraftRecovery";
 import { api, ApiError } from "../api";
 import { useNavigate } from "react-router-dom";
 import { useDraft } from "../components/MarkdownEditor";
@@ -146,6 +147,18 @@ function AccountSettings() {
             ))}
           </select>
         </label>
+        <DraftRecovery
+          draft={draft}
+          hasContent={!!draft.value}
+          filename="rivock-profile-draft.txt"
+          text={[
+            "Rivock profile draft",
+            "Avatar: " + form.avatar,
+            "Original revision: " + form.baseRevision,
+            "",
+            form.bio,
+          ].join("\n")}
+        />
         {patch.error && <ErrorBox error={patch.error} />}
         {form.baseRevision !== null &&
           form.baseRevision !== user.profile_revision && (

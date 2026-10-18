@@ -132,3 +132,60 @@ it("recovers topic and discussion type together with draft text after navigating
   expect(screen.getByLabelText("Title")).toHaveValue("A saved discussion");
   expect(screen.getByLabelText("Body")).toHaveValue("Some saved context");
 });
+
+it.each(["new", "edit"] as const)(
+  "exports a %s thread draft with its visible fields and original revision without submitting",
+  async (mode) => {
+    const blobs: Blob[] = [];
+    class DraftURL extends URL {
+      static createObjectURL = (blob: Blob) => {
+        blobs.push(blob);
+        return "blob:thread-draft";
+      };
+      static revokeObjectURL = vi.fn();
+    }
+    vi.stubGlobal("URL", DraftURL);
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
+    fixtures.patch.mockClear();
+    fixtures.getThread.mockResolvedValue(published(6));
+    writeDraft(
+      "thread-form:" + mode + ":" + (mode === "edit" ? "thread" : ""),
+      JSON.stringify({
+        title: "A private draft 📝",
+        body: "Keep these two\nlines intact.",
+        type: "discussion",
+        topicId: "topic",
+        baseRevision: mode === "edit" ? 5 : null,
+      }),
+    );
+    const view = show(mode);
+    try {
+      await screen.findByRole("button", { name: "Download draft" });
+      fireEvent.click(screen.getByRole("button", { name: "Download draft" }));
+      const exported = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(blobs[0]);
+      });
+      expect(exported).toContain("Type: discussion\nTopic: Education");
+      expect(exported).toContain(
+        "A private draft 📝\n\nKeep these two\nlines intact.",
+      );
+      if (mode === "edit") expect(exported).toContain("Original revision: 5");
+      else expect(exported).not.toContain("Original revision:");
+      expect((click.mock.instances[0] as HTMLAnchorElement).download).toBe(
+        "rivock-thread-draft.txt",
+      );
+      expect(fixtures.patch).not.toHaveBeenCalled();
+      expect(screen.getByLabelText("Body")).toHaveValue(
+        "Keep these two\nlines intact.",
+      );
+    } finally {
+      view.unmount();
+      vi.unstubAllGlobals();
+    }
+  },
+);

@@ -139,3 +139,5 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Batch feed projections with request-local viewer data; verify 237 PostgreSQL tests and paired local payload/performance checks.
 - [x] Add direct reply ordering and timestamp permalinks, preserving accepted-first priority, nested chronology, context and filtered-search return; verify 252 PostgreSQL tests, Ruff, 147 frontend tests/types/build and local mobile/desktop journeys.
 - [ ] Review the local feature candidate before any release. Keep features/local-conversation-tools unpushed under the current user instruction.
+
+- [x] Add current-editor text backups and persistence retry with pending-cleanup/account safeguards; verify 158 frontend tests/types/build and actual local download/reload/mobile checks. Local only.

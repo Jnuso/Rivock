@@ -58,3 +58,6 @@ Manually inspect and capture real browser layouts at 320, 390, 768, and 1440 CSS
 
 
 Local candidate: direct reply lists offer Recommended/Newest/Oldest, with visible accepted answers first in every mode. Persist the choice in reply_sort, retain it through focused context, and keep nested children chronological. Reply timestamps are keyboard-accessible links into the bounded context. Canonical Copy link omits this display preference and search history. These controls remain local and unreleased.
+
+
+Local draft-backup candidate: provide a current-editor plain-text download and a manual retry when browser saving fails. Preserve text/original revisions, retry pending cleanup before persisting, and do not resurrect a discarded or former-account value. Do not claim an untouched initial editor value is a saved draft or a requested download is confirmed disk persistence. Explain downloaded copies remain separate from browser-draft cleanup.

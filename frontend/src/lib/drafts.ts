@@ -88,6 +88,17 @@ export function writeDraft(key: string, value: string) {
   }
 }
 
+// Retry only the current in-memory draft. A discarded or previous-account copy
+// must never be reconstructed from a stale component value.
+export function retryDraft(key: string) {
+  const draft = memory.get(key);
+  return draft ? writeDraft(key, draft.value) : true;
+}
+
+export function draftSavedAt(key: string) {
+  return memory.get(key)?.savedAt ?? null;
+}
+
 export function forgetDraft(key: string) {
   memory.delete(key);
   discarded.add(key);

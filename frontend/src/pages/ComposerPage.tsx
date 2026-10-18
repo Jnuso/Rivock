@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { DraftRecovery } from "../components/DraftRecovery";
 import { api, ApiError } from "../api";
 import { MarkdownEditor, useDraft } from "../components/MarkdownEditor";
 import { ErrorBox, Loading } from "../components/States";
@@ -228,12 +229,25 @@ function ThreadComposer({ mode, id }: { mode: "new" | "edit"; id: string }) {
         personal information in public posts.
       </p>
       {error && <ErrorBox error={error} />}
-      {!draft.persisted && (
-        <p role="status">
-          Draft recovery is limited to this open tab because browser storage is
-          unavailable. You will be warned before closing it.
-        </p>
-      )}
+      <DraftRecovery
+        draft={draft}
+        hasContent={!!(form.title || form.body)}
+        filename="rivock-thread-draft.txt"
+        text={[
+          "Rivock thread draft",
+          "Type: " + form.type,
+          "Topic: " +
+            (topics.data?.find((topic) => topic.id === form.topicId)?.name ??
+              "Not selected"),
+          ...(form.baseRevision === null
+            ? []
+            : ["Original revision: " + form.baseRevision]),
+          "",
+          form.title,
+          "",
+          form.body,
+        ].join("\n")}
+      />
       {mode === "edit" && (
         <button
           className="btn"

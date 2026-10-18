@@ -11,13 +11,17 @@ import {
   writeDraft,
   forgetDraft,
   draftPersisted,
+  draftSavedAt,
+  retryDraft,
 } from "../lib/drafts";
 
 export function useDraft(key: string, initial = "") {
   const [value, setValue] = useState(() => readDraft(key, initial));
   const [persisted, setPersisted] = useState(() => draftPersisted(key));
+  const [savedAt, setSavedAt] = useState(() => draftSavedAt(key));
   useEffect(() => {
     setValue(readDraft(key, initial));
+    setSavedAt(draftSavedAt(key));
     setPersisted(draftPersisted(key));
   }, [key]);
   useEffect(() => {
@@ -32,13 +36,21 @@ export function useDraft(key: string, initial = "") {
   const set = (next: string) => {
     setValue(next);
     setPersisted(writeDraft(key, next));
+    setSavedAt(draftSavedAt(key));
   };
   const clear = () => {
     setValue("");
     forgetDraft(key);
+    setSavedAt(null);
     setPersisted(true);
   };
-  return { value, set, clear, persisted };
+  const retry = () => {
+    const saved = retryDraft(key);
+    setPersisted(saved);
+    setSavedAt(draftSavedAt(key));
+    return saved;
+  };
+  return { value, set, clear, persisted, savedAt, retry };
 }
 
 export function MarkdownEditor({

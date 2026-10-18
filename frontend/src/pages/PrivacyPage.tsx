@@ -79,6 +79,13 @@ export function PrivacyPage() {
           labeled; their original example conversations are not scraped Reddit
           content.
         </p>
+        <p>
+          Download draft saves a text copy of the current editor on your device;
+          it does not submit or publish it. Downloaded copies are separate from
+          Rivock’s browser drafts and remain until you remove them. If browser
+          saving fails, Retry saving draft tries again with your current text
+          and starts a new recovery window when successful.
+        </p>
       </section>
     </div>
   );
