@@ -150,3 +150,5 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 
 - [x] Check both local preview/production packages with synthetic public settings and no runtime network; verify generated contracts and zero reported npm vulnerabilities, then remove the disposable preview environment. No push/deploy.
 - [ ] Candidate follow-up: batch Alerts and public reply-history projections before large pages; existing feed/saved projections are already batched. Measure and preserve exact safe output/private state before changing those paths.
+
+- [x] Measure the next Alerts batching candidate with rollback-only synthetic PostgreSQL data: 8/103/253 statements at 1/20/50 items; baseline recorded, optimization still unchecked.
