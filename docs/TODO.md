@@ -132,3 +132,10 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 
 - [x] Prepare seven complete local feature journeys and generated feed contracts on features/local-conversation-tools; types/139 frontend tests/build, 226 PostgreSQL tests and Ruff pass. See LOCAL_FEATURES.md for precise scope and local browser evidence.
 - [ ] Owner review of potential features and answer-state semantics; keep this branch unpushed. No release authorization is implied by these implementation checks.
+
+
+## October 18 local feature continuation
+
+- [x] Batch feed projections with request-local viewer data; verify 237 PostgreSQL tests and paired local payload/performance checks.
+- [x] Add direct reply ordering and timestamp permalinks, preserving accepted-first priority, nested chronology, context and filtered-search return; verify 252 PostgreSQL tests, Ruff, 147 frontend tests/types/build and local mobile/desktop journeys.
+- [ ] Review the local feature candidate before any release. Keep features/local-conversation-tools unpushed under the current user instruction.

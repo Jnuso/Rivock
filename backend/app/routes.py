@@ -224,7 +224,14 @@ def delete_thread(id: UUID, db: DB, user: Member):
 
 
 @router.get("/threads/{id}/replies", response_model=v.ReplyList)
-def replies(id: UUID, db: DB, user: Viewer, limit: Limit = 20, offset: Offset = 0):
+def replies(
+    id: UUID,
+    db: DB,
+    user: Viewer,
+    limit: Limit = 20,
+    offset: Offset = 0,
+    sort: Literal["recommended", "newest", "oldest"] = "recommended",
+):
     parent = s.require_row(db, m.Thread, id)
     # Keep shells for unavailable ancestors so other people's responses stay reachable.
     votes = (
@@ -258,12 +265,13 @@ def replies(id: UUID, db: DB, user: Viewer, limit: Limit = 20, offset: Offset = 
         ),
         else_=None,
     )
-    stmt = stmt.order_by(
-        (m.Reply.id == accepted).desc(),
-        visible_rank.desc().nulls_last(),
-        m.Reply.published_at.desc(),
-        m.Reply.id.desc(),
-    )
+    stmt = stmt.order_by((m.Reply.id == accepted).desc())
+    if sort == "recommended":
+        stmt = stmt.order_by(visible_rank.desc().nulls_last())
+    if sort == "oldest":
+        stmt = stmt.order_by(m.Reply.published_at.asc(), m.Reply.id.asc())
+    else:
+        stmt = stmt.order_by(m.Reply.published_at.desc(), m.Reply.id.desc())
     return s.page(
         list(db.scalars(stmt.offset(offset).limit(limit + 1))),
         offset,

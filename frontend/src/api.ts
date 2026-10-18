@@ -241,9 +241,14 @@ export const api = {
     }),
   deleteThread: (id: string) =>
     apiFetch<null>(`/threads/${id}`, { method: "DELETE" }),
-  getReplies: (threadId: string, offset = 0, limit = 20) =>
+  getReplies: (
+    threadId: string,
+    offset = 0,
+    limit = 20,
+    sort = "recommended",
+  ) =>
     apiFetch<Page<Reply>>(
-      `/threads/${threadId}/replies${q({ offset, limit })}`,
+      `/threads/${threadId}/replies${q({ offset, limit, sort })}`,
     ),
   getChildren: (replyId: string, offset = 0, limit = 20) =>
     apiFetch<Page<Reply>>(

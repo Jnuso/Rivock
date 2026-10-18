@@ -2463,6 +2463,7 @@ export interface operations {
             query?: {
                 limit?: number;
                 offset?: number;
+                sort?: "recommended" | "newest" | "oldest";
             };
             header?: never;
             path: {

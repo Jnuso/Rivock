@@ -1389,6 +1389,21 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "recommended",
+                "newest",
+                "oldest"
+              ],
+              "type": "string",
+              "default": "recommended",
+              "title": "Sort"
+            }
           }
         ],
         "responses": {

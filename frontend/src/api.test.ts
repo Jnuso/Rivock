@@ -166,3 +166,20 @@ it("sends feed filters, search and pagination together as encoded query paramete
     limit: "20",
   });
 });
+
+it("sends reply order with its page offset and preserves the existing limit argument", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ items: [], next_offset: null })),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await api.getReplies("thread", 20, 5, "oldest");
+  const url = new URL(fetch.mock.calls[0][0]);
+  expect(url.pathname).toBe("/api/v1/threads/thread/replies");
+  expect(Object.fromEntries(url.searchParams)).toEqual({
+    offset: "20",
+    limit: "5",
+    sort: "oldest",
+  });
+});

@@ -1,4 +1,10 @@
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api, type Reply, ApiError } from "../api";
@@ -9,7 +15,11 @@ import { useAuth } from "../auth/AuthContext";
 import { cpLen, LIMITS } from "../lib/limits";
 import { usePaged, More } from "../lib/paging";
 import { ReportControl } from "../components/ReportControl";
-import { CopyLink, conversationPath } from "../components/CopyLink";
+import {
+  CopyLink,
+  conversationPath,
+  conversationViewPath,
+} from "../components/CopyLink";
 import { readFeedReturn, feedReturnState } from "../lib/feedReturn";
 
 function useRefresh(threadId: string) {
@@ -104,9 +114,17 @@ function ReplyComposer({
       if (result.submission.status !== "published")
         navigate(`/submissions/${result.submission.id}`);
       else if (result.content)
-        navigate(`/threads/${threadId}#reply-${result.content.id}`, {
-          state: feedReturnState(readFeedReturn(location.state)),
-        });
+        navigate(
+          conversationViewPath(
+            threadId,
+            new URLSearchParams(location.search).get("reply_sort") ??
+              "recommended",
+            result.content.id,
+          ),
+          {
+            state: feedReturnState(readFeedReturn(location.state)),
+          },
+        );
     },
     onError: (e) => {
       if (e instanceof ApiError && e.body?.error.submission_id)
@@ -188,6 +206,7 @@ function ReplyNode({
   acceptedId: string | null;
 }) {
   const { user } = useAuth();
+  const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const [responding, setResponding] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -262,9 +281,26 @@ function ReplyNode({
           {reply.author?.is_bot && (
             <span className="badge">Fictional demo</span>
           )}
-          <time dateTime={reply.published_at}>
-            {new Date(reply.published_at).toLocaleString()}
-          </time>
+          <Link
+            to={conversationViewPath(
+              threadId,
+              new URLSearchParams(location.search).get("reply_sort") ??
+                "recommended",
+              reply.id,
+            )}
+            state={feedReturnState(readFeedReturn(location.state))}
+            aria-label={
+              (reply.author
+                ? "Open reply from @" + reply.author.username
+                : "Open unavailable reply") +
+              ", " +
+              new Date(reply.published_at).toLocaleString()
+            }
+          >
+            <time dateTime={reply.published_at}>
+              {new Date(reply.published_at).toLocaleString()}
+            </time>
+          </Link>
           {reply.edited_at && <span>edited</span>}
           {reply.is_accepted && (
             <span className="badge">✓ Accepted answer</span>
@@ -463,6 +499,7 @@ function LinkedConversation({
   acceptedId,
   question,
   returnTo,
+  replySort,
 }: {
   chain: Reply[];
   threadId: string;
@@ -471,6 +508,7 @@ function LinkedConversation({
   acceptedId: string | null;
   question: boolean;
   returnTo: string | null;
+  replySort: string;
 }) {
   const destination = useRef<HTMLDivElement>(null);
   const target = chain[chain.length - 1];
@@ -496,7 +534,7 @@ function LinkedConversation({
             <p className="muted">[{parent.state} reply]</p>
           )}
           <Link
-            to={`/threads/${threadId}#reply-${parent.id}`}
+            to={conversationViewPath(threadId, replySort, parent.id)}
             state={feedReturnState(returnTo)}
           >
             Open this reply
@@ -520,7 +558,7 @@ function LinkedConversation({
       </div>
       <Link
         className="btn"
-        to={`/threads/${threadId}`}
+        to={conversationViewPath(threadId, replySort)}
         state={feedReturnState(returnTo)}
       >
         Show all {question ? "answers" : "replies"}
@@ -534,6 +572,8 @@ export function ThreadPage() {
   const { user } = useAuth();
   const location = useLocation();
   const returnTo = readFeedReturn(location.state);
+  const [replyParams, setReplyParams] = useSearchParams();
+  const replySort = replyParams.get("reply_sort") ?? "recommended";
   const linkedId = /^#reply-([a-f0-9-]{36})$/i.exec(location.hash)?.[1] ?? "";
   const context = useQuery({
     queryKey: ["reply-context", id, linkedId],
@@ -547,8 +587,8 @@ export function ThreadPage() {
     enabled: !!id,
   });
   const replies = usePaged(
-    ["replies", id],
-    (offset) => api.getReplies(id, offset),
+    ["replies", id, replySort],
+    (offset) => api.getReplies(id, offset, 20, replySort),
     !!id && !linkedId,
   );
   const save = useMutation({
@@ -597,7 +637,7 @@ export function ThreadPage() {
             <span>You’re viewing the accepted answer below.</span>
           ) : (
             <Link
-              to={conversationPath(id, t.accepted_reply_id)}
+              to={conversationViewPath(id, replySort, t.accepted_reply_id)}
               state={feedReturnState(returnTo)}
             >
               View accepted answer →
@@ -667,9 +707,46 @@ export function ThreadPage() {
         <span className="muted">({t.reply_count})</span>
       </h2>
       {!linkedId && (
-        <p className="muted">
-          Accepted answer first, then a mix of votes and freshness.
-        </p>
+        <>
+          <div className="row" role="group" aria-label="Reply order">
+            {[
+              ["recommended", "Recommended"],
+              ["newest", "Newest"],
+              ["oldest", "Oldest"],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={replySort === value ? "btn btnPrimary" : "btn"}
+                aria-pressed={replySort === value}
+                onClick={() => {
+                  if (replySort === value) return;
+                  const next = new URLSearchParams(replyParams);
+                  if (value === "recommended") next.delete("reply_sort");
+                  else next.set("reply_sort", value);
+                  setReplyParams(next, {
+                    state: feedReturnState(returnTo),
+                    preventScrollReset: true,
+                  });
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="muted">
+            {t.type === "question" && t.accepted_reply_id
+              ? "Accepted answer first. "
+              : ""}
+            {replySort === "recommended"
+              ? "Recommended balances votes and freshness."
+              : replySort === "oldest"
+                ? "Replies are shown oldest first."
+                : replySort === "newest"
+                  ? "Replies are shown newest first."
+                  : "Choose an order to reset this view."}
+          </p>
+        </>
       )}
       {linkedId && context.isLoading && <Loading />}
       {linkedId && <QueryError query={context} />}
@@ -684,12 +761,16 @@ export function ThreadPage() {
             acceptedId={t.accepted_reply_id}
             question={t.type === "question"}
             returnTo={returnTo}
+            replySort={replySort}
           />
         ) : (
           <Empty>This reply belongs to another conversation.</Empty>
         ))}
       {linkedId && (context.error || context.data?.thread_id !== id) && (
-        <Link to={`/threads/${id}`} state={feedReturnState(returnTo)}>
+        <Link
+          to={conversationViewPath(id, replySort)}
+          state={feedReturnState(returnTo)}
+        >
           Show all replies
         </Link>
       )}

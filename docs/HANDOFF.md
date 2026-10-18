@@ -8,6 +8,8 @@ The latest user instruction is to prepare more potential features on a new branc
 
 The October 18 continuation also batches feed projections: 237 PostgreSQL tests and Ruff pass, the public contract is identical, and the paired local dataset used 5–9 SQL reads per page instead of 81–162 while returning identical payloads. Frontend source is unchanged at 139 tests. See [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md). Keep this branch unpushed.
 
+The next October 18 checkpoint adds direct reply ordering and clickable reply timestamps. Current checks are **252 PostgreSQL tests, backend Ruff, 147 frontend tests, types and build**. The optional reply sort is now intentionally part of the generated API contract; the preceding feed-performance-only checkpoint retained its original contract. Browser checks cover local sorted/context/search-return journeys at 320/1280px using fictional data. See LOCAL_FEATURES.md. Nothing is pushed or deployed.
+
 ## Current usability release — October 17
 
 Application source `7bc80adfe11394deb0e3d6e4e819fd4abf1a6644` passed [exact-commit CI](https://github.com/Jnuso/Rivock/actions/runs/39072833183) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39072992347). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e`. After the user's release authorization, image-only updates moved the existing app and manual migration job to that digest. Ready revision `rivock-api--0000004` is Healthy with 100% traffic. No migration ran and no new ARM group deployment was created.

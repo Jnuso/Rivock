@@ -6,7 +6,7 @@ import {
   screen,
 } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import { CopyLink, conversationPath } from "./CopyLink";
+import { CopyLink, conversationPath, conversationViewPath } from "./CopyLink";
 
 afterEach(() => {
   cleanup();
@@ -111,3 +111,21 @@ it("offers a manual link while a clipboard permission request remains pending", 
   expect(input).toBeVisible();
   expect(screen.queryByText("Link copied.")).not.toBeInTheDocument();
 });
+
+it.each(["recommended", "newest", "oldest"])(
+  "keeps %s order in navigation while shared links stay canonical",
+  (sort) => {
+    const view = new URL(
+      conversationViewPath("thread", sort, "reply"),
+      window.location.origin,
+    );
+    expect(view.pathname).toBe("/threads/thread");
+    expect(view.hash).toBe("#reply-reply");
+    expect(view.searchParams.get("reply_sort")).toBe(
+      sort === "recommended" ? null : sort,
+    );
+    expect(conversationPath("thread", "reply")).toBe(
+      "/threads/thread#reply-reply",
+    );
+  },
+);

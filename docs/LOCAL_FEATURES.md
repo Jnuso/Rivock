@@ -36,3 +36,12 @@ Implementation commit: **1928c8297b061873be54e599f80fb181cddf9c2e**, local only.
 ## October 18 performance continuation
 
 The feed now batches per-page projections without sharing private state across requests. The full backend suite passes **237 tests**; unchanged OpenAPI and Ruff checks pass. Paired local 10,000-thread measurements reduced per-page SQL from 81–162 to 5–9 and returned identical payloads for anonymous/member cases. HTTP client regressions bound reads at 1/20/50 items. See [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md) for exact scope and limitations. Frontend source remains at the verified 139-test checkpoint. This continuation stays local and unpushed.
+
+
+## October 18 reply navigation continuation — local only
+
+Direct answers/replies now offer Recommended, Newest and Oldest. Recommended retains the existing vote/freshness ranking; dates and IDs provide deterministic chronological ties. A visible published accepted answer remains first in every order. Deleted/removed parents remain safe placeholders so descendants stay reachable; blocked or unavailable answers cannot retain acceptance. Nested children remain oldest first. Invalid sort values return the standard 422 error. No migration is required.
+
+The selected order lives in reply_sort in the browser URL and survives reload, focused context, parent links, Show all answers and published-reply navigation. Each reply timestamp opens its focused conversation, including nested replies. Back to results retains the originating filtered search throughout. Copy link continues to omit both search history and reply order. OpenAPI and generated TypeScript include the optional API sort parameter.
+
+Verification: **252 PostgreSQL tests**, including 15 reply-order cases, and full backend Ruff passed. Frontend types, **147 tests across 21 files**, and production build passed. Real local React/FastAPI/PostgreSQL checks at 320 and 1280 CSS pixels confirmed order, accepted-first priority, keyboard selection, reload, canonical-copy fallback, invalid-order recovery, nested timestamp context and filtered-search return. Mobile document width was 305 at a 320px viewport. The isolated fictional-account fixture does not verify Clerk or hosted behavior. Screenshots are saved in the accompanying local outputs. No push, PR, CI, deployment, cloud or application AI change occurred.

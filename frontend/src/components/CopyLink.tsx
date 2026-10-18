@@ -4,6 +4,19 @@ export function conversationPath(threadId: string, replyId?: string) {
   return `/threads/${encodeURIComponent(threadId)}${replyId ? `#reply-${encodeURIComponent(replyId)}` : ""}`;
 }
 
+export function conversationViewPath(
+  threadId: string,
+  sort: string,
+  replyId?: string,
+) {
+  const url = new URL(
+    conversationPath(threadId, replyId),
+    window.location.origin,
+  );
+  if (sort !== "recommended") url.searchParams.set("reply_sort", sort);
+  return url.pathname + url.search + url.hash;
+}
+
 export function CopyLink({
   path,
   label,

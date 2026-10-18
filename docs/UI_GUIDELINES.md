@@ -55,3 +55,6 @@ Use semantic buttons/forms/headings/landmarks, skip link, visible focus, meaning
 Every data view needs loading, empty, error/retry, and unavailable states. Distinguish signed out, onboarding, suspended, and deactivated. Never represent a network error as an empty feed or a failed publish as success. Reserve layout space for loaders to limit jumps.
 
 Manually inspect and capture real browser layouts at 320, 390, 768, and 1440 CSS pixels during implementation. Verify long usernames/titles, multi-paragraph Markdown, long URLs, depth-five branches, modals, and mobile keyboard. Browser tests cover navigation/back/forward, topic/search URL state, compose validation, draft preservation, pending/rejected publishing, acceptance, voting, and saving. The existing demo's DOM checks are not evidence that these future production screens or mobile layouts have been tested.
+
+
+Local candidate: direct reply lists offer Recommended/Newest/Oldest, with visible accepted answers first in every mode. Persist the choice in reply_sort, retain it through focused context, and keep nested children chronological. Reply timestamps are keyboard-accessible links into the bounded context. Canonical Copy link omits this display preference and search history. These controls remain local and unreleased.

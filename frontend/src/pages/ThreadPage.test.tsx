@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const fixture = vi.hoisted(() => ({
   accepted: "00000000-0000-4000-8000-000000000001" as string | null,
   threadType: "question",
@@ -30,6 +30,7 @@ const fixture = vi.hoisted(() => ({
     response_to: null,
   },
   getChildren: vi.fn(),
+  replies: vi.fn(),
   accept: vi.fn(),
   replyPost: vi.fn(),
   context: vi.fn(),
@@ -59,7 +60,7 @@ vi.mock("../api", () => ({
       reply_count: 2,
       accepted_reply_id: fixture.accepted,
     }),
-    getReplies: async () => ({ items: [fixture.reply], next_offset: null }),
+    getReplies: fixture.replies,
     getChildren: fixture.getChildren,
     acceptAnswer: fixture.accept,
     createReply: fixture.replyPost,
@@ -67,6 +68,11 @@ vi.mock("../api", () => ({
   },
 }));
 import { ThreadPage } from "./ThreadPage";
+beforeEach(() => {
+  fixture.replies
+    .mockReset()
+    .mockResolvedValue({ items: [fixture.reply], next_offset: null });
+});
 afterEach(() => {
   cleanup();
   fixture.accepted = "00000000-0000-4000-8000-000000000001";
@@ -173,7 +179,7 @@ it("opens a linked nested reply with its parent context without paging through r
   await screen.findByRole("button", { name: "Clear accepted answer" });
 });
 
-function showThread(feedReturn?: string) {
+function showThread(feedReturn?: string, search = "") {
   render(
     <QueryClientProvider
       client={
@@ -182,7 +188,7 @@ function showThread(feedReturn?: string) {
     >
       <MemoryRouter
         initialEntries={[
-          { pathname: "/threads/thread", state: { feedReturn } },
+          { pathname: "/threads/thread", search, state: { feedReturn } },
         ]}
       >
         <Routes>
@@ -286,7 +292,7 @@ it("keeps the originating results after a newly published reply opens its contex
       },
     ],
   });
-  showThread(path);
+  showThread(path, "?reply_sort=newest");
   const input = await screen.findByLabelText("Your reply");
   fireEvent.change(input, { target: { value: "My published response" } });
   fireEvent.click(screen.getByRole("button", { name: "Submit reply" }));
@@ -296,4 +302,132 @@ it("keeps the originating results after a newly published reply opens its contex
     screen.getByRole("link", { name: "← Back to results" }),
   ).toHaveAttribute("href", path);
   expect(screen.getByLabelText("Your reply")).toHaveValue("");
+  expect(
+    screen.getByRole("link", { name: "Show all answers" }),
+  ).toHaveAttribute("href", "/threads/thread?reply_sort=newest");
+});
+
+it("keeps the chosen order on later pages and restarts when the order changes", async () => {
+  fixture.replies.mockImplementation(async (_id, offset, _limit, sort) => ({
+    items: [
+      {
+        ...fixture.reply,
+        id: sort + offset,
+        body_markdown: sort + " page " + offset,
+        child_count: 0,
+        is_accepted: false,
+      },
+    ],
+    next_offset: sort === "newest" && offset === 0 ? 20 : null,
+  }));
+  showThread(undefined, "?reply_sort=newest");
+  await screen.findByText("newest page 0");
+  expect(screen.getByRole("button", { name: "Newest" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+  await screen.findByText("newest page 20");
+  expect(fixture.replies).toHaveBeenLastCalledWith("thread", 20, 20, "newest");
+  fireEvent.click(screen.getByRole("button", { name: "Oldest" }));
+  await screen.findByText("oldest page 0");
+  expect(fixture.replies).toHaveBeenLastCalledWith("thread", 0, 20, "oldest");
+  expect(screen.queryByText("newest page 20")).not.toBeInTheDocument();
+});
+
+it("preserves reply order and feed results through accepted-answer context", async () => {
+  const path = "/?q=office&sort=newest&type=question";
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [{ ...fixture.reply, child_count: 0 }],
+  });
+  showThread(path, "?reply_sort=oldest");
+  const shortcut = await screen.findByRole("link", {
+    name: "View accepted answer →",
+  });
+  expect(shortcut).toHaveAttribute(
+    "href",
+    "/threads/thread?reply_sort=oldest#reply-" + fixture.accepted,
+  );
+  fireEvent.click(shortcut);
+  await screen.findByLabelText("Linked reply");
+  expect(
+    screen.queryByRole("group", { name: "Reply order" }),
+  ).not.toBeInTheDocument();
+  const back = screen.getByRole("link", { name: "Show all answers" });
+  expect(back).toHaveAttribute("href", "/threads/thread?reply_sort=oldest");
+  fireEvent.click(back);
+  await screen.findByRole("group", { name: "Reply order" });
+  expect(screen.getByRole("button", { name: "Oldest" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(
+    screen.getByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", path);
+});
+
+it("recovers an invalid shared order by choosing Recommended", async () => {
+  fixture.replies.mockImplementation(async (_id, _offset, _limit, sort) => {
+    if (sort === "bad") throw new Error("Choose a supported reply order.");
+    return { items: [fixture.reply], next_offset: null };
+  });
+  showThread(undefined, "?reply_sort=bad");
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Choose a supported reply order.",
+  );
+  expect(
+    screen.queryByText("No replies yet. Start the conversation."),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Recommended" }));
+  await screen.findByText("A helpful answer");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(fixture.replies).toHaveBeenLastCalledWith(
+    "thread",
+    0,
+    20,
+    "recommended",
+  );
+});
+
+it("opens a nested reply from its timestamp while preserving order and originating results", async () => {
+  const targetId = "00000000-0000-4000-8000-000000000077";
+  const nested = {
+    ...fixture.reply,
+    id: targetId,
+    depth: 2,
+    is_accepted: false,
+    child_count: 0,
+    body_markdown: "Nested timestamp destination",
+    response_to: { reply_id: fixture.reply.id, username: "bruce" },
+  };
+  fixture.getChildren.mockResolvedValue({ items: [nested], next_offset: null });
+  fixture.context.mockResolvedValue({
+    thread_id: "thread",
+    replies: [fixture.reply, nested],
+  });
+  const returnTo = "/?q=office&sort=newest";
+  showThread(returnTo, "?reply_sort=oldest");
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Show 1 replies" }),
+  );
+  const article = (
+    await screen.findByText("Nested timestamp destination")
+  ).closest("article")!;
+  const link = within(article).getByRole("link", {
+    name: /^Open reply from @bruce/,
+  });
+  expect(link).toHaveAttribute(
+    "href",
+    "/threads/thread?reply_sort=oldest#reply-" + targetId,
+  );
+  fireEvent.click(link);
+  expect(await screen.findByLabelText("Linked reply")).toHaveFocus();
+  expect(fixture.context).toHaveBeenCalledWith(targetId);
+  expect(
+    screen.getByRole("link", { name: "Show all answers" }),
+  ).toHaveAttribute("href", "/threads/thread?reply_sort=oldest");
+  expect(
+    screen.getByRole("link", { name: "← Back to results" }),
+  ).toHaveAttribute("href", returnTo);
 });

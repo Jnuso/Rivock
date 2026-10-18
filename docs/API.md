@@ -49,7 +49,7 @@ Thread summary includes ID, type, topic, title, a plain-text excerpt up to 240 c
 
 | Method/path | Input | Result |
 | --- | --- | --- |
-| `GET /threads/{id}/replies` | Pagination | Direct replies; accepted first then Recommended |
+| `GET /threads/{id}/replies` | `sort=recommended|newest|oldest` (default recommended), pagination | Direct replies; a visible published accepted answer stays first, followed by the chosen order |
 | `GET /replies/{id}/children` | Pagination | Structural children oldest first; lazy expansion |
 | `GET /replies/{id}` | — | Single reply with the same safe visibility projection |
 | `GET /replies/{id}/context` | — | `{thread_id, replies}`: structural ancestors through target, oldest first, maximum five; safe placeholders apply |
