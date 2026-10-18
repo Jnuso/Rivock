@@ -195,3 +195,10 @@ The local features/local-conversation-tools branch includes feed projection batc
 
 
 The next local profile checkpoint passes 301 PostgreSQL tests/Ruff and 205 frontend tests (24 files)/types/build. Public tabs and selected profile sharing/return are implemented. A failing PostgreSQL regression reproduced the browser-discovered reply-history join ambiguity before the explicit owning-thread join fixed it. Existing hidden/deleted/profile visibility is retained. Actual local profile/context/reload proof is recorded in LOCAL_FEATURES.md; hosted identity/release and independent review remain unclaimed.
+
+
+## October 18 packaging and cleanup checkpoint
+
+Application source **79a8d4f0ca966bb162d9b99c8b5816402e73e769** is committed locally. The combined production and preview images were built locally with synthetic public Clerk keys. Both passed in-container checks with networking disabled: non-root UID 10001, moderation off/no provider key, all seven selected new feature markers in the bundle, SPA deep links/HEAD, asset caching, private/missing-path guards and liveness. This is not database readiness, a Clerk login, a container-browser check or a hosted release. The regenerated OpenAPI and TypeScript match the committed files after line-ending normalization. npm audit reported zero known vulnerabilities at this check; no dependency changed. Existing Starlette/httpx deprecation and Docker’s public-key ARG heuristic remain warnings.
+
+The fictional reply draft was discarded and both synthetic saved entries removed. Temporary preview tabs closed and viewport sizing reset; only our local preview servers stopped. The guarded cleanup verified the exact fictional account/thread set and zero active target connections, removed only rivock_features_test and confirmed absence. Existing app/test databases and other applications were preserved. Smoke containers removed themselves; the two local images remain available. No push, PR, image publication, deployment, migration, cloud/network/AI/schedule change occurred. The local patch was refreshed from a00c794.

@@ -147,3 +147,6 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Add full-library private saved search and Back to saved navigation, retaining safe clear-search placeholders; verify 294 PostgreSQL tests, Ruff, 183 frontend tests/types/build and actual local search/context/reload checks. Local only.
 
 - [x] Add profile tab URLs/copying/return, safe reply previews and clear total-reply labels; reproduce/fix the existing reply-history join failure. Verify 301 PostgreSQL tests, Ruff, 205 frontend tests/types/build and local profile/context/reload checks. Local only.
+
+- [x] Check both local preview/production packages with synthetic public settings and no runtime network; verify generated contracts and zero reported npm vulnerabilities, then remove the disposable preview environment. No push/deploy.
+- [ ] Candidate follow-up: batch Alerts and public reply-history projections before large pages; existing feed/saved projections are already batched. Measure and preserve exact safe output/private state before changing those paths.
