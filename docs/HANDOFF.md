@@ -166,4 +166,4 @@ Copy the paragraph below into a new chat opened in this project:
 
 
 ## Next local performance candidate
-Alerts performance follow-up (measured, **not implemented**): a guarded rollback-only PostgreSQL test with 50 fictional events measured 8/103/253 SQL statements for 1/20/50 items, with three samples per size. Median local route/query/projection times were 4.549/47.193/111.264 ms; authentication, rate checks, HTTP, JSON and network were excluded. Original user/thread/reply/notification row counts were restored after rollback. The next independent code task is to batch Alerts thread/reply/actor projections per request, preserve exact safe output and recipient/block filtering, and add bounded-query plus output-equivalence regressions. Feed/saved batching is already implemented; Alerts batching is not. No hosted capacity claim follows from this small fixture.
+Historical Alerts baseline (superseded by the October 20 implementation below/above): rollback-only local tests measured 8/103/253 reads for 1/20/50 items. The completed batching follow-up uses seven reads at all three sizes; see the current verification section for scope and limits.

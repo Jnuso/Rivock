@@ -1,6 +1,6 @@
 # Rivock implementation checklist
 
-Updated October 17, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The public Azure test preview is live and HTTP checks pass; the targeted hosted core browser journeys now pass. See BROWSER_CHECKS.md for exact scope and remaining checks.
+Updated October 20, 2026. Checked items have the implementation/check evidence described below; unchecked items still need work or real external configuration. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for limitations. The public Azure test preview is live and HTTP checks pass; the targeted hosted core browser journeys now pass. See BROWSER_CHECKS.md for exact scope and remaining checks.
 
 ## Repository and application foundation
 
