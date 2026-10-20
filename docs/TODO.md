@@ -149,6 +149,7 @@ Updated October 17, 2026. Checked items have the implementation/check evidence d
 - [x] Add profile tab URLs/copying/return, safe reply previews and clear total-reply labels; reproduce/fix the existing reply-history join failure. Verify 301 PostgreSQL tests, Ruff, 205 frontend tests/types/build and local profile/context/reload checks. Local only.
 
 - [x] Check both local preview/production packages with synthetic public settings and no runtime network; verify generated contracts and zero reported npm vulnerabilities, then remove the disposable preview environment. No push/deploy.
-- [ ] Candidate follow-up: batch Alerts and public reply-history projections before large pages; existing feed/saved projections are already batched. Measure and preserve exact safe output/private state before changing those paths.
+- [x] Batch Alerts projections with request-local records: 7 reads at 1/20/50 items, exact privacy/output regressions, 319 PostgreSQL tests and Ruff passed; API unchanged. Local only.
+- [ ] Measure public reply-history projections before considering batching; feed/saved/Alerts projections are already batched.
 
-- [x] Measure the next Alerts batching candidate with rollback-only synthetic PostgreSQL data: 8/103/253 statements at 1/20/50 items; baseline recorded, optimization still unchecked.
+- [x] Measure the next Alerts batching candidate with rollback-only synthetic PostgreSQL data: 8/103/253 statements at 1/20/50 items; baseline retained as historical evidence; optimization completed in the October 20 follow-up.

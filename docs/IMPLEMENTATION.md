@@ -207,7 +207,7 @@ The fictional reply draft was discarded and both synthetic saved entries removed
 Alerts performance follow-up (measured, **not implemented**): a guarded rollback-only PostgreSQL test with 50 fictional events measured 8/103/253 SQL statements for 1/20/50 items, with three samples per size. Median local route/query/projection times were 4.549/47.193/111.264 ms; authentication, rate checks, HTTP, JSON and network were excluded. Original user/thread/reply/notification row counts were restored after rollback. The next independent code task is to batch Alerts thread/reply/actor projections per request, preserve exact safe output and recipient/block filtering, and add bounded-query plus output-equivalence regressions. Feed/saved batching is already implemented; Alerts batching is not. No hosted capacity claim follows from this small fixture.
 
 
-## Alerts batching — October 20 local follow-up
+## Alerts batching â€” October 20 local follow-up
 
 The Alerts list now bulk-loads only its bounded page's threads, replies and actors, with one request-local visibility set. Recipient/block filtering still runs before pagination; single-item read/unread updates retain the same safe serializer. No shared viewer cache, migration or API change was introduced.
 
