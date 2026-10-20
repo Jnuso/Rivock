@@ -531,20 +531,27 @@ def notification_stmt(db, user):
     )
 
 
-def notification_out(db, row, user):
-    thread, reply = db.get(m.Thread, row.thread_id), db.get(m.Reply, row.reply_id)
+def notification_out(db, row, user, *, _batch=None):
+    if _batch is None:
+        thread, reply = db.get(m.Thread, row.thread_id), db.get(m.Reply, row.reply_id)
+        hidden = s.hidden_ids(db, user)
+    else:
+        threads, replies, actors, hidden = _batch
+        thread, reply = threads[row.thread_id], replies[row.reply_id]
     available = (
         thread.state == "published"
         and reply.state == "published"
-        and thread.author_id not in s.hidden_ids(db, user)
-        and reply.author_id not in s.hidden_ids(db, user)
+        and thread.author_id not in hidden
+        and reply.author_id not in hidden
     )
     verb = {
         "thread_reply": "replied to your thread",
         "reply_response": "replied to you",
         "answer_accepted": "accepted your answer",
     }.get(row.kind, "updated a conversation")
-    actor = s.public_user(db.get(m.User, row.actor_id)) if available else None
+    actor = None
+    if available:
+        actor = s.public_user(db.get(m.User, row.actor_id) if _batch is None else actors[row.actor_id])
     return {
         "id": row.id,
         "kind": row.kind,
@@ -565,18 +572,30 @@ def notifications(db: DB, user: Member, unread_only: bool = False, limit: Limit 
     stmt = notification_stmt(db, user).where(m.Notification.created_at <= stamp)
     if unread_only:
         stmt = stmt.where(m.Notification.read_at.is_(None))
-    result = s.page(
-        list(
-            db.scalars(
-                stmt.order_by(m.Notification.created_at.desc(), m.Notification.id)
-                .offset(offset)
-                .limit(limit + 1)
-            )
-        ),
-        offset,
-        limit,
-        lambda r: notification_out(db, r, user),
+    rows = list(
+        db.scalars(
+            stmt.order_by(m.Notification.created_at.desc(), m.Notification.id).offset(offset).limit(limit + 1)
+        )
     )
+    # Only this bounded page is projected; no viewer state survives the request.
+    visible = rows[:limit]
+    projected = {}
+    if visible:
+        threads = {
+            row.id: row
+            for row in db.scalars(select(m.Thread).where(m.Thread.id.in_({row.thread_id for row in visible})))
+        }
+        replies = {
+            row.id: row
+            for row in db.scalars(select(m.Reply).where(m.Reply.id.in_({row.reply_id for row in visible})))
+        }
+        actors = {
+            row.id: row
+            for row in db.scalars(select(m.User).where(m.User.id.in_({row.actor_id for row in visible})))
+        }
+        batch = threads, replies, actors, s.hidden_ids(db, user)
+        projected = {row.id: notification_out(db, row, user, _batch=batch) for row in visible}
+    result = s.page(rows, offset, limit, lambda row: projected[row.id])
     return {**result, "as_of": stamp}
 
 

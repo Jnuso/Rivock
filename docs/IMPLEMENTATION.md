@@ -205,3 +205,14 @@ The fictional reply draft was discarded and both synthetic saved entries removed
 
 
 Alerts performance follow-up (measured, **not implemented**): a guarded rollback-only PostgreSQL test with 50 fictional events measured 8/103/253 SQL statements for 1/20/50 items, with three samples per size. Median local route/query/projection times were 4.549/47.193/111.264 ms; authentication, rate checks, HTTP, JSON and network were excluded. Original user/thread/reply/notification row counts were restored after rollback. The next independent code task is to batch Alerts thread/reply/actor projections per request, preserve exact safe output and recipient/block filtering, and add bounded-query plus output-equivalence regressions. Feed/saved batching is already implemented; Alerts batching is not. No hosted capacity claim follows from this small fixture.
+
+
+## Alerts batching — October 20 local follow-up
+
+The Alerts list now bulk-loads only its bounded page's threads, replies and actors, with one request-local visibility set. Recipient/block filtering still runs before pagination; single-item read/unread updates retain the same safe serializer. No shared viewer cache, migration or API change was introduced.
+
+The query regression failed before the change at 103/253 reads for 20/50 items. Eighteen new PostgreSQL cases compare safe outputs for published/removed/deleted content, blocked targets, both actor block directions, deactivated actors, read/unread filtering, other recipients, pagination and visibility changes between requests. Full suite: **319 PostgreSQL tests passed**, Ruff passed. Fresh OpenAPI export matches the checked-in contract exactly after newline normalization. Frontend remains unchanged at the prior verified 205-test checkpoint; no new browser or hosted identity check is claimed.
+
+Rollback-only local measurement: **7 reads at 1/20/50 items**, three samples each; medians **3.823/4.212/4.662 ms**. Earlier baseline was 8/103/253 reads and 4.549/47.193/111.264 ms. These are separate local runs of the route/query/projection, excluding auth/rate limits, HTTP, JSON and network; they establish no hosted latency/capacity guarantee. All temporary fixture rows rolled back and original counts were verified.
+
+Existing preview/production package smoke evidence applies to application source 79a8d4f, preceding this backend-only follow-up; those images were not rebuilt. Nothing pushed, deployed or changed in cloud configuration. AI remains off. Public reply-history batching remains a separate unmeasured candidate.
