@@ -10,6 +10,8 @@ People can report published content. Reports stay private, do not automatically 
 
 ## Future direction, not implemented
 
+A [concrete report-assisted AI proposal](REPORT_AI_PROPOSAL.md) is prepared for owner review. It recommends manual admin-triggered, recommendation-only analysis as the first experiment, with revision/privacy/budget safeguards. These defaults are unapproved and unimplemented; no provider call or activation is implied.
+
 The user wants AI assistance combined with reports to assess harmful posts/comments after publication, without delaying the initial contribution. Before building that workflow, decide:
 
 - Which reports or other signals trigger review, with protection against duplicate or coordinated false reports.

@@ -272,12 +272,9 @@ def replies(
         stmt = stmt.order_by(m.Reply.published_at.asc(), m.Reply.id.asc())
     else:
         stmt = stmt.order_by(m.Reply.published_at.desc(), m.Reply.id.desc())
-    return s.page(
-        list(db.scalars(stmt.offset(offset).limit(limit + 1))),
-        offset,
-        limit,
-        lambda row: s.reply_out(db, row, user),
-    )
+    rows = list(db.scalars(stmt.offset(offset).limit(limit + 1)))
+    summaries = {item["id"]: item for item in s.reply_summaries(db, rows[:limit], user, hidden=hidden)}
+    return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
 @router.get("/replies/{id}/children", response_model=v.ReplyList)
@@ -292,7 +289,8 @@ def children(id: UUID, db: DB, user: Viewer, limit: Limit = 20, offset: Offset =
             .limit(limit + 1)
         )
     )
-    return s.page(rows, offset, limit, lambda row: s.reply_out(db, row, user))
+    summaries = {item["id"]: item for item in s.reply_summaries(db, rows[:limit], user)}
+    return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
 @router.get("/replies/{id}", response_model=v.ReplyOut)

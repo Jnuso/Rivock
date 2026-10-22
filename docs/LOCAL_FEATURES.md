@@ -104,3 +104,7 @@ Existing preview/production package smoke evidence applies to application source
 ## October 22 profile history continuation — local only
 
 Measured and batched public profile Threads/Replies. The 50-item reply fixture fell from 253/357 database statements for anonymous/member views to 8/12; every complete HTTP page matches the established per-item projection. Full suite: 343 PostgreSQL tests (24 new), 22 operator-helper tests, Ruff and unchanged OpenAPI passed. No frontend change, browser/Clerk/hosted claim, dependency, migration, AI call, cloud change, push or release. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md) for counts, visibility/depth-five regressions and test-environment limits. Prior package evidence predates this backend change.
+
+## October 22 conversation page continuation — local only
+
+Measured direct-answer and expanded follow-up pages, then reused the safe request-local reply batch. A 50-item signed-in follow-up fixture fell from 405 SQL statements to 12; complete HTTP payload equivalence, accepted-first sorting and unavailable shells remain verified. Full suite: 365 PostgreSQL tests, Ruff and unchanged OpenAPI passed. Both local preview/production packages were rebuilt with synthetic public keys and passed network-disabled source-hash/routing/security/non-root/private-file checks. See [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md) for exact counts, 22 new cases and limits. No push, deployment, schema, cloud/network/credential/schedule or AI change. A report-assisted AI proposal is documentation only, awaiting owner review.

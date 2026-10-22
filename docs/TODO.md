@@ -151,5 +151,7 @@ Updated October 20, 2026. Checked items have the implementation/check evidence d
 - [x] Check both local preview/production packages with synthetic public settings and no runtime network; verify generated contracts and zero reported npm vulnerabilities, then remove the disposable preview environment. No push/deploy.
 - [x] Batch Alerts projections with request-local records: 7 reads at 1/20/50 items, exact privacy/output regressions, 319 PostgreSQL tests and Ruff passed; API unchanged. Local only.
 - [x] Measure and batch public profile Threads/Replies without changing safe outputs; verify 343 PostgreSQL tests, 22 helper tests, Ruff and unchanged OpenAPI. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md). Local only, no push/deploy.
+- [x] Measure/batch direct-answer and expanded follow-up pages; preserve full payloads, ordering, safe shells and private votes. Full suite 365 PostgreSQL tests, Ruff/contract checks and both local package smokes pass. See [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md). Local only.
+- [x] Prepare a concrete report-assisted AI proposal for owner review, without enabling AI or changing publication behavior. See [REPORT_AI_PROPOSAL.md](REPORT_AI_PROPOSAL.md); implementation/provider/data decisions remain open.
 
 - [x] Measure the next Alerts batching candidate with rollback-only synthetic PostgreSQL data: 8/103/253 statements at 1/20/50 items; baseline retained as historical evidence; optimization completed in the October 20 follow-up.

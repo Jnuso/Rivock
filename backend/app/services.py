@@ -302,7 +302,7 @@ class _ReplyReadBatch:
 
 
 def reply_summaries(db, rows, user=None, *, hidden=None):
-    """Project a bounded history page, keeping all visibility/votes request-local."""
+    """Project a bounded reply page, keeping all visibility/votes request-local."""
     if not rows:
         return []
     hide = hidden_ids(db, user) if hidden is None else hidden
