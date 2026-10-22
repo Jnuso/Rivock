@@ -34,3 +34,5 @@ Current semantics are preserved: unavailable targets show an unavailable name; d
 The first complete run had 334 passes and nine setup errors because destructive database tests reject nonstandard hostnames. The disposable container was assigned the existing allowed `db` alias; the guard was not weakened. The complete rerun passed. No real app database, private credential file or cloud resource was mounted or modified.
 
 Earlier package checks apply to source `79a8d4f`, before Alerts/history batching; they do not prove the current image has been rebuilt. AI remains off. Review the local feature candidate before any push or release.
+
+Subsequent combined verification rebuilt both current packages and passed 365 backend tests after conversation batching; see [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md). The 343-test result above is the earlier profile-only checkpoint.

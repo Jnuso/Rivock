@@ -6,6 +6,8 @@ Built with **React + TypeScript + Vite, FastAPI, PostgreSQL 17, SQLAlchemy/Alemb
 
 **Continuing in a new chat? Read [the current handoff and starter prompt](docs/HANDOFF.md).** It separates completed setup from the remaining checks and next work.
 
+**Local feature branch:** [review the unpublished improvements and current checks](docs/LOCAL_REVIEW.md). This branch stays local until owner review; its new features and database optimizations have not been deployed to the Azure preview.
+
 **[Open the Azure test preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/)** — five original fictional conversations, Clerk development sign-in and a separate cloud database. Please use fictional content. HTTP/database checks pass; the owner confirmed hosted Google sign-in, onboarding and vote/save persistence. Gemma reviews are off: valid contributions publish immediately, with reports/manual moderation available. The older pending test submission has been published without AI. The core hosted two-account publication/report/admin and notification journeys passed, along with the latest keyboard/editor/read-recovery checks. Additional login/recovery and wider accessibility checks remain open. [Deployment evidence and remaining security work](docs/PREVIEW_DEPLOYMENT.md).
 
 ## What works in the implementation

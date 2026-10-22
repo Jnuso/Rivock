@@ -19,6 +19,8 @@ Detailed semantics and earlier browser evidence are in [LOCAL_FEATURES.md](LOCAL
 
 ## What was finished on October 22
 
+Implementation checkpoints are local commits `47e9ca3` (profile history) and `e4c3972` (conversation pages and review proposal). The rebuilt local image tags are `rivock-app:local-batching-preview-20261022` and `rivock-app:local-batching-production-20261022`; package smoke verified their normalized application source hashes against this checkout. These are local artifacts, not GHCR releases.
+
 The new continuation measured and fixed repeated database reads in profile and conversation pages. With 50 fictional items, signed-in profile reply history dropped from **357 to 12 SQL statements**, and expanded follow-ups from **405 to 12**. Anonymous history/follow-ups use eight in these fixtures. Complete HTTP payloads match the established per-item projection.
 
 The changes preserve private votes, hidden-author behavior, unavailable conversation shells, deactivated-author sanitizing, accepted-first ordering, response targets and page boundaries. These are database round-trip measurements on local fixtures, not a claim about Azure response time or production capacity. See [profile measurements](PROFILE_PERFORMANCE.md) and [conversation measurements](REPLY_PERFORMANCE.md).
@@ -30,7 +32,7 @@ The changes preserve private votes, hidden-author behavior, unavailable conversa
 - Backend Ruff and API-contract comparison passed. No schema migration or API change was needed for this continuation.
 - Current preview/production images built locally with fictional public settings and passed network-disabled non-root, source-hash, routing, cache/security-header and private-file checks.
 - Frontend source was unchanged on October 22. Its earlier **205 tests/types/build** and local browser evidence remain separate historical checks. No fresh hosted identity/browser check or new CI run is claimed.
-- Application AI stays off. Cloud resources, credentials, networking and schedules were unchanged. Google coding review, if completed, must be recorded separately from application moderation and direct test results.
+- Application AI stays off. Cloud resources, credentials, networking and schedules were unchanged. A separate Google coding review used four calls in two batches, with more than 65 seconds after the first terminal update before resuming. It returned no final report or changes; its baseline lacked an isolated test DB. No independent review/worker tests are claimed or integrated.
 
 The disposable test setup contains fictional data only and is separate from existing app databases. The package checks prove neither database readiness nor real Clerk login. Existing Starlette/httpx deprecation and Docker's public-key ARG heuristic remain warnings.
 

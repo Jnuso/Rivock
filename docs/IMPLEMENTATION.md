@@ -224,3 +224,9 @@ Measured and batched public profile Threads/Replies. The 50-item reply fixture f
 ## October 22 conversation page continuation — local only
 
 Measured direct-answer and expanded follow-up pages, then reused the safe request-local reply batch. A 50-item signed-in follow-up fixture fell from 405 SQL statements to 12; complete HTTP payload equivalence, accepted-first sorting and unavailable shells remain verified. Full suite: 365 PostgreSQL tests, Ruff and unchanged OpenAPI passed. Both local preview/production packages were rebuilt with synthetic public keys and passed network-disabled source-hash/routing/security/non-root/private-file checks. See [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md) for exact counts, 22 new cases and limits. No push, deployment, schema, cloud/network/credential/schedule or AI change. A report-assisted AI proposal is documentation only, awaiting owner review.
+
+## October 22 handoff and coding-review limits
+
+Reconciled HANDOFF.md to distinguish the local-only branch/current checks from the last recorded hosted release and remove superseded next-step instructions. README and LOCAL_REVIEW.md point to the consolidated review and unapproved report-assisted AI proposal. The task disposable PostgreSQL container, anonymous data volume and internal network were removed; local package images remain for review.
+
+Coding review job 544f8647cadc486ba60ad03749b6b9f3 used four total Google requests in two batches, waiting over 65 seconds after the first terminal update before resuming. Final result: provider_protocol / no final report, no changes, no source conflicts, no fresh worker tests. Its baseline could not collect without TEST_DATABASE_URL for an isolated PostgreSQL database. No worker result was integrated and no independent review is claimed. Application AI stayed off. Direct 365-test PostgreSQL and package results above remain the evidence. No push or cloud change.

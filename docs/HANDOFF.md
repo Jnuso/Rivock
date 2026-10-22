@@ -1,175 +1,108 @@
-# Rivock: start the next chat here
+# Rivock: next-chat handoff
 
-Checkpoint: October 22, 2026. This is the current handoff, not a new implementation plan or deployment authorization. Read the repository's [AGENTS.md](../AGENTS.md) first. Older chronological notes describe superseded states; the current moderation decision below takes precedence.
+Updated October 22, 2026. Read [AGENTS.md](../AGENTS.md) first, inspect Git status, then use this checkpoint and current source. Earlier chronological notes are evidence of earlier states, not instructions to repeat setup or activate services.
 
-## Current local-only feature work
+## Current task and boundaries
 
-For a concise consolidated review of prepared features, current checks and remaining decisions, read [LOCAL_REVIEW.md](LOCAL_REVIEW.md) before the chronological notes below.
+The user wants continued local improvements and one consolidated review. **Keep branch `features/local-conversation-tools` local: do not push, merge, publish or deploy.** The branch is based on `a00c794` from `fix/browser-draft-recovery`; do not switch to main or discard its existing work. The latest request to keep working does not reverse the explicit no-push instruction.
 
-Latest October 22 checkpoint: profile history, direct-answer and expanded follow-up pages are batched. **365 backend tests**, **22 helper tests**, Ruff and unchanged OpenAPI pass. Local preview/production images were rebuilt and passed network-disabled source/routing/security checks. Browser/frontend evidence is the prior unchanged-source checkpoint. A [report-assisted AI proposal](REPORT_AI_PROPOSAL.md) is ready for review only; AI remains off. See [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md) for the latest evidence. Nothing pushed/deployed; preserve the local-only branch instruction.
+Start with [LOCAL_REVIEW.md](LOCAL_REVIEW.md), which summarizes the prepared journeys, verification and owner decisions. [LOCAL_FEATURES.md](LOCAL_FEATURES.md) retains detailed feature/browser history.
 
-October 22 follow-up: public profile Threads/Replies now use request-local page batches. The 50-item reply fixture dropped from 253/357 SQL statements (anonymous/member) to 8/12, with complete HTTP payload equivalence. All 343 backend tests, 22 helper tests, Ruff and the unchanged OpenAPI check pass. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md). Current frontend/browser/package evidence below predates this backend-only change. Nothing pushed or deployed; AI/cloud/network/schedules remain unchanged.
+Repository: `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`; remote [Jnuso/Rivock](https://github.com/Jnuso/Rivock). Work only in this dedicated checkout, not the parent Codex repository.
 
-The user wants continued potential features on a new branch and explicitly says **do not push**. Branch: **features/local-conversation-tools**, based on **a00c794** from fix/browser-draft-recovery. Keep this branch local; existing draft PRs #1/#2 and the hosted release below are unchanged.
+## Product and current moderation
 
-Prepared journeys include canonical thread/reply sharing, accepted-answer navigation, keyboard Markdown/help, feed/answer filters, feed saves, unread Alerts, preserved feed/search return, direct reply order/timestamp links, current-editor text backups/retry saving, Mark unread, full-library private saved search/return, and public profile sharing/tab return. Reply totals now clearly include follow-ups. A real local check also found and fixed the public reply-history SQL join failure. Feed and saved summaries use request-local batches, without shared viewer state.
+Rivock is a text-first college-life advice/discussion learning and résumé project. Public visitors can read. Participation requires an account. Shared feed, seven topics, questions/discussions, accepted direct answers and content votes; **no communities, user karma or reputation gates**. React/TypeScript/Vite, FastAPI REST, PostgreSQL 17, SQLAlchemy/Alembic, Clerk and Docker/GitHub Actions; Azure preferred within a small budget.
 
-Current checks: **365 Docker/PostgreSQL tests** and **22 operator-helper tests**, backend Ruff; unchanged frontend remains at **205 frontend tests across 24 files**, types and production build. OpenAPI and generated types include the intentional reply-sort, saved-search and notification-boolean additions; the final profile fix adds no contract change. Earlier numeric checkpoints below and in LOCAL_FEATURES.md are historical. Browser checks used actual components/FastAPI/PostgreSQL and fictional principals; see [LOCAL_FEATURES.md](LOCAL_FEATURES.md) and [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md) for exact semantics, performance scope and limits. No new CI, push, release, real Clerk verification or independent worker review is claimed. Application AI stays off; cloud resources/network/schedules remain unchanged.
+**Keep application `MODERATION_MODE=off`.** Valid posts/replies/profile edits publish immediately after ordinary authorization, validation, duplicate/rate and target/revision checks. Publication is not AI approval. Reports remain private and do not automatically hide content; audited manual admin moderation remains. Do not reactivate the old pre-publication gate or add a cloud AI key/schedule.
 
-Packaging/cleanup follow-up: source **79a8d4f** passed both local preview/production image checks with network disabled and synthetic public settings. Generated schema/types match; npm audit reports zero known vulnerabilities. The disposable preview tabs/servers/database are cleaned up, other apps/databases preserved. The local patch and review outputs are refreshed. See LOCAL_FEATURES.md for the exact checks and limits. No release occurred.
+[REPORT_AI_PROPOSAL.md](REPORT_AI_PROPOSAL.md) is an unapproved design draft: manual admin-requested, recommendation-only analysis first, revision-aware deduplication, minimal provider context and explicit privacy/budget review. It creates no endpoint, migration, job or provider call. Discuss the proposal before implementation/activation. [REPORT_MODERATION.md](REPORT_MODERATION.md) is the confirmed policy.
 
+DMs, uploads, personalization and ongoing bots remain later work. Any bots must be visibly fictional/labeled, with original content; no scraped Reddit training corpus, simulated human voting or unsolicited DMs.
 
+## Prepared local feature journeys
 
-## Alerts batching — October 20 local follow-up
+- Canonical thread/reply/profile sharing and usable manual-copy fallback; accepted-answer shortcut and timestamp permalinks.
+- Conversation/answer-state filters combined with topics/search/order; private Saved-library search.
+- Recommended/Newest/Oldest direct answers with accepted-first priority; chronological follow-ups and clear total-reply labels.
+- Preserved return to filtered feed, Saved search or profile tab through context/reload.
+- Selection-aware Markdown shortcuts/help; robust local draft recovery, current-editor text downloads and retry saving.
+- Feed saves, All/Unread Alerts, Mark unread and consistent private-state refresh.
+- Public profile Threads/Replies tab links and repaired reply-history joins.
+- Request-local batching for feed, Saved, Alerts, profile history, direct answers and expanded follow-ups. No cross-viewer cache.
 
-The Alerts list now bulk-loads only its bounded page's threads, replies and actors, with one request-local visibility set. Recipient/block filtering still runs before pagination; single-item read/unread updates retain the same safe serializer. No shared viewer cache, migration or API change was introduced.
+The base includes the separate browser-recovery/privacy candidate previously recorded as draft PR #2. It does not include the separately recorded recovery-journal backend candidate from draft PR #1. Inspect actual source/PR status before assuming either is merged or released; this task did not change those PRs.
 
-The query regression failed before the change at 103/253 reads for 20/50 items. Eighteen new PostgreSQL cases compare safe outputs for published/removed/deleted content, blocked targets, both actor block directions, deactivated actors, read/unread filtering, other recipients, pagination and visibility changes between requests. Full suite: **319 PostgreSQL tests passed**, Ruff passed. Fresh OpenAPI export matches the checked-in contract exactly after newline normalization. Frontend remains unchanged at the prior verified 205-test checkpoint; no new browser or hosted identity check is claimed.
+## October 22 implementation and checks
 
-Rollback-only local measurement: **7 reads at 1/20/50 items**, three samples each; medians **3.823/4.212/4.662 ms**. Earlier baseline was 8/103/253 reads and 4.549/47.193/111.264 ms. These are separate local runs of the route/query/projection, excluding auth/rate limits, HTTP, JSON and network; they establish no hosted latency/capacity guarantee. All temporary fixture rows rolled back and original counts were verified.
+Local commits: `47e9ca3` batches profile history; `e4c3972` batches conversation pages and prepares the review/AI proposal. Later documentation commits do not change application source.
 
-Existing preview/production package smoke evidence applies to application source 79a8d4f, preceding this backend-only follow-up; those images were not rebuilt. Nothing pushed, deployed or changed in cloud configuration. AI remains off. Public profile history was subsequently measured and batched on October 22; see PROFILE_PERFORMANCE.md.
+- **365 backend tests passed together against disposable PostgreSQL 17.11**, including 46 new profile/conversation cases. Four profile and eight conversation query-budget regressions failed before their corresponding implementation.
+- **22 operator-helper tests passed** at the profile checkpoint; helpers did not change afterward.
+- Ruff with backend configuration and unchanged OpenAPI structure passed. No schema migration, dependency or API change in this continuation.
+- Full HTTP test-client payload comparisons preserve pagination, votes, blocks, deactivated authors, unavailable shells/targets, accepted priority and the depth-five parent/response-target distinction.
+- At 50 items, signed-in profile reply history fell from **357 to 12 SQL statements**; expanded follow-ups from **405 to 12**. These are local fixture round trips, not hosted latency/capacity measurements. Details: [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md), [REPLY_PERFORMANCE.md](REPLY_PERFORMANCE.md).
+- Both local preview/production images rebuilt with fictional public keys. Network-disabled smoke verified non-root UID 10001, AI off/no key, current normalized app-source hashes, liveness, document/deep-link/HEAD behavior, exact Clerk CSP, asset caching and private/missing-file guards. Tags: `rivock-app:local-batching-preview-20261022` and `rivock-app:local-batching-production-20261022`.
+- Frontend source was unchanged; its prior **205 tests across 24 files**, types/build and local browser evidence remain separate historical checks. No fresh hosted identity/browser or CI run is claimed on October 22. Package smoke does not prove database readiness or real Clerk login.
+- Independent Google coding review job `544f8647cadc486ba60ad03749b6b9f3` used four calls in two batches, with more than 65 seconds after the first terminal update before resuming. It ended `provider_protocol` / no final report, no changes or source conflicts. Its baseline could not collect without an isolated test DB. **No completed independent review or worker tests are claimed.** Direct checks above are the verification.
+- The task's disposable PostgreSQL container, anonymous volume and internal network were removed. No real app database, private configuration, cloud resource, schedule or network rule changed. Local images remain. No active worker job remains from this task.
 
+Existing Starlette/httpx deprecation and Docker public-key ARG heuristic remain warnings. Do not claim fresh audit/browser checks merely because an unchanged build layer was reused.
 
-## Current usability release — October 17
+## Last recorded hosted checkpoint, separate from local work
 
-Application source `7bc80adfe11394deb0e3d6e4e819fd4abf1a6644` passed [exact-commit CI](https://github.com/Jnuso/Rivock/actions/runs/39072833183) and [preview image publication](https://github.com/Jnuso/Rivock/actions/runs/39072992347). Anonymous GHCR manifest access and independent image inspection agreed on `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e`. After the user's release authorization, image-only updates moved the existing app and manual migration job to that digest. Ready revision `rivock-api--0000004` is Healthy with 100% traffic. No migration ran and no new ARM group deployment was created.
+[Live Azure preview](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/) / [admin](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/admin).
 
-The batch adds a first-focus Skip to main content link that preserves reply fragments, selection-aware Markdown formatting with restored focus/caret, and honest failed-read states with an explicit Try again control. Cached saved items survive refresh errors. Frontend types, all 71 tests and the production build passed; the exact-commit CI also passed backend, frontend and both container checks. The earlier directly run PostgreSQL suite had 205 backend tests and 22 helper tests; no backend source changed in this batch.
+The last recorded release is October 17 application source `7bc80adfe11394deb0e3d6e4e819fd4abf1a6644`, image `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e`, Healthy revision `rivock-api--0000004` with 100% traffic at that check. Exact-source CI and image publication passed. No fresh Azure inspection was performed on October 22; none of this branch's new features were deployed by this task.
 
-Targeted hosted checks used jack1's existing session at 320 CSS pixels. Skip focused MAIN, the next Tab reached Search, and the exact accepted-reply fragment survived activation. In the empty new-thread composer, selected Bold and Link formatted synthetic text, the link destination remained editable, Preview rendered correctly with formatting controls disabled, and reload restored the exact formatted draft. In the empty reply composer, keyboard Italic restored textarea focus/selection and Preview rendered an EM element. Both synthetic drafts were discarded without posting. Inspected views had no horizontal document overflow; temporary viewport sizing was reset.
+The user confirmed Google login/onboarding/vote/save persistence. Hosted `jack` has an audited exact-account admin grant; `jack1` is the other test account. Later authorized built-in-browser checks verified hosted immediate publication, reports leaving content visible, manual removal/restoration preserving replies, private/admin access boundaries, accepted answers/notifications and the released keyboard/editor/read-error recovery. See [BROWSER_CHECKS.md](BROWSER_CHECKS.md). Do not repeat completed setup or confuse synthetic local principals with real Clerk verification.
 
-A harmless unsupported feed sort produced the useful validation error and Try again without a false empty list. Enter on Try again retried that still-invalid read; choosing Trending restored the real hosted feed. This proves hosted validation-error recovery, not a hosted network outage or HTTP 503. The controlled HTTP 503/recovery check ran only through a local frontend proxy. The earlier two-account report/admin/publication journeys were not all repeated for this release.
+Built-in-browser testing with the existing jack/jack1 accounts was authorized for Rivock only. Do not touch unrelated accounts/tabs. The user handles any password, recovery or provider ownership entry. Firefox was unsupported by that tool at the recorded checkpoint; no Firefox compatibility claim exists. Additional offered sign-in/recovery methods and wider screen-reader/touch/device coverage remain open.
 
-Final Azure readback confirmed the pinned digest/ready revision, moderation off, no AI key, min/max 0/1, 0.25 vCPU/0.5 GiB, verified-TLS database URLs, the frozen 161 shared egress addresses plus two operator rules, and only the existing manual migration job. Health/readiness, seven topics, SPA deep links, private/missing resources, anonymous protected reads/writes, security/cache headers, false fixture indicator and changed frontend bundles passed HTTP checks. No schedule, paid resource or network rule was created.
+## Deployment and security facts to preserve
 
-The user authorized built-in-browser testing and the existing jack/jack1 accounts for Rivock only. Firefox remains unsupported by the current Windows browser tool; no Firefox compatibility claim is made. See [browser evidence and limits](BROWSER_CHECKS.md) for this release and the earlier hosted conversation/report/admin journeys. Documentation commits after the application source above do not change the running image.
-
-A [managed restore drill proposal](RESTORE_DRILL.md) and [retail snapshot](restore-retail-snapshot.json) are prepared for separate review. Read-only metadata at October 17 22:03 UTC reported Ready, seven-day retention and earliest restore point October 14 23:43:47 UTC. No restore server, managed restore, rollback, durable encrypted erasure-journal storage or cleanup schedule was created. A reported backup window is not evidence of successful recovery.
-
-Next: improve recovery safeguards, expand account/accessibility coverage and close the remaining network/cost/retention gates. Keep application AI off. The current environment is Consumption-only with no custom VNet; a private route needs its own migration/cost review. Month-to-date resource-group cost at October 17 07:11 UTC was USD 0.0034713738696 for the app and USD 0 for PostgreSQL; billing can lag and exact credit balance/expiry remain unverified.
-
-## Independent browser/operations follow-up — awaiting release
-
-Two failing regressions reproduced discarded text returning after browser storage recovered and a restored draft disappearing during navigation after storage became unavailable. Discard/removal retries now remain pending within the open tab; valid restored drafts are cached in memory. Sign-out/account-change cleanup uses the same deferred clearing, while unrelated storage keys are preserved. A newer memory-only draft is retained until the old stored copy can be removed and persistence succeeds.
-
-Frontend types, all 80 tests and the production build passed. Nine added regressions cover both reproduced failures, unreadable-but-valid storage, new text during failed cleanup, whole-account/partial cleanup, warning removal after memory-only discard and a Clerk-mocked account switch. Real local browser checks used the actual useDraft/MarkdownEditor components with synthetic storage failures: persisted reload, navigation through blocked reads, discarded text staying empty after recovery, whole-draft cleanup and a visible memory-only warning at 320px. The actual privacy component also displayed the preview-only retention notice at 320px. Both inspected layouts had no horizontal overflow; viewport overrides were reset and temporary tabs/server were closed. These fixtures had no account/API connection and do not establish hosted sign-out, native unload-dialog or a full accessibility/device matrix.
-
-This batch is an independent review candidate on fix/browser-draft-recovery, not deployed. Live source remains 7bc80ad/revision 0000004. Deferred cleanup is in-memory: a blocked stored copy cannot be guaranteed erased across a reload/closed tab before storage access returns. The privacy notice explains that limit. Application AI, Azure resources, firewall, credentials, scheduling and schema were unchanged.
-
-The separately tested recovery-journal safeguard remains open in [draft PR #1](https://github.com/Jnuso/Rivock/pull/1), not merged or deployed; its 259 backend tests and exact-head CI passed. This branch starts from main and does not include that unmerged backend change.
-
-[Owner input and release decisions](OWNER_CHECKLIST.md) are consolidated separately. [Read-only observations and prepared rollback](OPERATIONS_CHECKLIST.md) and the [lower-cost networking review](NETWORK_ALTERNATIVE.md) are documented. No managed restore, rollback, cleanup schedule or new paid resource was executed.
-
-## Where we are
-
-Rivock is a working college-life advice/discussion project for learning and a résumé. It has a shared text-first feed, questions/discussions, seven topics, replies, accepted answers and content votes. There are **no communities, user karma or reputation gates**. Public visitors can read; participation requires an account. The approved look is light, readable, blue-accented and responsive.
-
-- Repository: [Jnuso/Rivock](https://github.com/Jnuso/Rivock), branch `main`.
-- Windows checkout: `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`.
-- [Live Azure test site](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/) and [admin page](https://rivock-api.wittymushroom-48e2dfec.canadacentral.azurecontainerapps.io/admin).
-- Stack: React / TypeScript / Vite, FastAPI REST, PostgreSQL 17, SQLAlchemy / Alembic, Clerk, Docker / GitHub Actions, Azure Container Apps.
-- The site uses Clerk's development instance and fictional demo conversations. No custom domain has been purchased. This is a preview, with possible cold starts.
-- Core implementation includes search/topics, Trending/Latest, five reply levels, acceptance of a direct answer, voting, private saves, profiles, notifications, blocks/reports, account/ownership checks and audited admin actions. DMs, uploads, personalization and ongoing bots remain later work.
-
-## Latest decision: publication and moderation
-
-The user temporarily removed Gemma reviews. **Keep `MODERATION_MODE=off`.** Valid posts, replies and profile edits publish immediately after normal authorization, input, rate, duplicate and target/revision checks. Publication must never be described as AI approval. The owner's submission display says “Published without automated review.”
-
-Reports remain private and do not automatically hide content. Manual administrator review/removal/restoration/suspension remains available. **AI assistance combined with user reports after publication is a future design, not implemented.** Do not reactivate the old initial-publication gate or enable cloud Google calls as a routine next step. Historical Google/fixture/pending adapters and earlier evaluations are retained but inactive. See [REPORT_MODERATION.md](REPORT_MODERATION.md).
-
-The previous ordinary pending submission was released through the validated publication service. The October 16 read-only checkpoint, before the new browser tests, found one unreviewed published submission, zero pending/processing submissions and zero cloud AI attempts. Its content/type was not inspected; do not describe it as a new thread. Previously rejected/cancelled/manual-review items were not automatically published. No scheduled cloud worker or cloud AI key is enabled.
-
-## What is verified, and what is still a check
-
-**User-confirmed in the hosted preview:** Google sign-in, username creation, voting/saving and persistence after sign-out/repeat login. Username **`jack`** is the existing owner account. An audited operator command granted that exact account admin; an independent database check confirmed active, Clerk-linked admin state and one grant audit. Do not create a replacement account or link identities by email/domain.
-
-**Hosted continuation:** the agent verified the same two-account journey in Azure, including both the question-owner reply alert and the reply-author acceptance alert. The user handled sign-in; account/ownership boundaries and report/manual moderation were exercised in the real browser.
-
-**Technical evidence:** the latest app release passed GitHub CI and image publication. Backend tests used real PostgreSQL 17.11; frontend tests/types/build, helper checks, Ruff, Bicep and preview-image checks passed. Live readiness, privacy, headers, served frontend bundle and anonymous protected-route rejection passed. The targeted agent browser checks are now recorded in BROWSER_CHECKS.md; no completed independent coding-worker review is claimed. Detailed counts/checkpoints are in [IMPLEMENTATION.md](IMPLEMENTATION.md).
-
-**Still needed:** additional login/recovery methods, wider accessibility/device checks, managed recovery/rollback, retention scheduling and day/week cost/cold-start observations. The core hosted conversation/report/admin journeys are now verified.
-
-## Next work, in order
-
-### 1. Finish account/accessibility coverage
-
-The core hosted journey and source 7bc80ad usability rollout are complete; preserve [the actual browser and release evidence](BROWSER_CHECKS.md). The current digest is pinned and targeted hosted keyboard/editor/read-recovery checks passed. Future application releases still require their own exact-commit CI, publication and hosted checks.
-
-Remaining account/browser work: test additional offered sign-in/recovery methods without changing credentials automatically; expand screen-reader, touch, blocked-storage draft recovery and return-path coverage; fix concrete defects and record the real check scope. The 320/390/768/1440 review is targeted rather than a full accessibility certification.
-
-The user explicitly authorized the built-in browser and the existing jack/jack1 accounts for Rivock only. Firefox is blocked by the Windows browser tool. Do not repeat Clerk/Azure setup or claim fixtures establish real account/browser success.
-
-### 2. Close operations and security gaps before production
-
-- **Required security follow-up:** read [the new network/cost review](NETWORK_HARDENING.md), validate the selected lower-cost alternative or approve a changed budget, then implement/verify the replacement before removing the shared Azure egress and obsolete operator-IP rules. Do not remove the working route first or silently provision paid networking.
-- Review [the concrete restore-drill proposal](RESTORE_DRILL.md), establish protected complete erasure-journal storage, then exercise Azure-managed backup restoration/erasure replay, a previous-image rollback, and administrator recovery/pause procedures. Earlier synthetic local restore evidence does not prove managed Azure recovery.
-- Arrange/verify retention cleanup while keeping AI disabled. The scheduled cloud worker is currently disabled; one queue-release run was not a recurring cleanup schedule.
-- Check exact student-credit balance/expiration, actual day/week costs and cold-start latency. Record an operator contact and recovery/retention policy before a real launch.
-
-### 3. Design report-assisted AI separately
-
-Discuss when a report should trigger analysis, abuse of false reports, what context is sent, recommendations versus automatic actions, appeals/notifications, privacy/provider data terms, rate limits and costs. Initial publication must remain ungated. Reports alone do not establish harm. Review this design with the user before enabling provider calls or changing moderation behavior.
-
-### 4. Production and portfolio polish later
-
-After verification/security/recovery/cost review: choose/buy a domain, configure Clerk production, rebuild with its production public key and production profile, bind DNS/TLS and recheck real account flows. Decide how preview accounts/data transition. A domain/key switch alone is not production readiness.
-
-Then update screenshots, demo instructions and résumé/architecture evidence. Later bots must be visibly labeled and use original fictional content; no scraped Reddit training corpus, simulated human voting or unsolicited DMs. DMs need their own privacy/moderation design.
-
-## Deployment facts to preserve
-
-| Item | Current checkpoint |
+| Item | Recorded configuration |
 | --- | --- |
-| Deployed application source | `7bc80ad`; subsequent documentation commits do not change the running image |
-| Immutable image | `ghcr.io/jnuso/rivock-api@sha256:b8d0905d4109be5f9cb62a68c3d42a554e6c74e11fc2dacd84629e6c92364d1e` |
-| Rollout / ready revision | Image-only app/manual-job updates, October 17 / `rivock-api--0000004` |
-| Azure subscription | Azure for Students, `0f90c4c5-2dab-411c-93a1-503c2faee55f` |
-| Tenant | UConn, `17f1a87e-2a25-4eaa-b9df-9d439034b080`; subscription Owner access, no tenant-admin setup needed |
+| Subscription / tenant | Azure for Students `0f90c4c5-2dab-411c-93a1-503c2faee55f`; UConn tenant `17f1a87e-2a25-4eaa-b9df-9d439034b080`; subscription Owner, no tenant-admin setup needed |
 | Resource group / region | `rivock-dev` / Canada Central |
-| Environment | `rivock-env`, explicit WorkloadProfiles mode, Consumption profile only; environment quota occupied |
-| App | `rivock-api`, combined React + API, HTTPS, 0.25 vCPU / 0.5 GiB, min 0 / max 1 |
-| Migrations | Explicit manual `rivock-migrate` job; do not migrate on every API startup |
-| PostgreSQL | `rivock-dev-jnuso.postgres.database.azure.com`, version 17.11, B1ms, 32 GiB/P4, seven-day backups, no HA/geo/autogrow |
-| Database / schema | `rivock` / Alembic `31c7a48a90c1`; separate restricted `rivock_app` and `rivock_migrate` roles |
-| Data | Separate local/cloud databases; no local rows copied to Azure; five original fictional seed threads |
-| Cloud AI / schedule | Off; no provider key or scheduled worker |
+| Environment | `rivock-env`, explicit WorkloadProfiles mode, Consumption only; environment quota occupied |
+| App | `rivock-api`, combined React/API, HTTPS, 0.25 vCPU / 0.5 GiB, min 0 / max 1; cold starts possible |
+| Migrations | Existing explicit manual `rivock-migrate` job; do not migrate on every API startup |
+| PostgreSQL | `rivock-dev-jnuso.postgres.database.azure.com`, 17.11, B1ms, 32 GiB/P4, seven-day backups; no HA/geo/autogrow |
+| Database / schema | `rivock` / `31c7a48a90c1`; separate restricted `rivock_app` and `rivock_migrate` roles |
+| Data / identity | Separate local/cloud databases; no local rows copied; five original fictional seed conversations; Clerk development instance |
+| Cloud AI / schedule | Off, no provider key or scheduled worker; cleanup-only code/template prepared but daily schedule not enabled |
 
-The UConn directory is not a blocker: Clerk handles application login. Static Web Apps regions did not intersect the subscription's permitted regions, so the reviewed solution serves frontend/API together. Do not restart the Entra external-tenant or Static Web Apps setup.
+Clerk replaced blocked external-Entra setup. Static Web Apps regions did not intersect subscription policy, so one Container App serves frontend/API. Do not restart those failed setup paths or assume quota for another free environment. No domain has been purchased.
 
-**Firewall exception:** the user explicitly approved exactly 161 individual shared Azure egress IPv4 addresses for the preview, with the requirement to tighten security later. Two operator-IP rules also remain. Other Azure customers using that shared pool can attempt database login; restricted credentials and verified TLS remain necessary. The approval does not cover expansions, ranges, all-Azure or all-internet access. Do not silently add replacements if egress changes. Full evidence/fingerprint: [PREVIEW_DEPLOYMENT.md](PREVIEW_DEPLOYMENT.md).
+**Required before production:** replace the database's shared-egress route with a narrower cost-reviewed, verified connection, then retire the preview and obsolete operator rules. The user explicitly approved only the frozen **161 single shared Azure egress IPs**, plus the existing two operator rules, and requested tightening later. Other Azure tenants using that pool can attempt database login. Do not silently expand the set, add broad exceptions, remove the working route prematurely or provision paid networking without reviewing its concrete cost. Evidence/fingerprint: [PREVIEW_DEPLOYMENT.md](PREVIEW_DEPLOYMENT.md).
 
-**TLS:** both cloud database URLs retain `sslmode=verify-full` and use `sslrootcert=/etc/ssl/certs/ca-certificates.crt` inside the image. `sslrootcert=system` failed in the published runtime. Do not disable certificate/hostname verification to resolve connectivity problems.
+Both cloud DB URLs retain `sslmode=verify-full` and `sslrootcert=/etc/ssl/certs/ca-certificates.crt` inside the image. `sslrootcert=system` failed in that runtime. Never disable certificate/hostname verification as a workaround.
 
-**Cost:** target approximately $10/month excluding a future domain. A subscription-scoped $10 monthly budget sends actual-cost alerts at $5/$8/$10 to the user's selected UConn email. Alerts are not a spending cap. Student spending limit was confirmed On. The user estimated $100 credit and roughly a year remaining; exact current balance/expiry are unverified. An earlier USD 0.00 result covered PostgreSQL only at that checkpoint, not all current hosting costs.
+Target budget: approximately $10/month excluding a future domain. The $10 subscription budget alerts at $5/$8/$10 go to the selected UConn email; **alerts do not cap spending**. Spending limit was confirmed On. The original $100/roughly-one-year student-credit estimate is not a current balance/expiry check. Last recorded October 17 billing was about USD 0.00347 app and USD 0 PostgreSQL, subject to lag; it is not a forecast or current bill. Recheck before new spending decisions.
 
-## Safe working notes for the next agent
+## What to do next
 
-- Inspect Git status and current source before editing; preserve unrelated changes. Work only in the dedicated Rivock checkout. Read current instructions and relevant docs rather than all historical course PDFs.
-- Credentials are in ignored, owner-protected local files, including `.env.azure` and `.azure/preview.parameters.json`. Preserve ACLs. Do not print, commit, paste into prompts or request private keys/passwords. The administrator password was not saved. Use supported authenticated tools and request host access if required; never weaken permissions.
-- Azure wrapper: `scripts/azure.ps1`, with portable Azure CLI and project-local auth cache. Existing login is established. Browser OAuth replaced the failing Windows broker; do not assume login must be redone. Inspect deployment/job state before retrying an interrupted mutation.
-- Image workflow: `.github/workflows/publish-image.yml`, “Publish reviewed Rivock image,” `deployment_environment=preview`. Exact source commit must pass CI first; pin its published digest. GitHub environment `preview` already has the public `CLERK_PUBLISHABLE_KEY` variable. No private Clerk key is required. `gh` was not installed; existing Git Credential Manager authentication was used through its supported helper without printing/saving credentials. If unavailable, use the GitHub Actions UI rather than asking for a pasted token.
-- Local Compose file is `compose.yaml`; preserve the PostgreSQL volume. Port 5173 is currently another app; do not stop or replace it. A separate task-local Rivock preview used port 5174 with a localhost API proxy for visual checks. The existing local API/worker were read back with moderation off.
-- Run meaningful checks appropriate to code changes: real PostgreSQL backend tests, frontend tests/types/build and relevant image/config guards. Do not claim fixtures prove real login, provider quality or hosted browser layouts. Windows frontend checks previously needed a shared task-local TEMP/TMP directory and one test worker to avoid IPC-file errors.
-- The user permitted Google Gemma **coding help in this chat**, at a maximum of two Google requests/minute across workers. Root instructions require batches of at most two calls and at least 65 seconds after the previous terminal/update timestamp before another batch. This does not enable application content review. Last worker attempts failed with HTTP 503 and returned no review; do not claim independent review success. Confirm applicable authorization/instructions in a new chat before delegation.
+1. Review [LOCAL_REVIEW.md](LOCAL_REVIEW.md) and preserve the no-push branch. Fix concrete local defects or continue bounded verification; do not publish the candidate simply because its tests pass.
+2. Review the report-assisted AI proposal as a product/data decision. Keep application AI off while discussing or building any separately authorized offline fixtures.
+3. Address remaining accessibility/account/recovery coverage without repeating completed hosted checks. A changed-feature hosted verification belongs after a separately authorized release.
+4. Finish production gates through the prepared owner decisions: costed narrower networking, protected complete erasure-journal storage, exact temporary managed restore/rollback/cleanup plan and actual billing/credit observations. Do not execute paid/drill/schedule operations from a historical runbook alone.
+5. Later choose contact/domain/preview-data transition, production Clerk and DNS/TLS. DMs/bots/uploads/personalization remain separate scope.
 
-## Read these as needed
+[OWNER_CHECKLIST.md](OWNER_CHECKLIST.md), [OPERATIONS_CHECKLIST.md](OPERATIONS_CHECKLIST.md), [RESTORE_DRILL.md](RESTORE_DRILL.md) and [NETWORK_ALTERNATIVE.md](NETWORK_ALTERNATIVE.md) record the concrete open gates. Earlier synthetic restore evidence and a reported backup window do not establish managed Azure recovery.
 
-- [REPORT_MODERATION.md](REPORT_MODERATION.md): latest confirmed policy and future questions.
-- [TODO.md](TODO.md): remaining checklist; [REVIEW.md](REVIEW.md): broader review/history.
-- [PREVIEW_DEPLOYMENT.md](PREVIEW_DEPLOYMENT.md): release, firewall approval, TLS and deployment evidence.
-- [IMPLEMENTATION.md](IMPLEMENTATION.md): actual checks and chronological checkpoints.
-- [SPECIFICATION.md](SPECIFICATION.md), [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [API.md](API.md): product/engineering contracts.
-- [HOSTING_COSTS.md](HOSTING_COSTS.md), [CLERK_SETUP.md](CLERK_SETUP.md): cost assumptions and identity configuration.
+## Safe working notes
 
-`GEMMA_SETUP.md`, older Azure walkthroughs and earlier implementation entries contain historical setup states. Do not follow an old activation step when it conflicts with this checkpoint or the user's current request.
+- Preserve unrelated changes. Do not print, commit or forward passwords, keys, HMACs, private tokens or user text. Identity links use validated Clerk issuer/subject, never email/domain.
+- `.env.azure` and `.azure/preview.parameters.json` are ignored, owner-protected files. Preserve ACLs; use supported authenticated tools/host access only when needed. The administrator password was not saved. No private Clerk key is needed for this integration.
+- Existing Azure wrapper `scripts/azure.ps1` uses the portable CLI/project auth cache; browser OAuth replaced the failing Windows broker. Inspect existing operation state before retrying interrupted cloud mutations.
+- GitHub `preview` environment already has the public `CLERK_PUBLISHABLE_KEY` variable. Exact-commit CI must pass before its immutable image is published/pinned, but current no-push/no-release scope takes precedence. `gh` was not installed; never ask for pasted access tokens.
+- Local Compose file is `compose.yaml`; preserve its real PostgreSQL volume. Port 5173 previously belonged to another app; inspect listeners before starting/stopping a preview. Do not kill unrelated servers. Use disposable data and synthetic principals for local tests; never substitute SQLite for PostgreSQL verification.
+- Windows frontend tests previously needed shared task-local TEMP/TMP and one test worker. Read current scripts/config before running them. Fresh tests/layout/provider checks are distinct evidence.
+- Google coding-worker permission is at most **two Google requests/minute across workers**; cap each batch at two and wait at least 65 seconds after its prior terminal/update timestamp before more. Never resume with a larger unconsumed allowance. Coding authorization does not enable application content review. The last worker here is terminal; no retries are necessary just to repeat its failed report attempt.
 
-## Starter prompt for the new chat
+Read [IMPLEMENTATION.md](IMPLEMENTATION.md) for chronological checks, [SPECIFICATION.md](SPECIFICATION.md)/[ARCHITECTURE.md](ARCHITECTURE.md)/[SECURITY.md](SECURITY.md)/[API.md](API.md) for contracts, and [PREVIEW_DEPLOYMENT.md](PREVIEW_DEPLOYMENT.md) for deployment details. Old `GEMMA_SETUP.md` activation steps are historical, not current instructions.
 
-Copy the paragraph below into a new chat opened in this project:
+## Starter prompt
 
-> Continue Rivock in `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`. Read AGENTS.md and docs/HANDOFF.md, inspect Git status, and use the current source and latest verified deployment evidence. The Azure preview works and my hosted username is jack, already granted admin. Keep Gemma/application AI reviews off: valid contributions publish immediately; reports and manual moderation remain. Read docs/BROWSER_CHECKS.md for the completed hosted publication/admin/report/two-account checks, review the released keyboard/editor/read-recovery evidence, then continue operations/security readiness. Built-in browser testing and the existing jack/jack1 accounts were authorized for Rivock only in the continuation chat. Design future report-assisted AI separately. The shared database firewall rules must be narrowed before production after reviewing cost and verifying a replacement. Continue useful work and make routine decisions; ask me only for missing account setup, required authorization or material product choices. Do not repeat completed setup or expose secrets. Give me one consolidated review of changes and remaining decisions.
-
-
-## Next local performance candidate
-Historical Alerts baseline (superseded by the October 20 implementation below/above): rollback-only local tests measured 8/103/253 reads for 1/20/50 items. The completed batching follow-up uses seven reads at all three sizes; see the current verification section for scope and limits.
+> Continue Rivock in `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`. Read AGENTS.md, docs/HANDOFF.md and docs/LOCAL_REVIEW.md, then inspect Git status/current source. Keep features/local-conversation-tools local: do not push, merge, publish or deploy. The October 22 batch has 365 PostgreSQL backend tests, 22 helper tests and rebuilt local package checks; the new features are not on the Azure site. Keep application AI off and valid publication immediate, with private reports/manual moderation. Review the proposed report-assisted AI design separately before implementation or provider calls. Continue useful local fixes/verification, preserve existing work and make routine decisions; ask only for missing account input, required authorization or material product choices. Existing built-in-browser authorization is for Rivock and its jack/jack1 test accounts only. Do not repeat completed setup, expose secrets or execute paid cloud/recovery/schedule changes from old plans. Give me a consolidated review of changes, evidence and remaining decisions.
