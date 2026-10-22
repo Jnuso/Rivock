@@ -1,14 +1,16 @@
 # Rivock: start the next chat here
 
-Checkpoint: October 20, 2026. This is the current handoff, not a new implementation plan or deployment authorization. Read the repository's [AGENTS.md](../AGENTS.md) first. Older chronological notes describe superseded states; the current moderation decision below takes precedence.
+Checkpoint: October 22, 2026. This is the current handoff, not a new implementation plan or deployment authorization. Read the repository's [AGENTS.md](../AGENTS.md) first. Older chronological notes describe superseded states; the current moderation decision below takes precedence.
 
 ## Current local-only feature work
+
+October 22 follow-up: public profile Threads/Replies now use request-local page batches. The 50-item reply fixture dropped from 253/357 SQL statements (anonymous/member) to 8/12, with complete HTTP payload equivalence. All 343 backend tests, 22 helper tests, Ruff and the unchanged OpenAPI check pass. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md). Current frontend/browser/package evidence below predates this backend-only change. Nothing pushed or deployed; AI/cloud/network/schedules remain unchanged.
 
 The user wants continued potential features on a new branch and explicitly says **do not push**. Branch: **features/local-conversation-tools**, based on **a00c794** from fix/browser-draft-recovery. Keep this branch local; existing draft PRs #1/#2 and the hosted release below are unchanged.
 
 Prepared journeys include canonical thread/reply sharing, accepted-answer navigation, keyboard Markdown/help, feed/answer filters, feed saves, unread Alerts, preserved feed/search return, direct reply order/timestamp links, current-editor text backups/retry saving, Mark unread, full-library private saved search/return, and public profile sharing/tab return. Reply totals now clearly include follow-ups. A real local check also found and fixed the public reply-history SQL join failure. Feed and saved summaries use request-local batches, without shared viewer state.
 
-Current checks: **319 Docker/PostgreSQL tests**, backend Ruff, **205 frontend tests across 24 files**, frontend types and production build. OpenAPI and generated types include the intentional reply-sort, saved-search and notification-boolean additions; the final profile fix adds no contract change. Earlier numeric checkpoints below and in LOCAL_FEATURES.md are historical. Browser checks used actual components/FastAPI/PostgreSQL and fictional principals; see [LOCAL_FEATURES.md](LOCAL_FEATURES.md) and [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md) for exact semantics, performance scope and limits. No new CI, push, release, real Clerk verification or independent worker review is claimed. Application AI stays off; cloud resources/network/schedules remain unchanged.
+Current checks: **343 Docker/PostgreSQL tests** and **22 operator-helper tests**, backend Ruff; unchanged frontend remains at **205 frontend tests across 24 files**, types and production build. OpenAPI and generated types include the intentional reply-sort, saved-search and notification-boolean additions; the final profile fix adds no contract change. Earlier numeric checkpoints below and in LOCAL_FEATURES.md are historical. Browser checks used actual components/FastAPI/PostgreSQL and fictional principals; see [LOCAL_FEATURES.md](LOCAL_FEATURES.md) and [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md) for exact semantics, performance scope and limits. No new CI, push, release, real Clerk verification or independent worker review is claimed. Application AI stays off; cloud resources/network/schedules remain unchanged.
 
 Packaging/cleanup follow-up: source **79a8d4f** passed both local preview/production image checks with network disabled and synthetic public settings. Generated schema/types match; npm audit reports zero known vulnerabilities. The disposable preview tabs/servers/database are cleaned up, other apps/databases preserved. The local patch and review outputs are refreshed. See LOCAL_FEATURES.md for the exact checks and limits. No release occurred.
 
@@ -22,7 +24,7 @@ The query regression failed before the change at 103/253 reads for 20/50 items. 
 
 Rollback-only local measurement: **7 reads at 1/20/50 items**, three samples each; medians **3.823/4.212/4.662 ms**. Earlier baseline was 8/103/253 reads and 4.549/47.193/111.264 ms. These are separate local runs of the route/query/projection, excluding auth/rate limits, HTTP, JSON and network; they establish no hosted latency/capacity guarantee. All temporary fixture rows rolled back and original counts were verified.
 
-Existing preview/production package smoke evidence applies to application source 79a8d4f, preceding this backend-only follow-up; those images were not rebuilt. Nothing pushed, deployed or changed in cloud configuration. AI remains off. Public reply-history batching remains a separate unmeasured candidate.
+Existing preview/production package smoke evidence applies to application source 79a8d4f, preceding this backend-only follow-up; those images were not rebuilt. Nothing pushed, deployed or changed in cloud configuration. AI remains off. Public profile history was subsequently measured and batched on October 22; see PROFILE_PERFORMANCE.md.
 
 
 ## Current usability release — October 17

@@ -216,3 +216,7 @@ The query regression failed before the change at 103/253 reads for 20/50 items. 
 Rollback-only local measurement: **7 reads at 1/20/50 items**, three samples each; medians **3.823/4.212/4.662 ms**. Earlier baseline was 8/103/253 reads and 4.549/47.193/111.264 ms. These are separate local runs of the route/query/projection, excluding auth/rate limits, HTTP, JSON and network; they establish no hosted latency/capacity guarantee. All temporary fixture rows rolled back and original counts were verified.
 
 Existing preview/production package smoke evidence applies to application source 79a8d4f, preceding this backend-only follow-up; those images were not rebuilt. Nothing pushed, deployed or changed in cloud configuration. AI remains off. Public reply-history batching remains a separate unmeasured candidate.
+
+## October 22 profile history continuation — local only
+
+Measured and batched public profile Threads/Replies. The 50-item reply fixture fell from 253/357 database statements for anonymous/member views to 8/12; every complete HTTP page matches the established per-item projection. Full suite: 343 PostgreSQL tests (24 new), 22 operator-helper tests, Ruff and unchanged OpenAPI passed. No frontend change, browser/Clerk/hosted claim, dependency, migration, AI call, cloud change, push or release. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md) for counts, visibility/depth-five regressions and test-environment limits. Prior package evidence predates this backend change.

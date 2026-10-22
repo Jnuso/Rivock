@@ -290,19 +290,116 @@ def thread_out(db, row, user=None, detail=True, *, _batch: _ThreadReadBatch | No
     }
 
 
-def reply_out(db, row, user=None):
-    hide = hidden_ids(db, user)
+@dataclass(frozen=True)
+class _ReplyReadBatch:
+    hidden: set[str]
+    authors: dict[str, m.User]
+    targets: dict[str, m.Reply]
+    threads: dict[str, m.Thread]
+    scores: dict[str, int]
+    votes: dict[str, int]
+    child_counts: dict[str, int]
+
+
+def reply_summaries(db, rows, user=None, *, hidden=None):
+    """Project a bounded history page, keeping all visibility/votes request-local."""
+    if not rows:
+        return []
+    hide = hidden_ids(db, user) if hidden is None else hidden
+    ids = [row.id for row in rows]
+    target_ids = {row.response_to_reply_id for row in rows if row.response_to_reply_id}
+    targets = (
+        {row.id: row for row in db.scalars(select(m.Reply).where(m.Reply.id.in_(target_ids)))}
+        if target_ids
+        else {}
+    )
+    author_ids = {
+        row.author_id
+        for row in [*rows, *targets.values()]
+        if row.state == "published" and row.author_id not in hide
+    }
+    authors = (
+        {row.id: row for row in db.scalars(select(m.User).where(m.User.id.in_(author_ids)))}
+        if author_ids
+        else {}
+    )
+    threads = {
+        row.id: row
+        for row in db.scalars(select(m.Thread).where(m.Thread.id.in_({row.thread_id for row in rows})))
+    }
+    scores = dict(
+        db.execute(
+            select(m.ReplyVote.reply_id, func.sum(m.ReplyVote.value))
+            .where(m.ReplyVote.reply_id.in_(ids))
+            .group_by(m.ReplyVote.reply_id)
+        ).all()
+    )
+    votes = (
+        dict(
+            db.execute(
+                select(m.ReplyVote.reply_id, m.ReplyVote.value).where(
+                    m.ReplyVote.reply_id.in_(ids), m.ReplyVote.user_id == user.id
+                )
+            ).all()
+        )
+        if user
+        else {}
+    )
+    child_counts = dict(
+        db.execute(
+            select(m.Reply.parent_reply_id, func.count())
+            .where(m.Reply.parent_reply_id.in_(ids))
+            .group_by(m.Reply.parent_reply_id)
+        ).all()
+    )
+    batch = _ReplyReadBatch(hide, authors, targets, threads, scores, votes, child_counts)
+    return [reply_out(db, row, user, _batch=batch) for row in rows]
+
+
+def reply_out(db, row, user=None, *, _batch: _ReplyReadBatch | None = None):
+    hide = _batch.hidden if _batch else hidden_ids(db, user)
     visible = row.state == "published" and row.author_id not in hide
-    target = db.get(m.Reply, row.response_to_reply_id) if row.response_to_reply_id else None
+    target = (
+        _batch.targets.get(row.response_to_reply_id)
+        if _batch
+        else db.get(m.Reply, row.response_to_reply_id)
+        if row.response_to_reply_id
+        else None
+    )
     target_name = None
     if target:
         target_name = (
-            public_user(db.get(m.User, target.author_id))["username"]
+            public_user(_batch.authors[target.author_id] if _batch else db.get(m.User, target.author_id))[
+                "username"
+            ]
             if target.state == "published" and target.author_id not in hide
             else "[unavailable]"
         )
-    vote = db.get(m.ReplyVote, (user.id, row.id)) if user else None
-    thread = db.get(m.Thread, row.thread_id)
+    if _batch:
+        author = _batch.authors.get(row.author_id)
+        my_vote = _batch.votes.get(row.id)
+        thread = _batch.threads[row.thread_id]
+        score = int(_batch.scores.get(row.id, 0))
+        child_count = _batch.child_counts.get(row.id, 0)
+    else:
+        author = db.get(m.User, row.author_id) if visible else None
+        vote = db.get(m.ReplyVote, (user.id, row.id)) if user else None
+        my_vote = vote.value if vote else None
+        thread = db.get(m.Thread, row.thread_id)
+        score = (
+            int(
+                db.scalar(
+                    select(func.coalesce(func.sum(m.ReplyVote.value), 0)).where(
+                        m.ReplyVote.reply_id == row.id
+                    )
+                )
+            )
+            if visible
+            else None
+        )
+        child_count = db.scalar(
+            select(func.count()).select_from(m.Reply).where(m.Reply.parent_reply_id == row.id)
+        )
     return {
         "id": row.id,
         "thread_id": row.thread_id,
@@ -311,28 +408,20 @@ def reply_out(db, row, user=None):
         "response_to": {"reply_id": target.id, "username": target_name} if target else None,
         "depth": row.depth,
         "body_markdown": row.body_markdown if visible else None,
-        "author": public_user(db.get(m.User, row.author_id)) if visible else None,
+        "author": public_user(author) if visible else None,
         "state": row.state if row.author_id not in hide else "blocked",
         "revision": row.revision,
         "published_at": row.published_at,
         "edited_at": row.edited_at,
-        "score": int(
-            db.scalar(
-                select(func.coalesce(func.sum(m.ReplyVote.value), 0)).where(m.ReplyVote.reply_id == row.id)
-            )
-        )
-        if visible
-        else None,
-        "my_vote": vote.value if vote and visible else None,
+        "score": score if visible else None,
+        "my_vote": my_vote if visible else None,
         "is_accepted": bool(
             visible
             and thread.state == "published"
             and thread.author_id not in hide
             and thread.accepted_reply_id == row.id
         ),
-        "child_count": db.scalar(
-            select(func.count()).select_from(m.Reply).where(m.Reply.parent_reply_id == row.id)
-        ),
+        "child_count": child_count,
     }
 
 
@@ -365,7 +454,9 @@ def submission_reviews(db, ids):
 def submission_page(db, rows, offset, limit, snapshot=False):
     reviews = submission_reviews(db, [row.id for row in rows[:limit]])
     return page(
-        rows, offset, limit,
+        rows,
+        offset,
+        limit,
         lambda row: submission_out(row, snapshot, review=reviews.get(row.id)),
     )
 

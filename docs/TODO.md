@@ -150,6 +150,6 @@ Updated October 20, 2026. Checked items have the implementation/check evidence d
 
 - [x] Check both local preview/production packages with synthetic public settings and no runtime network; verify generated contracts and zero reported npm vulnerabilities, then remove the disposable preview environment. No push/deploy.
 - [x] Batch Alerts projections with request-local records: 7 reads at 1/20/50 items, exact privacy/output regressions, 319 PostgreSQL tests and Ruff passed; API unchanged. Local only.
-- [ ] Measure public reply-history projections before considering batching; feed/saved/Alerts projections are already batched.
+- [x] Measure and batch public profile Threads/Replies without changing safe outputs; verify 343 PostgreSQL tests, 22 helper tests, Ruff and unchanged OpenAPI. See [PROFILE_PERFORMANCE.md](PROFILE_PERFORMANCE.md). Local only, no push/deploy.
 
 - [x] Measure the next Alerts batching candidate with rollback-only synthetic PostgreSQL data: 8/103/253 statements at 1/20/50 items; baseline retained as historical evidence; optimization completed in the October 20 follow-up.

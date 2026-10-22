@@ -447,9 +447,10 @@ def saved(
     return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
-def profile(db, username, user):
+def profile(db, username, user, *, hidden=None):
     row = db.scalar(select(m.User).where(m.User.username == username.lower(), m.User.status != "deactivated"))
-    if not row or row.id in s.hidden_ids(db, user):
+    hide = s.hidden_ids(db, user) if hidden is None else hidden
+    if not row or row.id in hide:
         s.fail(404, "not_found", "This profile is unavailable.")
     return row
 
@@ -468,21 +469,19 @@ def contributions(
     limit: Limit = 20,
     offset: Offset = 0,
 ):
-    author = profile(db, username, user)
+    hidden = s.hidden_ids(db, user)
+    author = profile(db, username, user, hidden=hidden)
     cls = m.Thread if type == "threads" else m.Reply
     stmt = select(cls).where(cls.author_id == author.id, cls.state == "published")
     # Replies under an unavailable thread are reachable only through its conversation shell.
     if cls == m.Reply:
         stmt = stmt.join(m.Thread, m.Reply.thread_id == m.Thread.id).where(
-            m.Thread.state == "published", m.Thread.author_id.not_in(s.hidden_ids(db, user))
+            m.Thread.state == "published", m.Thread.author_id.not_in(hidden)
         )
     rows = list(db.scalars(stmt.order_by(cls.published_at.desc(), cls.id).offset(offset).limit(limit + 1)))
-    return s.page(
-        rows,
-        offset,
-        limit,
-        lambda r: s.thread_out(db, r, user, False) if cls == m.Thread else s.reply_out(db, r, user),
-    )
+    project = s.thread_summaries if cls == m.Thread else s.reply_summaries
+    summaries = {item["id"]: item for item in project(db, rows[:limit], user, hidden=hidden)}
+    return s.page(rows, offset, limit, lambda row: summaries[row.id])
 
 
 @router.get("/me/submissions", response_model=v.SubmissionList)
