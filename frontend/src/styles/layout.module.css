@@ -7,7 +7,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
-  box-shadow: 0 4px 16px rgba(32, 38, 56, 0.12);
+  box-shadow: 0 4px 16px var(--shadow);
   transform: translateY(-200%);
 }
 
@@ -61,7 +61,7 @@
 
 .link:hover,
 .linkActive {
-  background: #eef2ff;
+  background: var(--tint);
   color: var(--blue);
   text-decoration: none;
 }
@@ -112,7 +112,7 @@
 
 .mobileNav a[aria-current="page"] {
   color: var(--blue);
-  background: #eef2ff;
+  background: var(--tint);
 }
 
 .menu {
@@ -128,7 +128,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.35rem;
-  box-shadow: 0 8px 24px rgba(32, 38, 56, 0.12);
+  box-shadow: 0 8px 24px var(--shadow);
   z-index: 30;
 }
 
@@ -147,7 +147,7 @@
 
 .menuPanel a:hover,
 .menuPanel button:hover {
-  background: #eef2ff;
+  background: var(--tint);
 }
 
 @media (min-width: 900px) {

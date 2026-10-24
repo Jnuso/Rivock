@@ -1,6 +1,6 @@
 # Rivock: local work ready to review
 
-October 22, 2026. Branch `features/local-conversation-tools`. **Keep local: no push, merge, publication or deployment is authorized by this document.** The last recorded hosted release is still the separate October 17 checkpoint in [HANDOFF.md](HANDOFF.md); this batch has not changed it.
+October 22, 2026. Branch `features/local-conversation-tools`. **October 24 update: the user authorized a feature-branch push after validation. Merge, image publication and deployment remain unapproved.** The last recorded hosted release is still the separate October 17 checkpoint in [HANDOFF.md](HANDOFF.md); this batch has not changed it.
 
 ## What you can review together
 
@@ -45,3 +45,6 @@ The disposable test setup contains fictional data only and is separate from exis
 5. **Public launch:** choose contact/domain/preview-data transition and complete any required provider ownership or real recovery-method entry when ready.
 
 No account setup needs to be repeated just to review these documents. Production networking, managed recovery, real billing/credit expiry and wider device/account checks remain open in [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
+
+
+October 24 validation: reading preferences and conversation reader tools passed 230 frontend tests (26 files), types/build; the full backend suite passed 365 PostgreSQL tests, Ruff and unchanged API export; 22 helper tests passed. Fresh browser layout verification was unavailable because no browser surfaces were exposed. Historical browser evidence does not cover the new controls. User authorized pushing all current feature-branch work, then creating the UI proposal.

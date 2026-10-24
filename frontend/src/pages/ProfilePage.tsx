@@ -91,7 +91,7 @@ export function ProfilePage() {
         !contributions.error &&
         !contributions.items.length && <Empty>No public {type}.</Empty>}
       {contributions.items.map((item) => (
-        <article className="card" key={item.id}>
+        <article className="card readingCard" key={item.id}>
           {"title" in item ? (
             <Link
               to={`/threads/${item.id}`}
@@ -107,7 +107,9 @@ export function ProfilePage() {
               >
                 View conversation
               </Link>
-              <Markdown source={item.body_markdown?.slice(0, 240) ?? ""} />
+              <div className="readingExcerpt">
+                <Markdown source={item.body_markdown?.slice(0, 240) ?? ""} />
+              </div>
             </>
           )}
         </article>

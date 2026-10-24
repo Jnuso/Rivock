@@ -70,3 +70,6 @@ Local saved-search candidate: search the member’s whole library on the server 
 
 
 Local profile candidate: persist the Threads/Replies public tab in view=replies, share only the canonical username and selected tab, and preserve Back to profile through focused conversation links/reload. A missing/blocked profile has no copy control or contribution read. Use the existing safe Markdown renderer for bounded reply previews. Label total conversation replies separately from direct answers because follow-up replies contribute to that total.
+
+
+October 24 candidate: device-only validated reading preferences (theme, density, post text size) and loaded-answer collapse/expand/jump tools. Keep active reply/edit ancestors open; preserve descendants and URL/return state. Component tests pass; fresh responsive/dark/enlarged-text visual checks remain pending.

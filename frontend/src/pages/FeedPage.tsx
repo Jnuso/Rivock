@@ -14,7 +14,7 @@ import { SaveThreadButton } from "../components/SaveThreadButton";
 function ThreadCard({ t }: { t: ThreadSummary }) {
   const location = useLocation();
   return (
-    <article className="card stack">
+    <article className="card stack readingCard">
       <div className="row muted">
         <span>{t.type}</span>
         <span>·</span>
@@ -37,7 +37,7 @@ function ThreadCard({ t }: { t: ThreadSummary }) {
           {t.title}
         </Link>
       </h2>
-      <p className="muted" style={{ margin: 0 }}>
+      <p className="muted readingText readingExcerpt" style={{ margin: 0 }}>
         {t.excerpt}
       </p>
       <p className="muted" style={{ margin: 0 }}>

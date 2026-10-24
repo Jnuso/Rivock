@@ -22,6 +22,11 @@ import {
   conversationViewPath,
 } from "../components/CopyLink";
 import { readFeedReturn, feedReturnState } from "../lib/feedReturn";
+import {
+  ConversationReaderProvider,
+  ConversationReadingTools,
+  useConversationReader,
+} from "../components/ConversationReader";
 
 function useRefresh(threadId: string) {
   const qc = useQueryClient();
@@ -205,18 +210,31 @@ function ReplyNode({
   canReply,
   questionOwner,
   acceptedId,
+  rootReplyId,
+  question,
 }: {
   reply: Reply;
   threadId: string;
   canReply: boolean;
   questionOwner: boolean;
   acceptedId: string | null;
+  rootReplyId?: string;
+  question: boolean;
 }) {
   const { user } = useAuth();
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const [responding, setResponding] = useState(false);
   const [editing, setEditing] = useState(false);
+  const reader = useConversationReader();
+  const rootId = rootReplyId ?? reply.id;
+  const collapsed = reply.depth === 1 && reader.collapsed.has(reply.id);
+  const busy = reader.busyRoots.has(rootId);
+  const registerWriter = reader.registerWriter;
+  useEffect(() => {
+    registerWriter(reply.id, rootId, editing || responding);
+    return () => registerWriter(reply.id, rootId, false);
+  }, [reply.id, rootId, editing, responding, registerWriter]);
   const draft = useDraft(`edit-reply:${reply.id}`, reply.body_markdown ?? "");
   const revisionDraft = useDraft(`edit-reply-base:${reply.id}`);
   const baseRevision = Number(revisionDraft.value) || reply.revision;
@@ -275,8 +293,17 @@ function ReplyNode({
     },
   });
   return (
-    <div className="stack" id={`reply-${reply.id}`}>
-      <article className="card stack">
+    <div className="stack">
+      <article
+        className="card stack readingCard replyArticle"
+        id={`reply-${reply.id}`}
+        tabIndex={-1}
+        aria-label={
+          reply.state === "published" && reply.author
+            ? `Reply from @${reply.author.username}`
+            : "Unavailable reply"
+        }
+      >
         <div className="row muted">
           {reply.author ? (
             <Link to={`/u/${reply.author.username}`}>
@@ -313,206 +340,248 @@ function ReplyNode({
             <span className="badge">✓ Accepted answer</span>
           )}
         </div>
-        {reply.response_to && (
-          <p className="muted">In response to @{reply.response_to.username}</p>
-        )}
-        {visible && reply.body_markdown ? (
-          <Markdown source={reply.body_markdown} />
-        ) : (
-          <p className="muted">[{reply.state} reply]</p>
-        )}
-        <div className="row">
-          <Votes
-            score={reply.score}
-            value={reply.my_vote}
-            mine={mine}
-            available={visible && canReply}
-            onVote={(v) => changed(api.voteReply(reply.id, v))}
-            onClear={() => changed(api.clearReplyVote(reply.id))}
-          />
-          {visible && (
-            <CopyLink
-              path={conversationPath(threadId, reply.id)}
-              label="Reply link"
-            />
-          )}
-          {canReply && visible && (
-            <button className="btn" onClick={() => setResponding((v) => !v)}>
-              Reply
-            </button>
-          )}
-          {questionOwner && reply.depth === 1 && visible && (
+        {reply.depth === 1 && (
+          <div className="row">
             <button
+              type="button"
               className="btn"
-              disabled={accept.isPending}
-              onClick={() => accept.mutate()}
+              aria-expanded={!collapsed}
+              aria-controls={`reply-content-${reply.id} reply-followups-${reply.id}`}
+              disabled={busy}
+              onClick={() => reader.toggle(reply.id)}
             >
-              {acceptedId === reply.id
-                ? "Clear accepted answer"
-                : "Accept answer"}
+              {collapsed ? "Expand" : "Collapse"}{" "}
+              {question ? "answer" : "reply"}
             </button>
-          )}
-          {mine && visible && (
-            <>
-              <button
-                className="btn"
-                onClick={() => {
-                  if (!editing && !revisionDraft.value) {
-                    draft.set(reply.body_markdown ?? "");
-                    revisionDraft.set(String(reply.revision));
-                  }
-                  setEditing((v) => !v);
-                }}
-              >
-                Edit
-              </button>
-              <button
-                className="btn btnDanger"
-                disabled={remove.isPending}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Delete your reply text? Other replies will remain.",
-                    )
-                  )
-                    remove.mutate();
-                }}
-              >
-                Delete
-              </button>
-            </>
-          )}
-          {user && visible && !mine && (
-            <ReportControl target={{ reply_id: reply.id }} />
-          )}
-        </div>
-        {(accept.error || remove.error || edit.error) && (
-          <ErrorBox error={accept.error || remove.error || edit.error} />
-        )}
-        {editing && (
-          <div className="stack">
-            <MarkdownEditor
-              id={`edit-${reply.id}`}
-              label="Edit reply"
-              value={draft.value}
-              onChange={draft.set}
-              max={LIMITS.reply}
-            />
-            <DraftRecovery
-              draft={{
-                ...draft,
-                persisted: draft.persisted && revisionDraft.persisted,
-                savedAt: draft.savedAt ?? revisionDraft.savedAt,
-                retry: () => {
-                  const textSaved = draft.retry();
-                  const revisionSaved = revisionDraft.retry();
-                  return textSaved && revisionSaved;
-                },
-              }}
-              hasContent={!!draft.value}
-              filename="rivock-reply-draft.txt"
-              text={[
-                "Original revision: " + baseRevision,
-                "",
-                draft.value,
-              ].join("\n")}
-            />
-            {baseRevision !== reply.revision && (
-              <section className="stack" aria-label="Compare reply versions">
-                <h3>A newer reply version is available</h3>
-                <p>
-                  Your draft above uses revision {baseRevision}. The current
-                  published revision is {reply.revision}:
-                </p>
-                <Markdown source={reply.body_markdown ?? ""} />
-                <div className="row">
-                  <button
-                    className="btn"
-                    onClick={() => {
-                      if (
-                        !window.confirm(
-                          "Replace your reply draft with the current published version?",
-                        )
-                      )
-                        return;
-                      draft.set(reply.body_markdown ?? "");
-                      revisionDraft.set(String(reply.revision));
-                      edit.reset();
-                    }}
-                  >
-                    Load current reply
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => {
-                      revisionDraft.set(String(reply.revision));
-                      edit.reset();
-                    }}
-                  >
-                    Keep my reply draft against current version
-                  </button>
-                </div>
-              </section>
+            {collapsed && reply.child_count > 0 && (
+              <span className="muted">
+                {reply.child_count} direct follow-ups
+              </span>
             )}
-            <div className="row">
-              <button
-                className="btn btnPrimary"
-                disabled={
-                  edit.isPending ||
-                  baseRevision !== reply.revision ||
-                  !draft.value.trim() ||
-                  cpLen(draft.value) > LIMITS.reply
-                }
-                onClick={() => edit.mutate()}
-              >
-                Submit edit
-              </button>
-              <button className="btn" onClick={() => setEditing(false)}>
-                Cancel edit
-              </button>
-              <button className="btn" onClick={refresh}>
-                Check latest reply
-              </button>
-            </div>
+            {busy && (
+              <span className="muted">
+                Finish or cancel your reply or edit to collapse this
+                conversation.
+              </span>
+            )}
           </div>
         )}
-        {responding && (
-          <ReplyComposer
-            threadId={threadId}
-            target={reply}
-            onDone={() => {
-              setResponding(false);
-              setExpanded(true);
-            }}
-          />
-        )}
-        {reply.child_count > 0 && (
-          <button
-            className="btn"
-            aria-expanded={expanded}
-            onClick={() => setExpanded((v) => !v)}
-          >
-            {expanded ? "Hide replies" : `Show ${reply.child_count} replies`}
-          </button>
-        )}
-      </article>
-      {expanded && (
-        <div className="replyBranch stack">
-          {children.isLoading && <Loading />}
-          <QueryError query={children} />
-          {children.items.map((r) => (
-            <ReplyNode
-              key={r.id}
-              reply={r}
-              threadId={threadId}
-              canReply={canReply}
-              questionOwner={questionOwner}
-              acceptedId={acceptedId}
+        <div
+          className="stack replyContent"
+          id={`reply-content-${reply.id}`}
+          hidden={collapsed}
+        >
+          {reply.response_to && (
+            <p className="muted">
+              In response to @{reply.response_to.username}
+            </p>
+          )}
+          {visible && reply.body_markdown ? (
+            <Markdown source={reply.body_markdown} />
+          ) : (
+            <p className="muted">[{reply.state} reply]</p>
+          )}
+          <div className="row">
+            <Votes
+              score={reply.score}
+              value={reply.my_vote}
+              mine={mine}
+              available={visible && canReply}
+              onVote={(v) => changed(api.voteReply(reply.id, v))}
+              onClear={() => changed(api.clearReplyVote(reply.id))}
             />
-          ))}
-          <More query={children} />
+            {visible && (
+              <CopyLink
+                path={conversationPath(threadId, reply.id)}
+                label="Reply link"
+              />
+            )}
+            {canReply && visible && (
+              <button className="btn" onClick={() => setResponding((v) => !v)}>
+                Reply
+              </button>
+            )}
+            {questionOwner && reply.depth === 1 && visible && (
+              <button
+                className="btn"
+                disabled={accept.isPending}
+                onClick={() => accept.mutate()}
+              >
+                {acceptedId === reply.id
+                  ? "Clear accepted answer"
+                  : "Accept answer"}
+              </button>
+            )}
+            {mine && visible && (
+              <>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    if (!editing && !revisionDraft.value) {
+                      draft.set(reply.body_markdown ?? "");
+                      revisionDraft.set(String(reply.revision));
+                    }
+                    setEditing((v) => !v);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btnDanger"
+                  disabled={remove.isPending}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Delete your reply text? Other replies will remain.",
+                      )
+                    )
+                      remove.mutate();
+                  }}
+                >
+                  Delete
+                </button>
+              </>
+            )}
+            {user && visible && !mine && (
+              <ReportControl target={{ reply_id: reply.id }} />
+            )}
+          </div>
+          {(accept.error || remove.error || edit.error) && (
+            <ErrorBox error={accept.error || remove.error || edit.error} />
+          )}
+          {editing && (
+            <div className="stack">
+              <MarkdownEditor
+                id={`edit-${reply.id}`}
+                label="Edit reply"
+                value={draft.value}
+                onChange={draft.set}
+                max={LIMITS.reply}
+              />
+              <DraftRecovery
+                draft={{
+                  ...draft,
+                  persisted: draft.persisted && revisionDraft.persisted,
+                  savedAt: draft.savedAt ?? revisionDraft.savedAt,
+                  retry: () => {
+                    const textSaved = draft.retry();
+                    const revisionSaved = revisionDraft.retry();
+                    return textSaved && revisionSaved;
+                  },
+                }}
+                hasContent={!!draft.value}
+                filename="rivock-reply-draft.txt"
+                text={[
+                  "Original revision: " + baseRevision,
+                  "",
+                  draft.value,
+                ].join("\n")}
+              />
+              {baseRevision !== reply.revision && (
+                <section className="stack" aria-label="Compare reply versions">
+                  <h3>A newer reply version is available</h3>
+                  <p>
+                    Your draft above uses revision {baseRevision}. The current
+                    published revision is {reply.revision}:
+                  </p>
+                  <Markdown source={reply.body_markdown ?? ""} />
+                  <div className="row">
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        if (
+                          !window.confirm(
+                            "Replace your reply draft with the current published version?",
+                          )
+                        )
+                          return;
+                        draft.set(reply.body_markdown ?? "");
+                        revisionDraft.set(String(reply.revision));
+                        edit.reset();
+                      }}
+                    >
+                      Load current reply
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        revisionDraft.set(String(reply.revision));
+                        edit.reset();
+                      }}
+                    >
+                      Keep my reply draft against current version
+                    </button>
+                  </div>
+                </section>
+              )}
+              <div className="row">
+                <button
+                  className="btn btnPrimary"
+                  disabled={
+                    edit.isPending ||
+                    baseRevision !== reply.revision ||
+                    !draft.value.trim() ||
+                    cpLen(draft.value) > LIMITS.reply
+                  }
+                  onClick={() => edit.mutate()}
+                >
+                  Submit edit
+                </button>
+                <button className="btn" onClick={() => setEditing(false)}>
+                  Cancel edit
+                </button>
+                <button className="btn" onClick={refresh}>
+                  Check latest reply
+                </button>
+              </div>
+            </div>
+          )}
+          {responding && (
+            <ReplyComposer
+              threadId={threadId}
+              target={reply}
+              onDone={() => {
+                setResponding(false);
+                setExpanded(true);
+              }}
+            />
+          )}
+          {reply.child_count > 0 && (
+            <button
+              className="btn"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((v) => !v)}
+            >
+              {expanded ? "Hide replies" : `Show ${reply.child_count} replies`}
+            </button>
+          )}
         </div>
-      )}
+      </article>
+      <div
+        className="replyFollowups"
+        id={`reply-followups-${reply.id}`}
+        hidden={collapsed}
+      >
+        {expanded && (
+          <div className="replyBranch stack">
+            {children.isLoading && <Loading />}
+            <QueryError query={children} />
+            {children.items.map((r) => (
+              <ReplyNode
+                key={r.id}
+                reply={r}
+                threadId={threadId}
+                canReply={canReply}
+                questionOwner={questionOwner}
+                acceptedId={acceptedId}
+                rootReplyId={rootId}
+                question={question}
+              />
+            ))}
+            <More query={children} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -580,6 +649,7 @@ function LinkedConversation({
           canReply={available}
           questionOwner={mine && available && question}
           acceptedId={acceptedId}
+          question={question}
         />
       </div>
       <Link
@@ -595,12 +665,25 @@ function LinkedConversation({
 
 export function ThreadPage() {
   const { id = "" } = useParams();
+  return (
+    <ConversationReaderProvider key={id}>
+      <ThreadPageContent />
+    </ConversationReaderProvider>
+  );
+}
+
+function ThreadPageContent() {
+  const { id = "" } = useParams();
   const { user } = useAuth();
   const location = useLocation();
   const returnTo = readFeedReturn(location.state);
   const [replyParams, setReplyParams] = useSearchParams();
   const replySort = replyParams.get("reply_sort") ?? "recommended";
   const linkedId = /^#reply-([a-f0-9-]{36})$/i.exec(location.hash)?.[1] ?? "";
+  const { expandLoaded } = useConversationReader();
+  useEffect(() => {
+    if (linkedId) expandLoaded([linkedId]);
+  }, [linkedId, expandLoaded]);
   const context = useQuery({
     queryKey: ["reply-context", id, linkedId],
     queryFn: () => api.getReplyContext(linkedId),
@@ -678,7 +761,7 @@ export function ThreadPage() {
         </aside>
       )}
       {t.body_markdown ? (
-        <div className="card">
+        <div className="card readingCard">
           <Markdown source={t.body_markdown} />
         </div>
       ) : (
@@ -809,6 +892,12 @@ export function ThreadPage() {
       )}
       {!linkedId && replies.isLoading && <Loading />}
       {!linkedId && <QueryError query={replies} />}
+      {!linkedId && (
+        <ConversationReadingTools
+          replies={replies.items}
+          question={t.type === "question"}
+        />
+      )}
       {!linkedId &&
         !replies.isLoading &&
         !replies.error &&
@@ -824,6 +913,7 @@ export function ThreadPage() {
             canReply={available}
             questionOwner={mine && available && t.type === "question"}
             acceptedId={t.accepted_reply_id}
+            question={t.type === "question"}
           />
         ))}
       {!linkedId && <More query={replies} />}

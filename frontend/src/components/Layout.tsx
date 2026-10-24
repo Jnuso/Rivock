@@ -13,6 +13,10 @@ import {
 import { api } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import styles from "../styles/layout.module.css";
+import {
+  ReadingPreferencesControl,
+  ReadingPreferencesProvider,
+} from "./ReadingPreferences";
 
 function useTopics() {
   return useQuery({
@@ -22,6 +26,14 @@ function useTopics() {
 }
 
 export function Layout() {
+  return (
+    <ReadingPreferencesProvider>
+      <LayoutContent />
+    </ReadingPreferencesProvider>
+  );
+}
+
+function LayoutContent() {
   const { configured, account, user, signIn, signOut, authMessage, me } =
     useAuth();
   const topics = useTopics();
@@ -223,7 +235,7 @@ export function Layout() {
             className="row"
             style={{ justifyContent: "space-between", marginBottom: "1rem" }}
           >
-            <div />
+            <ReadingPreferencesControl />
             <div className="row">
               {user ? (
                 <>

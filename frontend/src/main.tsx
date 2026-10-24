@@ -7,6 +7,9 @@ import "@fontsource/inter/latin-400.css";
 import "@fontsource/inter/latin-600.css";
 import "@fontsource/inter/latin-700.css";
 import "./styles/global.css";
+import { initializeReadingPreferences } from "./lib/readingPreferences";
+
+initializeReadingPreferences();
 
 const queryClient = new QueryClient({
   defaultOptions: {

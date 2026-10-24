@@ -1,10 +1,10 @@
 # Rivock: next-chat handoff
 
-Updated October 22, 2026. Read [AGENTS.md](../AGENTS.md) first, inspect Git status, then use this checkpoint and current source. Earlier chronological notes are evidence of earlier states, not instructions to repeat setup or activate services.
+Updated October 24, 2026. Read [AGENTS.md](../AGENTS.md) first, inspect Git status, then use this checkpoint and current source. Earlier chronological notes are evidence of earlier states, not instructions to repeat setup or activate services.
 
 ## Current task and boundaries
 
-The user wants continued local improvements and one consolidated review. **Keep branch `features/local-conversation-tools` local: do not push, merge, publish or deploy.** The branch is based on `a00c794` from `fix/browser-draft-recovery`; do not switch to main or discard its existing work. The latest request to keep working does not reverse the explicit no-push instruction.
+On October 24 the user explicitly authorized validating and pushing all current work on `features/local-conversation-tools` to GitHub, followed by an illustrated UI improvement document. This supersedes the earlier no-push restriction. The branch is based on `a00c794` from `fix/browser-draft-recovery`; preserve its work. Merge, image publication and deployment remain separate actions and were not authorized.
 
 Start with [LOCAL_REVIEW.md](LOCAL_REVIEW.md), which summarizes the prepared journeys, verification and owner decisions. [LOCAL_FEATURES.md](LOCAL_FEATURES.md) retains detailed feature/browser history.
 
@@ -106,3 +106,12 @@ Read [IMPLEMENTATION.md](IMPLEMENTATION.md) for chronological checks, [SPECIFICA
 ## Starter prompt
 
 > Continue Rivock in `C:\Users\Jnuso\Codex\Codex\Codex\Rivock`. Read AGENTS.md, docs/HANDOFF.md and docs/LOCAL_REVIEW.md, then inspect Git status/current source. Keep features/local-conversation-tools local: do not push, merge, publish or deploy. The October 22 batch has 365 PostgreSQL backend tests, 22 helper tests and rebuilt local package checks; the new features are not on the Azure site. Keep application AI off and valid publication immediate, with private reports/manual moderation. Review the proposed report-assisted AI design separately before implementation or provider calls. Continue useful local fixes/verification, preserve existing work and make routine decisions; ask only for missing account input, required authorization or material product choices. Existing built-in-browser authorization is for Rivock and its jack/jack1 test accounts only. Do not repeat completed setup, expose secrets or execute paid cloud/recovery/schedule changes from old plans. Give me a consolidated review of changes, evidence and remaining decisions.
+
+
+## October 24 push preparation
+
+Reading preferences now offer Light, Dark or System theme, Comfortable or Compact density, and three post-text sizes. Only validated device appearance settings are persisted; storage failures show retry feedback. Conversation tools collapse/expand loaded direct answers and jump to loaded answers, protecting open reply/edit composers and preserving loaded follow-ups. No API or schema changes.
+
+Fresh checks passed: 365 Docker/PostgreSQL tests, 230 frontend tests across 26 files, frontend types/build, 22 operator-helper tests, backend Ruff and API-contract equivalence. The 25 added frontend cases cover reading settings, unavailable storage, account draft-cleanup separation, collapse/jump behavior and editor protection. Browser automation reported no available browser surfaces in this session, so fresh responsive, dark-mode and enlarged-text layout inspection remains pending. Existing browser screenshots predate these controls. This limitation does not establish a hosted failure.
+
+The user requested a practical illustrated Word/PDF UI plan after the source push. Its recommendations are proposals, not implemented changes. Keep application AI off and do not merge, deploy, publish images or change cloud configuration.

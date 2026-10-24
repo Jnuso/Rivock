@@ -127,7 +127,7 @@ export function SavedPage() {
         </Empty>
       )}
       {items.map((t) => (
-        <article key={t.id} className="card stack">
+        <article key={t.id} className="card stack readingCard">
           {t.state && t.state !== "published" ? (
             <p className="muted">Unavailable saved item</p>
           ) : (
@@ -140,7 +140,10 @@ export function SavedPage() {
                   {t.title}
                 </Link>
               </h2>
-              <p className="muted" style={{ margin: 0 }}>
+              <p
+                className="muted readingText readingExcerpt"
+                style={{ margin: 0 }}
+              >
                 {t.excerpt}
               </p>
             </>
